@@ -9,6 +9,7 @@ import Terminkalender.Datum.DatumException;
 import java.rmi.RemoteException;
 import java.time.LocalDate;
 import java.util.Calendar;
+import java.util.LinkedList;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -468,15 +469,38 @@ public class TUI {
     }
 
     private void wochenansicht() throws RemoteException, BenutzerException {
+        Scanner scanner = new Scanner(System.in);
         LocalDate ld = LocalDate.now();
         Datum heute;
-        Terminkalender dieseWoche;
+        LinkedList<Termin> dieseWoche;
+        boolean nochmal = true;
+        int eingabe;
+        
         try {
             heute = new Datum(ld.getDayOfMonth(), ld.getMonthValue(), ld.getYear());
             int kw = heute.getKalenderwoche();
-        
             dieseWoche = stub.getTermineInKalenderwoche(kw, ld.getYear());
-            for
+
+            System.out.println("\n-----> " + dieseWoche.size() + " Termine im Jahr " + ld.getYear() + " in KW " + kw + ":");
+            
+            for(Termin termin : dieseWoche){
+                System.out.println(termin.getTitel());
+            }
+            
+            do{
+                System.out.println("\nZum Bearbeiten/Löschen die Nummer des Termins eingeben");
+                System.out.println("'0' um zurück zu gelangen");
+                if(scanner.hasNextInt()){
+                    eingabe = scanner.nextInt();
+                    nochmal = false;
+                    if(eingabe > 0 && eingabe <= dieseWoche.size()){
+                        //TODO: diesen Termin bearbeiten
+                    }
+                }
+                else{
+                    scanner.next();
+                }  
+            } while(nochmal); 
         } catch (DatumException e) {
             System.out.println(e.getMessage());
         }
