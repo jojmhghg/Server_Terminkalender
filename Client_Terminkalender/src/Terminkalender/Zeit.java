@@ -5,6 +5,8 @@
  */
 package Terminkalender;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Tim Meyer
@@ -51,9 +53,9 @@ public class Zeit {
     /**
      * Exception-Klasse für Klasse Zeit
      */
-    private static class ZeitException extends Exception {
+    public static class ZeitException extends Exception implements Serializable{
         
-        String message;
+        private final String message;
         
         public ZeitException(String message) {
             this.message = message;

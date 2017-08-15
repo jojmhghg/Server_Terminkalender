@@ -5,11 +5,9 @@
  */
 package Terminkalender;
 
+import Terminkalender.Datum.DatumException;
 import java.rmi.RemoteException;
-import java.util.LinkedList;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -116,7 +114,7 @@ public class TUI {
 		catch(BenutzerException e){
 			System.err.println("\n" + e.getMessage());
 			System.out.print("Eingabe wiederholen? (j/n) ");
-			again = scanner.next();
+			again = scanner.nextLine();
 			if(again.equals("j") || again.equals("ja") || again.equals("y") || again.equals("yes")){
 				wiederholen = true;
 			}
@@ -145,7 +143,7 @@ public class TUI {
                 eingabe = scanner.nextInt();     
                 switch(eingabe){
                     case 1:
-                        System.out.println("\n-----> noch nicht implementiert!");
+                        terminkalender();
                         break;
                     case 2:
                         kontakte();
@@ -321,10 +319,148 @@ public class TUI {
     }
 
     private void showKontakte() throws RemoteException, BenutzerException {
-        System.out.println("\n-----> Deine Kontakte:");
+        System.out.println("\n-----> Deine Kontakte(" + stub.getKontakte().size() + "):");
         for(String kontakt : stub.getKontakte()) {
             System.out.println(kontakt);
         }
+    }
+
+    private void terminkalender() throws RemoteException, BenutzerException {
+        Scanner scanner = new Scanner(System.in);
+        int eingabe;
+        boolean wiederholen = true;
+                      
+        do{
+	    System.out.println("\n************ Terminkalender ************\n");
+            System.out.println("01 - Wochenansicht");
+            System.out.println("02 - Montasansicht");
+            System.out.println("03 - neuer Termin anlegen");
+            System.out.println("04 - Zurück");	
+	    System.out.print("Eingabe: ");
+            
+	    if(scanner.hasNextInt()){
+                eingabe = scanner.nextInt();     
+                switch(eingabe){
+                    case 1:
+                        System.out.println("\n-----> noch nicht implementiert!");
+                        break;
+                    case 2:
+                        System.out.println("\n-----> noch nicht implementiert!");
+                        break;
+                    case 3:
+                        terminAnlegen();
+                        break;
+                    case 4:
+                        wiederholen = false;
+                        break;
+                    default:    
+                        System.out.println("\n-----> Ungueltige Eingabe!");
+                        break;
+                }
+            } 
+            else{
+                System.out.println("\n-----> Ungueltige Eingabe!");
+                scanner.next();
+            }     
+        } while(wiederholen);
+    }
+
+    private void terminAnlegen() throws RemoteException, BenutzerException{
+        Scanner scanner = new Scanner(System.in);
+        Datum datum;
+        Zeit start, ende;
+        String titel;
+        int tag = 0, monat = 0, jahr = 0, stunde = 0, minute = 0;
+        boolean nochmal = true;
+        
+        System.out.print("Titel: ");
+        titel = scanner.nextLine();
+        
+        try{
+            do{
+                System.out.print("Tag(1-31):");
+                if(scanner.hasNextInt()){
+                    tag = scanner.nextInt();
+                    nochmal = false;
+                }
+                else{
+                    scanner.next();
+                }  
+            } while(nochmal);
+            do{
+                System.out.print("Monat(1-12):");
+                if(scanner.hasNextInt()){
+                    monat = scanner.nextInt();
+                    nochmal = false;
+                }
+                else{
+                    scanner.next();
+                }  
+            } while(nochmal);
+            do{
+                System.out.print("Jahr:");
+                if(scanner.hasNextInt()){
+                    jahr = scanner.nextInt();
+                    nochmal = false;
+                }
+                else{
+                    scanner.next();
+                }  
+            } while(nochmal);      
+            datum = new Datum(tag, monat, jahr);
+            
+            do{
+                System.out.print("Start-Stunde:");
+                if(scanner.hasNextInt()){
+                    stunde = scanner.nextInt();
+                    nochmal = false;
+                }
+                else{
+                    scanner.next();
+                }  
+            } while(nochmal); 
+            do{
+                System.out.print("Start-Minute:");
+                if(scanner.hasNextInt()){
+                    minute = scanner.nextInt();
+                    nochmal = false;
+                }
+                else{
+                    scanner.next();
+                }  
+            } while(nochmal); 
+            start = new Zeit(stunde, minute);
+            
+            do{
+                System.out.print("End-Stunde:");
+                if(scanner.hasNextInt()){
+                    stunde = scanner.nextInt();
+                    nochmal = false;
+                }
+                else{
+                    scanner.next();
+                }  
+            } while(nochmal); 
+            do{
+                System.out.print("End-Minute:");
+                if(scanner.hasNextInt()){
+                    minute = scanner.nextInt();
+                    nochmal = false;
+                }
+                else{
+                    scanner.next();
+                }  
+            } while(nochmal); 
+            ende = new Zeit(stunde, minute);
+
+            stub.addTermin(datum, start, ende, titel);
+        }
+        catch(DatumException | Zeit.ZeitException | TerminException e){
+            System.out.println("\n-----> " + e.getMessage());
+        }
+            
+        
+        
     }
     
 }
