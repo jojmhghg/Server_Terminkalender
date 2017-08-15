@@ -14,7 +14,7 @@ import java.rmi.registry.*;
  *
  * @author Tim Meyer
  */
-public class TerminkalenderClient {
+public class Client {
    
     /**
      * @param args the command line arguments
