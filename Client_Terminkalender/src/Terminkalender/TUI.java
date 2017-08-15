@@ -7,7 +7,11 @@ package Terminkalender;
 
 import Terminkalender.Datum.DatumException;
 import java.rmi.RemoteException;
+import java.time.LocalDate;
+import java.util.Calendar;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -463,8 +467,19 @@ public class TUI {
         
     }
 
-    private void wochenansicht() throws RemoteException {
-        stub.getTermineInKalenderwoche(0, 0);
+    private void wochenansicht() throws RemoteException, BenutzerException {
+        LocalDate ld = LocalDate.now();
+        Datum heute;
+        Terminkalender dieseWoche;
+        try {
+            heute = new Datum(ld.getDayOfMonth(), ld.getMonthValue(), ld.getYear());
+            int kw = heute.getKalenderwoche();
+        
+            dieseWoche = stub.getTermineInKalenderwoche(kw, ld.getYear());
+            for
+        } catch (DatumException e) {
+            System.out.println(e.getMessage());
+        }
         
     }
     

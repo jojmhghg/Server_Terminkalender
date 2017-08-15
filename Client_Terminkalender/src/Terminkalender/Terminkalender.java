@@ -64,12 +64,12 @@ public class Terminkalender implements Serializable{
      * @return 
      * @throws Terminkalender.TerminException 
      */
-    public Terminkalender getTermineImMonat(int monat, int jahr) throws TerminException{
-        Terminkalender monatsauszug = new Terminkalender();
+    public LinkedList<Termin> getTermineImMonat(int monat, int jahr) throws TerminException{
+        LinkedList<Termin> monatsauszug = new LinkedList<>();
         
         for(Termin termin : terminkalender){
             if(termin.getDatum().getMonat() == monat && termin.getDatum().getJahr() == jahr){
-                monatsauszug.addTermin(termin);
+                monatsauszug.add(termin);
             }
         }
         
@@ -83,12 +83,12 @@ public class Terminkalender implements Serializable{
      * @param jahr
      * @return 
      */
-    public Terminkalender getTermineInWoche(int kalenderwoche, int jahr) {
-        Terminkalender wochenauszug = new Terminkalender();
+    public LinkedList<Termin> getTermineInWoche(int kalenderwoche, int jahr) {
+        LinkedList<Termin> wochenauszug = new LinkedList<>();
         
         for(Termin termin : terminkalender){
             if(termin.getDatum().getKalenderwoche() == kalenderwoche && termin.getDatum().getJahr() == jahr){
-                wochenauszug.addTermin(termin);
+                wochenauszug.add(termin);
             }
         }
         
