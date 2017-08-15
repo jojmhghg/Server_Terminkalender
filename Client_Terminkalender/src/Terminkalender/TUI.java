@@ -6,6 +6,7 @@
 package Terminkalender;
 
 import java.rmi.RemoteException;
+import java.util.LinkedList;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -251,7 +252,7 @@ public class TUI {
         }
     }
 
-    private void kontakte() throws RemoteException {
+    private void kontakte() throws RemoteException, BenutzerException {
         Scanner scanner = new Scanner(System.in);
         int eingabe;
         boolean wiederholen = true;
@@ -268,7 +269,7 @@ public class TUI {
                 eingabe = scanner.nextInt();     
                 switch(eingabe){
                     case 1:
-                        System.out.println("\n-----> noch nicht implementiert!");
+                        showKontakte();
                         break;
                     case 2:
                         addKontakt();
@@ -316,6 +317,13 @@ public class TUI {
             System.out.println("\n-----> Kontakt erfolgreich gelöscht!");
         } catch (BenutzerException e) {
             System.out.println("\n-----> " + e.getMessage());
+        }
+    }
+
+    private void showKontakte() throws RemoteException, BenutzerException {
+        System.out.println("\n-----> Deine Kontakte:");
+        for(String kontakt : stub.getKontakte()) {
+            System.out.println(kontakt);
         }
     }
     

@@ -125,10 +125,14 @@ public class Benutzer implements Serializable{
      * @throws Terminkalender.BenutzerException 
      */
     public void removeKontakt(String username) throws BenutzerException{
+        boolean inListe = false;
         for(String kontakt : kontaktliste){
             if(kontakt.equals(username)){
-                throw new BenutzerException(username + " bereits in der Kontaktliste vorhanden!");
+                inListe = true;
             }
+        }
+        if(!inListe){
+            throw new BenutzerException(username + " nicht in der Kontaktliste vorhanden!");
         }
         kontaktliste.remove(username);
     }
