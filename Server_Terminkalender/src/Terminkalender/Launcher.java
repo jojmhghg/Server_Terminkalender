@@ -411,11 +411,10 @@ public class Launcher implements LauncherInterface{
      * @param kalenderwoche
      * @param jahr
      * @return
-     * @throws BenutzerException
-     * @throws TerminException 
+     * @throws BenutzerException 
      */
     @Override
-    public Terminkalender getTermineInKalenderwoche(int kalenderwoche, int jahr) throws BenutzerException, TerminException{
+    public Terminkalender getTermineInKalenderwoche(int kalenderwoche, int jahr) throws BenutzerException{
         if(!eingeloggt){
             throw new BenutzerException("noch nicht eingeloggt");
         }
