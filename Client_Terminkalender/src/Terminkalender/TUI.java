@@ -342,7 +342,7 @@ public class TUI {
                 eingabe = scanner.nextInt();     
                 switch(eingabe){
                     case 1:
-                        System.out.println("\n-----> noch nicht implementiert!");
+                        wochenansicht();
                         break;
                     case 2:
                         System.out.println("\n-----> noch nicht implementiert!");
@@ -460,6 +460,11 @@ public class TUI {
         }
             
         
+        
+    }
+
+    private void wochenansicht() throws RemoteException {
+        stub.getTermineInKalenderwoche(0, 0);
         
     }
     

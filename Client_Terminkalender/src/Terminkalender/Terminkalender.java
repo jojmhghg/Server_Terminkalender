@@ -82,9 +82,8 @@ public class Terminkalender implements Serializable{
      * @param kalenderwoche
      * @param jahr
      * @return 
-     * @throws Server.TerminException 
      */
-    public Terminkalender getTermineInWoche(int kalenderwoche, int jahr) throws TerminException{
+    public Terminkalender getTermineInWoche(int kalenderwoche, int jahr) {
         Terminkalender wochenauszug = new Terminkalender();
         
         for(Termin termin : terminkalender){
