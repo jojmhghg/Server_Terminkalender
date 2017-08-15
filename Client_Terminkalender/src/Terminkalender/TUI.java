@@ -7,6 +7,8 @@ package Terminkalender;
 
 import java.rmi.RemoteException;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -108,7 +110,7 @@ public class TUI {
 		
         	try{
 			stub.createUser(username, password, email);
-			System.out.print("\n-----> Registrierung erfolgreich");
+			System.out.println("\n-----> Registrierung erfolgreich");
 		}
 		catch(BenutzerException e){
 			System.err.println("\n" + e.getMessage());
@@ -145,7 +147,7 @@ public class TUI {
                         System.out.println("\n-----> noch nicht implementiert!");
                         break;
                     case 2:
-                        System.out.println("\n-----> noch nicht implementiert!");
+                        kontakte();
                         break;
                     case 3:
                         System.out.println("\n-----> noch nicht implementiert!");
@@ -215,24 +217,106 @@ public class TUI {
 
     private void changeVorname() throws RemoteException, BenutzerException {
         Scanner scanner = new Scanner(System.in);
-        String change;
+        String newName;
 
-        System.out.println("Neuer Vorname: ");
-        change = scanner.nextLine();
-        stub.changeVorname(change);
+        System.out.print("Neuer Vorname: ");
+        newName = scanner.nextLine();
+        stub.changeVorname(newName);
+        System.out.println("\n-----> Vorname erfolgreich geändert!");
     }
 
     private void changeNachname() throws RemoteException, BenutzerException{
         Scanner scanner = new Scanner(System.in);
-        String change;
+        String newName;
 
-        System.out.println("Neuer Nachname: ");
-        change = scanner.nextLine();
-        stub.changeNachname(change);
+        System.out.print("Neuer Nachname: ");
+        newName = scanner.nextLine();
+        stub.changeNachname(newName);
+        System.out.println("\n-----> Nachname erfolgreich geändert!");
     }
 
-    private void changePW() {
-        System.out.println("\n-----> Noch nicht implementiert! ");
+    private void changePW() throws RemoteException {
+        Scanner scanner = new Scanner(System.in);
+        String altesPW, neuesPW;
+
+        System.out.print("Altes Passwort: ");
+        altesPW = scanner.nextLine();
+        System.out.print("Neues Passwort: ");
+        neuesPW = scanner.nextLine();
+        try {
+            stub.changePasswort(altesPW, neuesPW);
+            System.out.println("\n-----> Passwort ändern erfolgreich!");
+        } catch (BenutzerException e) {
+            System.out.println("\n-----> " + e.getMessage());
+        }
+    }
+
+    private void kontakte() throws RemoteException {
+        Scanner scanner = new Scanner(System.in);
+        int eingabe;
+        boolean wiederholen = true;
+                      
+        do{
+	    System.out.println("\n************ Kontakte ************\n");
+            System.out.println("01 - Kontakte anzeigen");
+            System.out.println("02 - Kontakt hinzufügen");
+            System.out.println("03 - Kontakt löschen");
+            System.out.println("04 - Zurück");	
+	    System.out.print("Eingabe: ");
+            
+	    if(scanner.hasNextInt()){
+                eingabe = scanner.nextInt();     
+                switch(eingabe){
+                    case 1:
+                        System.out.println("\n-----> noch nicht implementiert!");
+                        break;
+                    case 2:
+                        addKontakt();
+                        break;
+                    case 3:
+                        removeKontakt();
+                        break;
+                    case 4:
+                        wiederholen = false;
+                        break;
+                    default:    
+                        System.out.println("\n-----> Ungueltige Eingabe!");
+                        break;
+                }
+            } 
+            else{
+                System.out.println("\n-----> Ungueltige Eingabe!");
+                scanner.next();
+            }     
+        } while(wiederholen);
+    }
+
+    private void addKontakt() throws RemoteException {
+        Scanner scanner = new Scanner(System.in);
+        String username;
+
+        System.out.print("Username des Kontakts: ");
+        username = scanner.nextLine();
+        try {
+            stub.addKontakt(username);
+            System.out.println("\n-----> Kontakt erfolgreich hinzugefügt!");
+        } catch (BenutzerException e) {
+            System.out.println("\n-----> " + e.getMessage());
+        }
+    }
+
+    private void removeKontakt() throws RemoteException {
+        Scanner scanner = new Scanner(System.in);
+        String username;
+
+        System.out.print("Username des Kontakts: ");
+        username = scanner.nextLine();
+        try {
+            stub.removeKontakt(username);
+            System.out.println("\n-----> Kontakt erfolgreich gelöscht!");
+        } catch (BenutzerException e) {
+            System.out.println("\n-----> " + e.getMessage());
+        }
     }
     
 }

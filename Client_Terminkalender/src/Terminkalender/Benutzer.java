@@ -90,7 +90,7 @@ public class Benutzer implements Serializable{
         this.email = email;
     }
     public void setPasswort(String neuesPasswort) throws BenutzerException{
-        if(passwort.length() < 4 || passwort.length() > 12){
+        if(neuesPasswort.length() < 4 || neuesPasswort.length() > 12){
             throw new BenutzerException("Das Passwort sollte zwischen 4 und 12 Zeichen lang sein");
         }
         this.passwort = neuesPasswort;
@@ -108,19 +108,28 @@ public class Benutzer implements Serializable{
     /**
      * 
      * @param username 
+     * @throws Terminkalender.BenutzerException 
      */
-    public void addKontakt(String username){
-        //TODO: teste ob username existiert, wenn nein: werfe Fehler
-        //TODO: teste ob username bereits in kontaktliste, wenn ja: werfe Fehler
+    public void addKontakt(String username) throws BenutzerException{
+        for(String kontakt : kontaktliste){
+            if(kontakt.equals(username)){
+                throw new BenutzerException(username + " bereits in der Kontaktliste vorhanden!");
+            }
+        }
         kontaktliste.add(username);
     }
     
     /**
      * 
      * @param username 
+     * @throws Terminkalender.BenutzerException 
      */
-    public void removeKontakt(String username){
-        //TODO: teste ob username in kontaktliste, wenn nein: werfe Fehler
+    public void removeKontakt(String username) throws BenutzerException{
+        for(String kontakt : kontaktliste){
+            if(kontakt.equals(username)){
+                throw new BenutzerException(username + " bereits in der Kontaktliste vorhanden!");
+            }
+        }
         kontaktliste.remove(username);
     }
 
@@ -155,9 +164,5 @@ public class Benutzer implements Serializable{
         return result;
     }
 }
-
-    /*private boolean usernameAlreadyUsed(String username) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }*/
     
 
