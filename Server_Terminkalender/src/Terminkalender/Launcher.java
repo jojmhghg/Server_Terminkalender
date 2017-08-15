@@ -322,6 +322,9 @@ public class Launcher implements LauncherInterface{
         if(!eingeloggt){
             throw new BenutzerException("noch nicht eingeloggt");
         }
+        if(!benutzerliste.existiertBenutzer(username)){
+            throw new BenutzerException("Benutzername existiert nicht!");
+        }
         eingeloggterBenutzer.addKontakt(username);
     }
 
