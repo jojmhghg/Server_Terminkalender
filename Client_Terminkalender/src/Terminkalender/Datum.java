@@ -11,7 +11,7 @@ import java.io.Serializable;
  *
  * @author Tim Meyer
  */
-public class Datum {
+public class Datum implements Serializable{
     private int tag;
     private int monat;
     private int jahr;

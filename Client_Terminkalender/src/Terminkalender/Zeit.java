@@ -11,7 +11,7 @@ import java.io.Serializable;
  *
  * @author Tim Meyer
  */
-public class Zeit {
+public class Zeit implements Serializable{
     private int stunde;
     private int minute;
     
