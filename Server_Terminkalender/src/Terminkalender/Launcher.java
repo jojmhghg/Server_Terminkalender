@@ -431,7 +431,7 @@ public class Launcher implements LauncherInterface{
      * @throws TerminException 
      */
     @Override
-    public Terminkalender getTermineInMonat(Monat monat, int jahr) throws BenutzerException, TerminException{
+    public Terminkalender getTermineInMonat(int monat, int jahr) throws BenutzerException, TerminException{
         if(!eingeloggt){
             throw new BenutzerException("noch nicht eingeloggt");
         }

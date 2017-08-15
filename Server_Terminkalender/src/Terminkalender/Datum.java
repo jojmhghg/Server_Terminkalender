@@ -5,6 +5,8 @@
  */
 package Terminkalender;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Tim Meyer
@@ -14,13 +16,15 @@ public class Datum {
     private int monat;
     private int jahr;
     
-    public Datum(int tag, Monat monat, int jahr) throws DatumException{
-
-        if(!existiertTagInMonat(tag, monat.getWert(), jahr)){
+    public Datum(int tag, int monat, int jahr) throws DatumException{
+        if(monat > 12 || monat < 1){
+            throw new DatumException("kein gültiger Monat!");
+        }
+        if(!existiertTagInMonat(tag, monat, jahr)){
             throw new DatumException("Monat " + monat + " hat keinen Tag " + tag);
         }
         this.tag = tag;
-        this.monat = monat.getWert();
+        this.monat = monat;
         this.jahr = jahr;
     }
 
@@ -31,8 +35,8 @@ public class Datum {
         }
         this.tag = tag;
     }
-    public void setMonat(Monat monat){
-        this.monat = monat.getWert();
+    public void setMonat(int monat){
+        this.monat = monat;
     }
     public void setJahr(int jahr){
         this.jahr = jahr;
@@ -117,32 +121,26 @@ public class Datum {
      * @return 
      */
     private boolean existiertTagInMonat(int tag, int monat, int jahr){
-        switch(monat % 2){
-            case 1:
-                if(tag > 31 || tag < 1){
-                    return false;
-                }
-                break;
-                
-            case 0:
-                /* Februar mehr als 29 Tage? */
-                if(monat == 2 && tag > 29){
-                    return false;
-                }
-                /* Februar mehr als 28 Tage, wenn kein Schaltjahr? */
-                if(monat == 2 && !istSchaltjahr(jahr) && tag > 28){
-                    return false;
-                }
-                if(tag > 30 || tag < 1){
-                    return false;
-                }
-                break;
-
-            default:
-
-                break; 
+        if(monat == 1 || monat == 3 || monat == 5 || monat == 7 || monat == 8 || monat == 10 || monat == 12){
+            if(tag > 31 || tag < 1){
+                return false;
+            }
         }
-        
+        else if(monat == 2) {
+             /* Februar mehr als 29 Tage? */
+            if(tag > 29){
+                return false;
+            }
+            /* Februar mehr als 28 Tage, wenn kein Schaltjahr? */
+            if(!istSchaltjahr(jahr) && tag > 28){
+                return false; 
+            }
+        }
+        else{
+            if(tag > 30 || tag < 1){
+                return false;
+            }
+        }     
         return true;
     }
     
@@ -168,7 +166,7 @@ public class Datum {
     /**
      * Exception-Klasse für Klasse Datum
      */
-    public static class DatumException extends Exception {
+    public static class DatumException extends Exception implements Serializable{
 
         private final String message;
         

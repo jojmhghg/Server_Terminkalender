@@ -62,13 +62,13 @@ public class Terminkalender implements Serializable{
      * @param monat
      * @param jahr
      * @return 
-     * @throws Server.TerminException 
+     * @throws Terminkalender.TerminException 
      */
-    public Terminkalender getTermineImMonat(Monat monat, int jahr) throws TerminException{
+    public Terminkalender getTermineImMonat(int monat, int jahr) throws TerminException{
         Terminkalender monatsauszug = new Terminkalender();
         
         for(Termin termin : terminkalender){
-            if(termin.getDatum().getMonat() == monat.getWert() && termin.getDatum().getJahr() == jahr){
+            if(termin.getDatum().getMonat() == monat && termin.getDatum().getJahr() == jahr){
                 monatsauszug.addTermin(termin);
             }
         }
