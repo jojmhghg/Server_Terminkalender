@@ -47,8 +47,8 @@ public interface LauncherInterface extends Remote{
     public void changeTerminbeginn(int id, Zeit neuerBeginn) throws BenutzerException, TerminException, RemoteException;  
     public void changeTermindatum(int id, Datum neuesDatum) throws BenutzerException, RemoteException, TerminException;
     public void addTerminteilnehmer(int id, String username) throws RemoteException, BenutzerException;
-    public Terminkalender getTermineInKalenderwoche(int kalenderwoche, int jahr) throws RemoteException, BenutzerException;
-    public Terminkalender getTermineInMonat(int monat, int jahr) throws RemoteException, TerminException, BenutzerException;
+    public LinkedList<Termin> getTermineInKalenderwoche(int kalenderwoche, int jahr) throws RemoteException, BenutzerException;
+    public LinkedList<Termin> getTermineInMonat(int monat, int jahr) throws RemoteException, TerminException, BenutzerException;
     public void terminAnnehmen(String username, int id, Termin termin) throws RemoteException, TerminException, BenutzerException;
     public void terminAblehnen(String username, int id, Termin termin) throws RemoteException, TerminException, BenutzerException;
     

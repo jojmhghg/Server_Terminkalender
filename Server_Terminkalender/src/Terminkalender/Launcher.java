@@ -414,7 +414,7 @@ public class Launcher implements LauncherInterface{
      * @throws BenutzerException 
      */
     @Override
-    public Terminkalender getTermineInKalenderwoche(int kalenderwoche, int jahr) throws BenutzerException{
+    public LinkedList<Termin> getTermineInKalenderwoche(int kalenderwoche, int jahr) throws BenutzerException{
         if(!eingeloggt){
             throw new BenutzerException("noch nicht eingeloggt");
         }
@@ -430,7 +430,7 @@ public class Launcher implements LauncherInterface{
      * @throws TerminException 
      */
     @Override
-    public Terminkalender getTermineInMonat(int monat, int jahr) throws BenutzerException, TerminException{
+    public LinkedList<Termin> getTermineInMonat(int monat, int jahr) throws BenutzerException, TerminException{
         if(!eingeloggt){
             throw new BenutzerException("noch nicht eingeloggt");
         }
