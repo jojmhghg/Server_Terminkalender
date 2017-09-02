@@ -126,33 +126,31 @@ public class Launcher implements LauncherInterface{
         }
         if(eingeloggterBenutzer.getUsername().equals(eingeloggterBenutzer.getTerminkalender().getTerminByID(id).getOwner())){
             for(Teilnehmer teilnehmer : eingeloggterBenutzer.getTerminkalender().getTerminByID(id).getTeilnehmerliste()){
-                System.out.println(teilnehmer.getUsername());
-                System.out.println(id);
-                
-                benutzerliste.getBenutzer(teilnehmer.getUsername()).getTerminkalender().removeTerminByID(id);
-                System.out.println(teilnehmer.getUsername());
-                benutzerliste.getBenutzer(teilnehmer.getUsername()).addMeldung(
-                        eingeloggterBenutzer.getUsername() 
-                        + " hat den Termin '" 
-                        + eingeloggterBenutzer.getTerminkalender().getTerminByID(id).getTitel()
-                        + "' am "
-                        + eingeloggterBenutzer.getTerminkalender().getTerminByID(id).getDatum().toString()
-                        + " gelöscht");        
+                if(!eingeloggterBenutzer.getUsername().equals(eingeloggterBenutzer.getTerminkalender().getTerminByID(id).getOwner())){            
+                    benutzerliste.getBenutzer(teilnehmer.getUsername()).getTerminkalender().removeTerminByID(id);
+                    benutzerliste.getBenutzer(teilnehmer.getUsername()).addMeldung(
+                            eingeloggterBenutzer.getUsername() 
+                            + " hat den Termin '" 
+                            + eingeloggterBenutzer.getTerminkalender().getTerminByID(id).getTitel()
+                            + "' am "
+                            + eingeloggterBenutzer.getTerminkalender().getTerminByID(id).getDatum().toString()
+                            + " gelöscht");   
+                }            
             }
         }
         else{
-            System.out.println("falsch");
             for(Teilnehmer teilnehmer : eingeloggterBenutzer.getTerminkalender().getTerminByID(id).getTeilnehmerliste()){
-                benutzerliste.getBenutzer(teilnehmer.getUsername()).addMeldung(
-                        eingeloggterBenutzer.getUsername() 
-                        + " nimmt nicht mehr an dem Termin '" 
-                        + eingeloggterBenutzer.getTerminkalender().getTerminByID(id).getTitel()
-                        + "' am "
-                        + eingeloggterBenutzer.getTerminkalender().getTerminByID(id).getDatum().toString()
-                        + " teil");        
+                if(!eingeloggterBenutzer.getUsername().equals(teilnehmer.getUsername())){   
+                    benutzerliste.getBenutzer(teilnehmer.getUsername()).addMeldung(
+                            eingeloggterBenutzer.getUsername() 
+                            + " nimmt nicht mehr an dem Termin '" 
+                            + eingeloggterBenutzer.getTerminkalender().getTerminByID(id).getTitel()
+                            + "' am "
+                            + eingeloggterBenutzer.getTerminkalender().getTerminByID(id).getDatum().toString()
+                            + " teil"); 
+                }
             }
         }
-        System.out.println("2222222222");
         eingeloggterBenutzer.getTerminkalender().removeTerminByID(id);
     }
     
@@ -263,9 +261,7 @@ public class Launcher implements LauncherInterface{
         }
         benutzerliste.getBenutzer(username).addAnfrage(eingeloggterBenutzer.getTerminkalender().getTerminByID(id), eingeloggterBenutzer.getUsername());
         benutzerliste.getBenutzer(username).addTermin(eingeloggterBenutzer.getTerminkalender().getTerminByID(id));
-        for(Teilnehmer teilnehmer : eingeloggterBenutzer.getTerminkalender().getTerminByID(id).getTeilnehmerliste()){
-            eingeloggterBenutzer.getTerminkalender().getTerminByID(id).addTeilnehmer(username);
-        }
+        eingeloggterBenutzer.getTerminkalender().getTerminByID(id).addTeilnehmer(username);
     }
     
     /**
