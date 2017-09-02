@@ -51,7 +51,7 @@ public class BenutzerListe implements Serializable{
      * 
      * @param username
      * @return 
-     * @throws Server.BenutzerException 
+     * @throws Terminkalender.BenutzerException 
      */
     public Benutzer getBenutzer(String username) throws BenutzerException{
         Benutzer result = null;        
