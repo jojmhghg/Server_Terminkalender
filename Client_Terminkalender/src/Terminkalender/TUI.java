@@ -11,8 +11,6 @@ import java.rmi.RemoteException;
 import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -82,6 +80,9 @@ public class TUI {
                     case 4:
                         System.out.println("\n-----> Anwendung beendet!");
 			wiederholen = false;
+                        break;
+                    case 43:
+                        entwicklerTools();
                         break;
                     default:    
                         System.out.println("\n-----> Ungueltige Eingabe!");
@@ -425,7 +426,7 @@ public class TUI {
         do{
 	    System.out.println("\n************ Terminkalender ************\n");
             System.out.println("01 - Wochenansicht");
-            System.out.println("02 - Montasansicht");
+            System.out.println("02 - Monatsansicht");
             System.out.println("03 - neuer Termin anlegen");
             System.out.println("04 - Zurück");	
 	    System.out.print("Eingabe: ");
@@ -813,6 +814,7 @@ public class TUI {
                         break;
                     case 9:
                         terminLoeschen(terminID);
+                        wiederholen = false;
                         break;
                     default:    
                         System.out.println("\n-----> Ungueltige Eingabe!");
@@ -1051,6 +1053,13 @@ public class TUI {
         }
     }
 
+    /**
+     * TUI zum Bearbeiten der Teilnehmerliste eines Termins
+     * 
+     * @param terminID
+     * @throws RemoteException
+     * @throws BenutzerException 
+     */
     private void terminTeilnehmerlisteBearbeiten(int terminID) throws RemoteException, BenutzerException {
         Scanner scanner = new Scanner(System.in);
         String username, eingabe;
@@ -1071,5 +1080,9 @@ public class TUI {
                 System.out.println("-----> " + e.getMessage());
             }    
         }
+    }
+
+    private void entwicklerTools() {
+        
     }
 }
