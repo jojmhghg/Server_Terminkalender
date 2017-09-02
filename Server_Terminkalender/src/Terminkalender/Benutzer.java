@@ -111,6 +111,9 @@ public class Benutzer implements Serializable{
      * @throws Terminkalender.BenutzerException 
      */
     public void addKontakt(String username) throws BenutzerException{
+        if(username.equals(this.username)){
+            throw new BenutzerException("Du kannst dich nicht selbst hinzufügen!");
+        }
         for(String kontakt : kontaktliste){
             if(kontakt.equals(username)){
                 throw new BenutzerException(username + " bereits in der Kontaktliste vorhanden!");
