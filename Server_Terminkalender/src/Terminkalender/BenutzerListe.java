@@ -15,9 +15,11 @@ import java.util.LinkedList;
 public class BenutzerListe implements Serializable{
     
     private final LinkedList<Benutzer> benutzerliste;
+    private int userIDCounter;
     
     BenutzerListe(){
         benutzerliste = new LinkedList<>();
+        userIDCounter = 1;
     }
     
     /**
@@ -33,7 +35,8 @@ public class BenutzerListe implements Serializable{
             throw new BenutzerException(username + " existiert bereits!");
         }
         //TODO: teste ob email in benutzerliste vorhanden ist, wenn ja: werfe Fehler
-        benutzerliste.add(new Benutzer(username, passwort, email));
+        benutzerliste.add(new Benutzer(username, passwort, email, userIDCounter));
+        userIDCounter++;
     }
     
     public boolean existiertBenutzer(String username){

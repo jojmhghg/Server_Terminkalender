@@ -261,8 +261,11 @@ public class Launcher implements LauncherInterface{
         if(!benutzerliste.existiertBenutzer(username)){
             throw new BenutzerException("Benutzer: " + username + " exisitert nicht!");
         }
-        eingeloggterBenutzer.getTerminkalender().getTerminByID(id).addTeilnehmer(username);
-        benutzerliste.getBenutzer(username).addAnfrage(eingeloggterBenutzer.getTerminkalender().getTerminByID(id), username);
+        benutzerliste.getBenutzer(username).addAnfrage(eingeloggterBenutzer.getTerminkalender().getTerminByID(id), eingeloggterBenutzer.getUsername());
+        benutzerliste.getBenutzer(username).addTermin(eingeloggterBenutzer.getTerminkalender().getTerminByID(id));
+        for(Teilnehmer teilnehmer : eingeloggterBenutzer.getTerminkalender().getTerminByID(id).getTeilnehmerliste()){
+            eingeloggterBenutzer.getTerminkalender().getTerminByID(id).addTeilnehmer(username);
+        }
     }
     
     /**

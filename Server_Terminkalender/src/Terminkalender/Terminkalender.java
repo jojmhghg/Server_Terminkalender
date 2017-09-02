@@ -17,9 +17,9 @@ public class Terminkalender implements Serializable{
     private final LinkedList<Termin> terminkalender;
     private int idCounter;
     
-    Terminkalender(){
+    Terminkalender(int userID){
         terminkalender = new LinkedList<>();
-        idCounter = 1;
+        idCounter = userID * 1000000 + 1;
     }
        
 
