@@ -28,13 +28,13 @@ public class Zeit implements Serializable{
     }
 
     //Setter:
-    private void setStunde(int stunde) throws ZeitException{
+    public void setStunde(int stunde) throws ZeitException{
         if(stunde > 23 || stunde < 0){
             throw new ZeitException("Stunde zwischen 0 und 23 wählen");
         }
         this.stunde = stunde;
     }
-    private void setMinute(int minute) throws ZeitException{
+    public void setMinute(int minute) throws ZeitException{
         if(minute > 59 || minute < 0){
             throw new ZeitException("Minute zwischen 0 und 59 wählen");
         }
@@ -42,13 +42,17 @@ public class Zeit implements Serializable{
     }
     
     //Getter:
-    private int getStunde(){
+    public int getStunde(){
         return stunde;
     }
-    private int getMinute(){
+    public int getMinute(){
         return minute;
     }
     
+    @Override
+    public String toString(){
+        return this.stunde + ":" + this.minute;
+    }
     
     /**
      * Exception-Klasse für Klasse Zeit

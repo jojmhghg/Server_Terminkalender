@@ -69,6 +69,20 @@ public class Launcher implements LauncherInterface{
     
     /**
      * 
+     * @param TerminID
+     * @return
+     * @throws BenutzerException 
+     */
+    @Override
+    public Termin getTermin(int TerminID) throws BenutzerException{
+        if(!eingeloggt){
+            throw new BenutzerException("noch nicht eingeloggt");
+        }
+        return eingeloggterBenutzer.getTerminkalender().getTerminByID(TerminID);
+    }
+    
+    /**
+     * 
      * @param termin
      * @throws BenutzerException
      * @throws TerminException 

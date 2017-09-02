@@ -111,6 +111,11 @@ public class Datum implements Serializable{
         return wochentag;
     }
     
+    @Override
+    public String toString(){
+        return this.tag + "." + this.monat + "." + this.jahr;
+    }
+    
     
     /**
      * testet ob übergebener Tag im Monat 'monat' und Jahr 'jahr' existiert
