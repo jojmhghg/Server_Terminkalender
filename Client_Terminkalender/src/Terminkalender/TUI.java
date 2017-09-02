@@ -6,10 +6,13 @@
 package Terminkalender;
 
 import Terminkalender.Datum.DatumException;
+import Terminkalender.Zeit.ZeitException;
 import java.rmi.RemoteException;
 import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -799,7 +802,7 @@ public class TUI {
                         terminOrtBearbeiten(terminID);
                         break;    
                     case 7:
-                        System.out.println("noch nicht implementiert!");
+                        terminTeilnehmerlisteBearbeiten(terminID);
                         break;
                     case 8:
                         try {
@@ -809,7 +812,7 @@ public class TUI {
                         }
                         break;
                     case 9:
-                        System.out.println("noch nicht implementiert!");
+                        terminLoeschen(terminID);
                         break;
                     default:    
                         System.out.println("\n-----> Ungueltige Eingabe!");
@@ -945,12 +948,10 @@ public class TUI {
      * TUI zum Bearbeiten der Startzeit eines Termins
      * 
      * @param terminID
-     * @throws Terminkalender.Zeit.ZeitException
      * @throws BenutzerException
-     * @throws TerminException
      * @throws RemoteException 
      */
-    private void terminStartBearbeiten(int terminID) throws Zeit.ZeitException, BenutzerException, TerminException, RemoteException {
+    private void terminStartBearbeiten(int terminID) throws BenutzerException, RemoteException {
         Scanner scanner = new Scanner(System.in);
         int stunde = 1, minute = 1;
         boolean nochmal = true;
@@ -977,19 +978,23 @@ public class TUI {
                 scanner.next();
             }  
         } while(nochmal); 
-        stub.changeTerminbeginn(terminID, new Zeit(stunde, minute));
+        try{
+            stub.changeTerminbeginn(terminID, new Zeit(stunde, minute));
+        } catch(ZeitException e){
+            System.out.println("\n---->" + e.getMessage());
+        } catch(TerminException e){
+            System.out.println("\n---->" + e.getMessage());
+        } 
     }
 
     /**
      * TUI zum Bearbeiten der Endzeit eines Termins
      * 
      * @param terminID
-     * @throws Terminkalender.Zeit.ZeitException
      * @throws BenutzerException
-     * @throws TerminException
      * @throws RemoteException 
      */
-    private void terminEndeBearbeiten(int terminID) throws Zeit.ZeitException, BenutzerException, TerminException, RemoteException {
+    private void terminEndeBearbeiten(int terminID) throws BenutzerException, RemoteException {
         Scanner scanner = new Scanner(System.in);
         int stunde = 1, minute = 1;
         boolean nochmal = true;
@@ -1016,7 +1021,55 @@ public class TUI {
                 scanner.next();
             }  
         } while(nochmal); 
-        stub.changeTerminende(terminID, new Zeit(stunde, minute));
+        try{
+            stub.changeTerminende(terminID, new Zeit(stunde, minute));
+        } catch(TerminException e){
+            System.out.println("\n---->" + e.getMessage());
+        } catch (ZeitException e) {
+            System.out.println("\n---->" + e.getMessage());
+        }
     }
-    
+
+    /**
+     * TUI zum Löschen eines Termins
+     * 
+     * @param terminID
+     * @throws RemoteException
+     * @throws BenutzerException 
+     */
+    private void terminLoeschen(int terminID) throws RemoteException, BenutzerException {
+        Scanner scanner = new Scanner(System.in);
+        String eingabe;
+        
+        System.out.println("\nSind Sie sicher, dass sie den Termin löschen wollen?");
+        System.out.println("Falls sie der Ersteller des Termins sind, wird er bei allen Teilnehmern gelöscht");
+        System.out.print("Termin löschen? (j/n)");
+        eingabe = scanner.nextLine();     
+        if(eingabe.equals("j")){
+            stub.removeTermin(terminID);
+            System.out.println("\nTermin wurde erfolgreich gelöscht!");
+        }
+    }
+
+    private void terminTeilnehmerlisteBearbeiten(int terminID) throws RemoteException, BenutzerException {
+        Scanner scanner = new Scanner(System.in);
+        String username, eingabe;
+        
+        System.out.println("\nTeilnehmerliste:");
+        for(Teilnehmer teilnehmer : stub.getTermin(terminID).getTeilnehmerliste()){
+            System.out.println(teilnehmer.getUsername());
+        }
+        System.out.print("\nNeuen Teilnehmer hinzufügen? (j/n)");
+        eingabe = scanner.nextLine();     
+        if(eingabe.equals("j")){
+            System.out.println("\nUsername: ");
+            username = scanner.nextLine();
+            try {
+                stub.addTerminteilnehmer(terminID, username);
+                System.out.println("-----> Teilnehmer erfolgreich hizugefügt!");  
+            } catch (TerminException e) {
+                System.out.println("-----> " + e.getMessage());
+            }    
+        }
+    }
 }

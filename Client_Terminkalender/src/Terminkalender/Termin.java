@@ -48,9 +48,14 @@ public class Termin implements Serializable{
      * fügt der Teilnehmerliste 'teilnehmer' den Teilnehmer 'usename' hinzu
      * 
      * @param username 
+     * @throws Terminkalender.TerminException 
      */
-    public void addTeilnehmer(String username){
-        //TODO: teste ob username in teilnehmerliste enthalten, wenn ja: werfe Fehler
+    public void addTeilnehmer(String username) throws TerminException{
+        for(Teilnehmer user : this.teilnehmer){
+            if(user.getUsername().equals(username)){
+                throw new TerminException(username + " bereits auf der Teilnehmerliste");
+            }
+        }
         teilnehmer.add(new Teilnehmer(username));
     }
     

@@ -170,6 +170,14 @@ public class Benutzer implements Serializable{
         terminanfragen.removeFirst();
         return result;
     }
+    
+    /**
+     *
+     * @param meldung
+     */
+    public void addMeldung(String meldung){
+        meldungen.add(meldung);
+    }
 }
     
 
