@@ -8,11 +8,8 @@ package Terminkalender;
 import Terminkalender.Datum.DatumException;
 import java.rmi.RemoteException;
 import java.time.LocalDate;
-import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -24,7 +21,11 @@ public class TUI {
     TUI(LauncherInterface stub){
         this.stub = stub;
     }
-        
+     
+    /**
+     * Methode die TUI startet
+     * 
+     */
     public void start(){
     	try{
             startbildschirm();
@@ -34,10 +35,19 @@ public class TUI {
 	} 
         catch (BenutzerException e) {
             System.err.println(e.getMessage());
+        } catch (TerminException e) {
+            System.err.println(e.getMessage());
         }
     }
     
-    private void startbildschirm() throws RemoteException, BenutzerException{
+    /**
+     * TUI zum Startbildschirm
+     * 
+     * @throws RemoteException
+     * @throws BenutzerException
+     * @throws TerminException 
+     */
+    private void startbildschirm() throws RemoteException, BenutzerException, TerminException{
         Scanner scanner = new Scanner(System.in);
         int eingabe;
         boolean wiederholen = true;
@@ -78,7 +88,14 @@ public class TUI {
         } while(wiederholen);
     }
     
-    private void anmelden() throws RemoteException, BenutzerException{
+    /**
+     * TUI zum Anmelden
+     * 
+     * @throws RemoteException
+     * @throws BenutzerException
+     * @throws TerminException 
+     */
+    private void anmelden() throws RemoteException, BenutzerException, TerminException{
         Scanner scanner = new Scanner(System.in);
         String username, password;
                 
@@ -97,6 +114,11 @@ public class TUI {
         }            
     }
     
+    /**
+     * TUI zum Registrieren
+     * 
+     * @throws RemoteException 
+     */
     private void registrieren() throws RemoteException{
         Scanner scanner = new Scanner(System.in);
         String username, password, email, again;
@@ -130,7 +152,14 @@ public class TUI {
 	} while(wiederholen);            
     }
 
-    private void hauptbildschirm() throws RemoteException, BenutzerException{
+    /**
+     * TUI zum Hauptbildschirm eines Benutzers
+     * 
+     * @throws RemoteException
+     * @throws BenutzerException
+     * @throws TerminException 
+     */
+    private void hauptbildschirm() throws RemoteException, BenutzerException, TerminException{
         Scanner scanner = new Scanner(System.in);
         int eingabe;
         boolean wiederholen = true;
@@ -176,6 +205,12 @@ public class TUI {
         } while(wiederholen);
     }
 
+    /**
+     * TUI zur Profilübersicht
+     * 
+     * @throws RemoteException
+     * @throws BenutzerException 
+     */
     private void profil() throws RemoteException, BenutzerException{
         Scanner scanner = new Scanner(System.in);
         int eingabe;
@@ -219,6 +254,12 @@ public class TUI {
         } while(wiederholen);
     }
 
+    /**
+     * TUI um den Vornamen zu ändern
+     * 
+     * @throws RemoteException
+     * @throws BenutzerException 
+     */
     private void changeVorname() throws RemoteException, BenutzerException {
         Scanner scanner = new Scanner(System.in);
         String newName;
@@ -229,6 +270,12 @@ public class TUI {
         System.out.println("\n-----> Vorname erfolgreich geändert!");
     }
 
+    /**
+     * TUI um den Namen zu ändern
+     * 
+     * @throws RemoteException
+     * @throws BenutzerException 
+     */
     private void changeNachname() throws RemoteException, BenutzerException{
         Scanner scanner = new Scanner(System.in);
         String newName;
@@ -239,6 +286,11 @@ public class TUI {
         System.out.println("\n-----> Nachname erfolgreich geändert!");
     }
 
+    /**
+     * TUI um das Passwort zu ändern
+     * 
+     * @throws RemoteException 
+     */
     private void changePW() throws RemoteException {
         Scanner scanner = new Scanner(System.in);
         String altesPW, neuesPW;
@@ -255,6 +307,12 @@ public class TUI {
         }
     }
 
+    /**
+     * TUI zum Kontaktmenü
+     * 
+     * @throws RemoteException
+     * @throws BenutzerException 
+     */
     private void kontakte() throws RemoteException, BenutzerException {
         Scanner scanner = new Scanner(System.in);
         int eingabe;
@@ -295,6 +353,11 @@ public class TUI {
         } while(wiederholen);
     }
 
+    /**
+     * TUI um neuen Kontakt hinzuzufügen
+     * 
+     * @throws RemoteException 
+     */
     private void addKontakt() throws RemoteException {
         Scanner scanner = new Scanner(System.in);
         String username;
@@ -309,6 +372,11 @@ public class TUI {
         }
     }
 
+    /**
+     * TUI um Kontakt zu entfernen
+     * 
+     * @throws RemoteException 
+     */
     private void removeKontakt() throws RemoteException {
         Scanner scanner = new Scanner(System.in);
         String username;
@@ -323,6 +391,12 @@ public class TUI {
         }
     }
 
+    /**
+     * TUI um Kontaktliste anzuzeigen
+     * 
+     * @throws RemoteException
+     * @throws BenutzerException 
+     */
     private void showKontakte() throws RemoteException, BenutzerException {
         System.out.println("\n-----> Deine Kontakte(" + stub.getKontakte().size() + "):");
         for(String kontakt : stub.getKontakte()) {
@@ -330,7 +404,14 @@ public class TUI {
         }
     }
 
-    private void terminkalender() throws RemoteException, BenutzerException {
+    /**
+     * TUI zur Terminkalenderübersicht 
+     * 
+     * @throws RemoteException
+     * @throws BenutzerException
+     * @throws TerminException 
+     */
+    private void terminkalender() throws RemoteException, BenutzerException, TerminException {
         Scanner scanner = new Scanner(System.in);
         int eingabe;
         boolean wiederholen = true;
@@ -350,7 +431,7 @@ public class TUI {
                         wochenansicht();
                         break;
                     case 2:
-                        System.out.println("\n-----> noch nicht implementiert!");
+                        monatsansicht();
                         break;
                     case 3:
                         terminAnlegen();
@@ -370,6 +451,12 @@ public class TUI {
         } while(wiederholen);
     }
 
+    /**
+     * TUI zum Anlegen eines Termins
+     * 
+     * @throws RemoteException
+     * @throws BenutzerException 
+     */
     private void terminAnlegen() throws RemoteException, BenutzerException{
         Scanner scanner = new Scanner(System.in);
         Datum datum;
@@ -468,42 +555,183 @@ public class TUI {
         
     }
 
+    /**
+     * TUI zum Anzeigen der Kalenderwochenansicht der Termine
+     * 
+     * @throws RemoteException
+     * @throws BenutzerException 
+     */
     private void wochenansicht() throws RemoteException, BenutzerException {
         Scanner scanner = new Scanner(System.in);
         LocalDate ld = LocalDate.now();
         Datum heute;
         LinkedList<Termin> dieseWoche;
         boolean nochmal = true;
-        int eingabe;
+        String eingabe;
+        int eingabe2, i, kw, jahr;
+        boolean vorherigerDurchlaufWarB = false;
         
         try {
             heute = new Datum(ld.getDayOfMonth(), ld.getMonthValue(), ld.getYear());
-            int kw = heute.getKalenderwoche();
-            dieseWoche = stub.getTermineInKalenderwoche(kw, ld.getYear());
+            kw = heute.getKalenderwoche();
+            jahr = ld.getYear();
 
-            System.out.println("\n-----> " + dieseWoche.size() + " Termine im Jahr " + ld.getYear() + " in KW " + kw + ":");
-            
-            for(Termin termin : dieseWoche){
-                System.out.println(termin.getTitel());
-            }
-            
             do{
-                System.out.println("\nZum Bearbeiten/Löschen die Nummer des Termins eingeben");
-                System.out.println("'0' um zurück zu gelangen");
-                if(scanner.hasNextInt()){
-                    eingabe = scanner.nextInt();
-                    nochmal = false;
-                    if(eingabe > 0 && eingabe <= dieseWoche.size()){
-                        //TODO: diesen Termin bearbeiten
-                    }
+                i = 1;
+                dieseWoche = stub.getTermineInKalenderwoche(kw, jahr);
+                System.out.println("\n-----> " + dieseWoche.size() + " Termine im Jahr " + jahr + " in KW " + kw + ":");
+
+                for(Termin termin : dieseWoche){
+                    System.out.println(i + " " + termin.getTitel());
+                    i++;
                 }
-                else{
-                    scanner.next();
-                }  
+            
+                System.out.println("\nb zum Bearbeiten/Löschen eines Termins");
+                System.out.println("v/n für vorherige/nächste Woche eingeben");
+                System.out.println("z um zurück zu gelangen");
+                         
+                eingabe = scanner.nextLine();
+                if(vorherigerDurchlaufWarB == true){
+                    eingabe = scanner.nextLine();
+                }
+                vorherigerDurchlaufWarB = false;
+                if("\n".equals(eingabe)){
+                    eingabe = scanner.nextLine();
+                }
+                switch (eingabe) {
+                    case "v":
+                        if(kw == 1){
+                            kw = 53;
+                            jahr--;
+                        }
+                        else{
+                            kw--;
+                        }
+                        break;
+                    case "n":
+                        if(kw == 53){
+                            kw = 1;
+                            jahr++;
+                        }
+                        else{
+                            kw++;
+                        }
+                        break;
+                    case "z":
+                        nochmal = false;
+                        break;
+                    case "b":
+                        System.out.println("\nBitte Nummer des Termins zum Bearbeiten/Löschen eingeben");
+                        System.out.println("'0' um die Eingabe abzubrechen");
+                        if(scanner.hasNextInt()){
+                            eingabe2 = scanner.nextInt();
+                            if(eingabe2 > 0 && eingabe2 <= dieseWoche.size()){
+                                terminBearbeiten(dieseWoche.get(i-1).getID());
+                            }
+                        }
+                        else{
+                            System.out.println("ungültige Eingabe!");
+                        }
+                        vorherigerDurchlaufWarB = true;
+                        break;
+                    default:
+                        System.out.println("ungültige Eingabe!");
+                        break;
+                }
             } while(nochmal); 
         } catch (DatumException e) {
             System.out.println(e.getMessage());
         }
+        
+    }
+
+    /**
+     * TUI zum Anzeigen der Monatsansicht der Termine
+     * 
+     * @throws BenutzerException
+     * @throws RemoteException
+     * @throws TerminException 
+     */
+    private void monatsansicht() throws BenutzerException, RemoteException, TerminException {
+        Scanner scanner = new Scanner(System.in);
+        LocalDate ld = LocalDate.now();
+        LinkedList<Termin> dieserMonat;
+        boolean nochmal = true;
+        String eingabe;
+        int eingabe2, i, monat, jahr;
+        boolean vorherigerDurchlaufWarB = false;
+        
+        monat = ld.getMonthValue();
+        jahr = ld.getYear();
+        do{
+            i = 1;
+            dieserMonat = stub.getTermineInMonat(monat, jahr);
+            System.out.println("\n-----> " + dieserMonat.size() + " Termine im Jahr " + jahr + " im Monat " + monat + ":");
+            
+            for(Termin termin : dieserMonat){
+                System.out.println(i + " " + termin.getTitel());
+                i++;
+            }
+            
+            System.out.println("\nb zum Bearbeiten/Löschen eines Termins");
+            System.out.println("v/n für vorherigen/nächsten Monat eingeben");
+            System.out.println("z um zurück zu gelangen");
+            
+            eingabe = scanner.nextLine();
+            if(vorherigerDurchlaufWarB == true){
+                eingabe = scanner.nextLine();
+            }
+            vorherigerDurchlaufWarB = false;
+            if("\n".equals(eingabe)){
+                eingabe = scanner.nextLine();
+            }
+            switch (eingabe) {
+                case "v":
+                    if(monat == 1){
+                        monat = 12;
+                        jahr --;
+                    }
+                    else{
+                        monat--;
+                    }
+                    break;
+                case "n":
+                    if(monat == 12){
+                        monat = 1;
+                        jahr++;
+                    }
+                    else{
+                        monat++;
+                    }
+                    break;
+                case "z":
+                    nochmal = false;
+                    break;
+                case "b":
+                    System.out.println("\nBitte Nummer des Termins zum Bearbeiten/Löschen eingeben");
+                    System.out.println("'0' um die Eingabe abzubrechen");
+                    if(scanner.hasNextInt()){
+                        eingabe2 = scanner.nextInt();
+                        if(eingabe2 > 0 && eingabe2 <= dieserMonat.size()){
+                            terminBearbeiten(dieserMonat.get(i-1).getID());
+                        }
+                    }
+                    else{
+                        System.out.println("ungültige Eingabe!");
+                    }
+                    vorherigerDurchlaufWarB = true;
+                    break;
+                default:
+                    System.out.println("ungültige Eingabe!");
+                    break;
+            }
+        } while(nochmal);
+    }
+
+    /**
+     * TUI zum Bearbeiten eines Termins
+     */
+    private void terminBearbeiten(int terminID) {
         
     }
     
