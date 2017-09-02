@@ -14,6 +14,7 @@ import java.io.Serializable;
  */
 public class Benutzer implements Serializable{
     
+    private int userID;
     private final String username;
     private String vorname;
     private String nachname;
@@ -31,7 +32,7 @@ public class Benutzer implements Serializable{
      * @param email
      * @throws BenutzerException 
      */
-    Benutzer(String username, String passwort, String email) throws BenutzerException{
+    Benutzer(String username, String passwort, String email, int userID) throws BenutzerException{
         if(username.length() < 4 || username.length() > 12){
             throw new BenutzerException("Der Username sollte zwischen 4 und 12 Zeichen lang sein");
         }
@@ -39,12 +40,13 @@ public class Benutzer implements Serializable{
             throw new BenutzerException("Das Passwort sollte zwischen 4 und 12 Zeichen lang sein");
         }
         
+        this.userID = userID;
         this.email = email;
         this.username = username;
         this.passwort = passwort;
         this.nachname = "";
         this.vorname = "";
-        this.terminkalender = new Terminkalender();
+        this.terminkalender = new Terminkalender(userID);
         this.kontaktliste = new LinkedList<>();
         this.meldungen = new LinkedList<>();
         this.terminanfragen = new LinkedList<>();
@@ -150,6 +152,15 @@ public class Benutzer implements Serializable{
      */
     public void addTermin(Datum datum, Zeit beginn, Zeit ende, String titel) throws TerminException{
         terminkalender.addTermin(datum, beginn, ende, titel, username);
+    }
+    
+    /**
+     * 
+     * @param termin
+     * @throws TerminException 
+     */
+    public void addTermin(Termin termin) throws TerminException{
+        terminkalender.addTermin(termin);
     }
     
     /**
