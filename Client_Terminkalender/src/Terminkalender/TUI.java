@@ -37,6 +37,10 @@ public class TUI {
             System.err.println(e.getMessage());
         } catch (TerminException e) {
             System.err.println(e.getMessage());
+        } catch (DatumException e) {
+            System.err.println(e.getMessage());
+        } catch (Zeit.ZeitException e) {
+            System.err.println(e.getMessage());
         }
     }
     
@@ -47,7 +51,7 @@ public class TUI {
      * @throws BenutzerException
      * @throws TerminException 
      */
-    private void startbildschirm() throws RemoteException, BenutzerException, TerminException{
+    private void startbildschirm() throws RemoteException, BenutzerException, TerminException, DatumException, Zeit.ZeitException{
         Scanner scanner = new Scanner(System.in);
         int eingabe;
         boolean wiederholen = true;
@@ -95,7 +99,7 @@ public class TUI {
      * @throws BenutzerException
      * @throws TerminException 
      */
-    private void anmelden() throws RemoteException, BenutzerException, TerminException{
+    private void anmelden() throws RemoteException, BenutzerException, TerminException, DatumException, Zeit.ZeitException{
         Scanner scanner = new Scanner(System.in);
         String username, password;
                 
@@ -159,7 +163,7 @@ public class TUI {
      * @throws BenutzerException
      * @throws TerminException 
      */
-    private void hauptbildschirm() throws RemoteException, BenutzerException, TerminException{
+    private void hauptbildschirm() throws RemoteException, BenutzerException, TerminException, DatumException, Zeit.ZeitException{
         Scanner scanner = new Scanner(System.in);
         int eingabe;
         boolean wiederholen = true;
@@ -214,7 +218,6 @@ public class TUI {
     private void profil() throws RemoteException, BenutzerException{
         Scanner scanner = new Scanner(System.in);
         int eingabe;
-        String change;
         boolean wiederholen = true;
                       
         do{
@@ -411,7 +414,7 @@ public class TUI {
      * @throws BenutzerException
      * @throws TerminException 
      */
-    private void terminkalender() throws RemoteException, BenutzerException, TerminException {
+    private void terminkalender() throws RemoteException, BenutzerException, TerminException, DatumException, Zeit.ZeitException {
         Scanner scanner = new Scanner(System.in);
         int eingabe;
         boolean wiederholen = true;
@@ -479,6 +482,7 @@ public class TUI {
                     scanner.next();
                 }  
             } while(nochmal);
+            nochmal = true;
             do{
                 System.out.print("Monat(1-12):");
                 if(scanner.hasNextInt()){
@@ -489,6 +493,7 @@ public class TUI {
                     scanner.next();
                 }  
             } while(nochmal);
+            nochmal = true;
             do{
                 System.out.print("Jahr:");
                 if(scanner.hasNextInt()){
@@ -501,6 +506,7 @@ public class TUI {
             } while(nochmal);      
             datum = new Datum(tag, monat, jahr);
             
+            nochmal = true;
             do{
                 System.out.print("Start-Stunde:");
                 if(scanner.hasNextInt()){
@@ -511,6 +517,7 @@ public class TUI {
                     scanner.next();
                 }  
             } while(nochmal); 
+            nochmal = true;
             do{
                 System.out.print("Start-Minute:");
                 if(scanner.hasNextInt()){
@@ -523,6 +530,7 @@ public class TUI {
             } while(nochmal); 
             start = new Zeit(stunde, minute);
             
+            nochmal = true;
             do{
                 System.out.print("End-Stunde:");
                 if(scanner.hasNextInt()){
@@ -532,7 +540,8 @@ public class TUI {
                 else{
                     scanner.next();
                 }  
-            } while(nochmal); 
+            } while(nochmal);
+            nochmal = true;
             do{
                 System.out.print("End-Minute:");
                 if(scanner.hasNextInt()){
@@ -561,7 +570,7 @@ public class TUI {
      * @throws RemoteException
      * @throws BenutzerException 
      */
-    private void wochenansicht() throws RemoteException, BenutzerException {
+    private void wochenansicht() throws RemoteException, BenutzerException, TerminException, Zeit.ZeitException {
         Scanner scanner = new Scanner(System.in);
         LocalDate ld = LocalDate.now();
         Datum heute;
@@ -589,7 +598,7 @@ public class TUI {
                 System.out.println("\nb zum Bearbeiten/Löschen eines Termins");
                 System.out.println("v/n für vorherige/nächste Woche eingeben");
                 System.out.println("z um zurück zu gelangen");
-                         
+                System.out.print("Eingabe: ");
                 eingabe = scanner.nextLine();
                 if(vorherigerDurchlaufWarB == true){
                     eingabe = scanner.nextLine();
@@ -621,12 +630,12 @@ public class TUI {
                         nochmal = false;
                         break;
                     case "b":
-                        System.out.println("\nBitte Nummer des Termins zum Bearbeiten/Löschen eingeben");
+                        System.out.println("\nBitte Nummer des Termins zum Anzeigen/Bearbeiten/Löschen eingeben");
                         System.out.println("'0' um die Eingabe abzubrechen");
                         if(scanner.hasNextInt()){
                             eingabe2 = scanner.nextInt();
                             if(eingabe2 > 0 && eingabe2 <= dieseWoche.size()){
-                                terminBearbeiten(dieseWoche.get(i-1).getID());
+                                terminAnzeigenBearbeiten(dieseWoche.get(eingabe2 - 1).getID());
                             }
                         }
                         else{
@@ -652,7 +661,7 @@ public class TUI {
      * @throws RemoteException
      * @throws TerminException 
      */
-    private void monatsansicht() throws BenutzerException, RemoteException, TerminException {
+    private void monatsansicht() throws BenutzerException, RemoteException, TerminException, DatumException, Zeit.ZeitException {
         Scanner scanner = new Scanner(System.in);
         LocalDate ld = LocalDate.now();
         LinkedList<Termin> dieserMonat;
@@ -676,7 +685,7 @@ public class TUI {
             System.out.println("\nb zum Bearbeiten/Löschen eines Termins");
             System.out.println("v/n für vorherigen/nächsten Monat eingeben");
             System.out.println("z um zurück zu gelangen");
-            
+            System.out.print("Eingabe: ");
             eingabe = scanner.nextLine();
             if(vorherigerDurchlaufWarB == true){
                 eingabe = scanner.nextLine();
@@ -708,12 +717,12 @@ public class TUI {
                     nochmal = false;
                     break;
                 case "b":
-                    System.out.println("\nBitte Nummer des Termins zum Bearbeiten/Löschen eingeben");
+                    System.out.println("\nBitte Nummer des Termins zum Anzeigen/Bearbeiten/Löschen eingeben");
                     System.out.println("'0' um die Eingabe abzubrechen");
                     if(scanner.hasNextInt()){
                         eingabe2 = scanner.nextInt();
                         if(eingabe2 > 0 && eingabe2 <= dieserMonat.size()){
-                            terminBearbeiten(dieserMonat.get(i-1).getID());
+                            terminAnzeigenBearbeiten(dieserMonat.get(eingabe2 - 1).getID());
                         }
                     }
                     else{
@@ -729,10 +738,285 @@ public class TUI {
     }
 
     /**
-     * TUI zum Bearbeiten eines Termins
+     * TUI zum Anzeigen, Bearbeiten oder Löschen eines Termins
+     * 
+     * @param terminID
+     * @throws RemoteException
+     * @throws BenutzerException 
      */
-    private void terminBearbeiten(int terminID) {
+    private void terminAnzeigenBearbeiten(int terminID) throws RemoteException, BenutzerException, DatumException, TerminException, Zeit.ZeitException {
+        Scanner scanner = new Scanner(System.in);
+        int eingabe;
+        boolean wiederholen = true;
+                      
+        do{
+	    System.out.println("\n************ Terminansicht ************\n");
+            System.out.println("Titel: " + stub.getTermin(terminID).getTitel() + "(1)");
+            System.out.println("Datum: " + stub.getTermin(terminID).getDatum().toString() + "(2)");
+            System.out.println("Start: " + stub.getTermin(terminID).getBeginn().toString() + "(3)");
+            System.out.println("Ende:: " + stub.getTermin(terminID).getEnde().toString() + "(4)");
+            if(stub.getTermin(terminID).getNotiz().length() > 20){
+                System.out.println("Notiz: " + stub.getTermin(terminID).getNotiz().substring(0, 20) + "...(5)");
+            }
+            else{
+                System.out.println("Notiz: " + stub.getTermin(terminID).getNotiz() + "(5)");
+            }
+            System.out.println("Ort: " + stub.getTermin(terminID).getOrt() + "(6)");
+            System.out.println("Teilnehmer anzeigen(7)");
+            if(stub.getTermin(terminID).getEditierbar()){
+                System.out.println("Bearbeitungsrecht: Jeder(8)");
+            }
+            else{
+                System.out.println("Bearbeitungsrecht: Terminersteller(8)");
+            }      
+            System.out.println("Terminersteller: " + stub.getTermin(terminID).getOwner());
+            System.out.println("Termin löschen(9)");
+            System.out.println("zurück(0)");
+	    System.out.print("Eingabe: ");
+            
+	    if(scanner.hasNextInt()){
+                eingabe = scanner.nextInt();
+                switch(eingabe){
+                    case 0:
+                        wiederholen = false;
+                        break;
+                    case 1:
+                        terminTitelBearbeiten(terminID);
+                        break;
+                    case 2:
+                        terminDatumBearbeiten(terminID);
+                        break;
+                    case 3:
+                        terminStartBearbeiten(terminID);
+                        break;
+                    case 4:
+                        terminEndeBearbeiten(terminID);
+                        break;
+                    case 5:
+                        terminNotizBearbeiten(terminID);
+                        break;
+                    case 6:
+                        terminOrtBearbeiten(terminID);
+                        break;    
+                    case 7:
+                        System.out.println("noch nicht implementiert!");
+                        break;
+                    case 8:
+                        try {
+                            stub.changeEditierrechte(!stub.getTermin(terminID).getEditierbar(), terminID);
+                        } catch (TerminException e) {
+                            System.out.println(e.getMessage());
+                        }
+                        break;
+                    case 9:
+                        System.out.println("noch nicht implementiert!");
+                        break;
+                    default:    
+                        System.out.println("\n-----> Ungueltige Eingabe!");
+                        break;
+                }
+            } 
+            else{
+                System.out.println("\n-----> Ungueltige Eingabe!");
+                scanner.next();
+            }     
+        } while(wiederholen);
+    }
+    
+    /**
+     * TUI zum Bearbeiten des Titels eines Termins
+     * 
+     * @param terminID
+     * @throws BenutzerException
+     * @throws RemoteException 
+     */
+    private void terminTitelBearbeiten(int terminID) throws BenutzerException, RemoteException {
+        Scanner scanner = new Scanner(System.in);
+        String newTitel;
         
+        System.out.print("\nNeuer Titel: ");
+        newTitel = scanner.nextLine();
+        try {
+            stub.changeTermintitel(terminID, newTitel);
+            System.out.println("-----> Titel erfolgreich geändert!");
+        } catch (TerminException e) {
+            System.out.println("----->" + e.getMessage());
+        }   
+    }
+
+    /**
+     * TUI zum Bearbeiten des Ortes eines Termins
+     * 
+     * @param terminID
+     * @throws BenutzerException
+     * @throws RemoteException 
+     */
+    private void terminOrtBearbeiten(int terminID) throws BenutzerException, RemoteException {
+        Scanner scanner = new Scanner(System.in);
+        String newOrt;
+        
+        System.out.print("\nNeuer Ort: ");
+        newOrt = scanner.nextLine();
+        try {
+            stub.changeTerminort(terminID, newOrt);
+            System.out.println("-----> Ort erfolgreich geändert!");
+        } catch (TerminException e) {
+            System.out.println("----->" + e.getMessage());
+        }  
+    }
+
+    /**
+     * TUI zum Bearbeiten des Datums eines Termins
+     * 
+     * @param terminID
+     * @throws Terminkalender.Datum.DatumException
+     * @throws BenutzerException
+     * @throws RemoteException
+     * @throws TerminException 
+     */
+    private void terminDatumBearbeiten(int terminID) throws DatumException, BenutzerException, RemoteException, TerminException{
+        Scanner scanner = new Scanner(System.in);
+        int tag = 1, monat = 1, jahr = 1900;
+        boolean nochmal = true;
+        
+        System.out.println("\nNeues Datum eingeben");
+        do{
+            System.out.print("Tag(1-31):");
+            if(scanner.hasNextInt()){
+                tag = scanner.nextInt();
+                nochmal = false;
+            }
+            else{
+                scanner.next();
+            }  
+        } while(nochmal);
+        nochmal = true;
+        do{
+            System.out.print("Monat(1-12):");
+            if(scanner.hasNextInt()){
+                monat = scanner.nextInt();
+                nochmal = false;
+            }
+            else{
+                scanner.next();
+            }  
+        } while(nochmal);
+        nochmal = true;
+        do{
+            System.out.print("Jahr:");
+            if(scanner.hasNextInt()){
+                jahr = scanner.nextInt();
+                nochmal = false;
+            }
+            else{
+                scanner.next();
+            }  
+        } while(nochmal); 
+        stub.changeTermindatum(terminID, new Datum(tag, monat, jahr));
+    }
+
+    /**
+     * TUI zum Bearbeiten der Notiz eines Termins
+     * 
+     * @param terminID
+     * @throws BenutzerException
+     * @throws RemoteException 
+     */
+    private void terminNotizBearbeiten(int terminID) throws BenutzerException, RemoteException {
+        Scanner scanner = new Scanner(System.in);
+        String neueNotiz, eingabe;
+        
+        System.out.println("\n" + stub.getTermin(terminID).getNotiz());
+        System.out.print("Neue Notiz anlegen? (j/n)");
+        eingabe = scanner.nextLine();     
+        if(eingabe.equals("j")){
+            System.out.println("\nNeue Notiz eingeben: (max. 200 Zeichen) ");
+            neueNotiz = scanner.nextLine();
+            try {
+                stub.changeTerminnotiz(terminID, neueNotiz);
+                System.out.println("-----> Notiz erfolgreich geändert!");
+            } catch (TerminException e) {
+                System.out.println("----->" + e.getMessage());
+            }  
+        }
+    }
+
+    /**
+     * TUI zum Bearbeiten der Startzeit eines Termins
+     * 
+     * @param terminID
+     * @throws Terminkalender.Zeit.ZeitException
+     * @throws BenutzerException
+     * @throws TerminException
+     * @throws RemoteException 
+     */
+    private void terminStartBearbeiten(int terminID) throws Zeit.ZeitException, BenutzerException, TerminException, RemoteException {
+        Scanner scanner = new Scanner(System.in);
+        int stunde = 1, minute = 1;
+        boolean nochmal = true;
+        
+        System.out.println("\nNeue Startzeit festlegen");
+        do{
+            System.out.print("Stunde:");
+            if(scanner.hasNextInt()){
+                stunde = scanner.nextInt();
+                nochmal = false;
+            }
+            else{
+                scanner.next();
+            }  
+        } while(nochmal); 
+        nochmal = true;
+        do{
+            System.out.print("Minute:");
+            if(scanner.hasNextInt()){
+                minute = scanner.nextInt();
+                nochmal = false;
+            }
+            else{
+                scanner.next();
+            }  
+        } while(nochmal); 
+        stub.changeTerminbeginn(terminID, new Zeit(stunde, minute));
+    }
+
+    /**
+     * TUI zum Bearbeiten der Endzeit eines Termins
+     * 
+     * @param terminID
+     * @throws Terminkalender.Zeit.ZeitException
+     * @throws BenutzerException
+     * @throws TerminException
+     * @throws RemoteException 
+     */
+    private void terminEndeBearbeiten(int terminID) throws Zeit.ZeitException, BenutzerException, TerminException, RemoteException {
+        Scanner scanner = new Scanner(System.in);
+        int stunde = 1, minute = 1;
+        boolean nochmal = true;
+        
+        System.out.println("\nNeue Endzeit festlegen");
+        do{
+            System.out.print("Stunde:");
+            if(scanner.hasNextInt()){
+                stunde = scanner.nextInt();
+                nochmal = false;
+            }
+            else{
+                scanner.next();
+            }  
+        } while(nochmal); 
+        nochmal = true;
+        do{
+            System.out.print("Minute:");
+            if(scanner.hasNextInt()){
+                minute = scanner.nextInt();
+                nochmal = false;
+            }
+            else{
+                scanner.next();
+            }  
+        } while(nochmal); 
+        stub.changeTerminende(terminID, new Zeit(stunde, minute));
     }
     
 }

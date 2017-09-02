@@ -36,6 +36,7 @@ public interface LauncherInterface extends Remote{
     public String getEmail() throws RemoteException, BenutzerException;
     
     /* alles zu Terminen */
+    public Termin getTermin(int TerminID) throws RemoteException, BenutzerException;
     public void addTermin(Termin termin) throws RemoteException, BenutzerException, TerminException; /* notwendig? */
     public void addTermin(Datum datum, Zeit beginn, Zeit ende, String titel) throws RemoteException, BenutzerException, TerminException;
     public void removeTermin(int id) throws RemoteException, BenutzerException;

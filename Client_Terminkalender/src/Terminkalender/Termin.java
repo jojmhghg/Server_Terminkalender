@@ -94,25 +94,25 @@ public class Termin implements Serializable{
         this.editierbar = editierbar;
     }
     public void setNotiz(String notiz, String username) throws TerminException{
-        if(!username.equals(this.owner)){
+        if(!username.equals(this.owner) && !editierbar){
             throw new TerminException("Nur der Ersteller des Termins kann die Rechte aendern!");
         }
         this.notiz = notiz;
     }   
     public void setOrt(String ort, String username) throws TerminException{
-        if(!username.equals(this.owner)){
+        if(!username.equals(this.owner) && !editierbar){
             throw new TerminException("Nur der Ersteller des Termins kann die Rechte aendern!");
         }
         this.ort = ort;
     }
     public void setTitel(String neuerTitel, String username) throws TerminException{
-        if(!username.equals(this.owner)){
+        if(!username.equals(this.owner) && !editierbar){
             throw new TerminException("Nur der Ersteller des Termins kann die Rechte aendern!");
         }
         titel = neuerTitel;
     }
     public void setBeginn(Zeit neuerBeginn, String username) throws TerminException{
-        if(!username.equals(this.owner)){
+        if(!username.equals(this.owner) && !editierbar){
             throw new TerminException("Nur der Ersteller des Termins kann die Rechte aendern!");
         }
         if(!anfangVorEnde(neuerBeginn, ende)){
@@ -121,7 +121,7 @@ public class Termin implements Serializable{
         beginn = neuerBeginn;
     }
     public void setEnde(Zeit neuesEnde, String username) throws TerminException{
-        if(!username.equals(this.owner)){
+        if(!username.equals(this.owner) && !editierbar){
             throw new TerminException("Nur der Ersteller des Termins kann die Rechte aendern!");
         }
         if(!anfangVorEnde(beginn, neuesEnde)){
@@ -130,7 +130,7 @@ public class Termin implements Serializable{
         ende = neuesEnde;
     }
     public void setDatum(Datum neuesDatum, String username) throws TerminException{
-        if(!username.equals(this.owner)){
+        if(!username.equals(this.owner) && !editierbar){
             throw new TerminException("Nur der Ersteller des Termins kann die Rechte aendern!");
         }
         datum = neuesDatum;
@@ -139,7 +139,7 @@ public class Termin implements Serializable{
     /**
      * 
      * @param username 
-     * @throws Server.TerminException 
+     * @throws Terminkalender.TerminException 
      */
     public void changeTeilnehmerNimmtTeil(String username) throws TerminException{
         boolean error = true;
@@ -178,7 +178,15 @@ public class Termin implements Serializable{
      * @return 
      */
     private boolean anfangVorEnde(Zeit beginn, Zeit ende){
-        //TODO: impl. Funktion die testet ob beginng vor ende ist, dann return true, sonst false
-        return true;
+        boolean result = true;
+        if(ende.getStunde() < beginn.getStunde()){
+            result = false;
+        }
+        else if(ende.getStunde() == beginn.getStunde()){
+            if(ende.getMinute() < beginn.getMinute()){
+                result = false;
+            }
+        }
+        return result;
     }
 }
