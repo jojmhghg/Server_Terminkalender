@@ -12,8 +12,8 @@ import java.io.Serializable;
  * @author timtim
  */
 public class Meldungen implements Serializable{
-    private final String text;
-    private boolean gelesen;
+    protected final String text;
+    protected boolean gelesen;
     
     Meldungen(String text){
         this.text = text;

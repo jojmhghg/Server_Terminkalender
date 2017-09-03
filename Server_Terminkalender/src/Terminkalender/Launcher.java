@@ -6,8 +6,6 @@
 package Terminkalender;
 
 import java.util.LinkedList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -120,7 +118,6 @@ public class Launcher implements LauncherInterface{
      * 
      * @param id
      * @throws BenutzerException 
-     * @throws Terminkalender.TerminException 
      */
     @Override
     public void removeTermin(int id) throws BenutzerException{
@@ -529,6 +526,12 @@ public class Launcher implements LauncherInterface{
         eingeloggterBenutzer.deleteMeldung(index);
     }
     
+    /**
+     * 
+     * @param index
+     * @throws BenutzerException 
+     */
+    @Override
     public void setMeldungenGelesen(int index) throws BenutzerException{
         if(!eingeloggt){
             throw new BenutzerException("noch nicht eingeloggt");
