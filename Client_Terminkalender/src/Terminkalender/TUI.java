@@ -1,10 +1,8 @@
 /*
  * ToDo und Bugs:
  *
- * Monats & Wochenansicht:
- * bei auswahl der termine, wird immer nr 1 geöffnet
+ * Monats & Wochenansicht
  * termine nach datum sortieren
- * mehr daten anzeigen
  *
  * Meldungen:
  * meldung muss entfernt werden, falls man über monatsansicht geht
@@ -983,7 +981,7 @@ public class TUI {
      * @throws BenutzerException
      * @throws RemoteException 
      */
-    private void terminNotizBearbeiten(int terminID) throws BenutzerException, RemoteException {
+    private void terminNotizBearbeiten(int terminID) throws BenutzerException, RemoteException, TerminException {
         Scanner scanner = new Scanner(System.in);
         String neueNotiz, eingabe;
         
@@ -1095,7 +1093,7 @@ public class TUI {
      * @throws RemoteException
      * @throws BenutzerException 
      */
-    private void terminLoeschen(int terminID) throws RemoteException, BenutzerException {
+    private void terminLoeschen(int terminID) throws RemoteException, BenutzerException, TerminException {
         Scanner scanner = new Scanner(System.in);
         String eingabe;
         
@@ -1116,7 +1114,7 @@ public class TUI {
      * @throws RemoteException
      * @throws BenutzerException 
      */
-    private void terminTeilnehmerlisteBearbeiten(int terminID) throws RemoteException, BenutzerException {
+    private void terminTeilnehmerlisteBearbeiten(int terminID) throws RemoteException, BenutzerException, TerminException {
         Scanner scanner = new Scanner(System.in);
         String username, eingabe;
         
