@@ -5,11 +5,13 @@
  */
 package Terminkalender;
 
+import java.io.Serializable;
+
 /**
  *
  * @author timtim
  */
-public class Meldungen {
+public class Meldungen implements Serializable{
     private final String text;
     private boolean gelesen;
     

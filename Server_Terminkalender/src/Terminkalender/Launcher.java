@@ -529,6 +529,13 @@ public class Launcher implements LauncherInterface{
         eingeloggterBenutzer.deleteMeldung(index);
     }
     
+    public void setMeldungenGelesen(int index) throws BenutzerException{
+        if(!eingeloggt){
+            throw new BenutzerException("noch nicht eingeloggt");
+        }
+        eingeloggterBenutzer.getMeldungen().get(index).meldungGelesen();
+    }
+    
     /**
      * Hilfsmethode um Benutzerliste zu füllen
      * 

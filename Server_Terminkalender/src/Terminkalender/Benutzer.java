@@ -77,9 +77,6 @@ public class Benutzer implements Serializable{
     public LinkedList<Meldungen> getMeldungen(){
         return meldungen;
     }
-    public LinkedList<Anfrage> getTerminanfragen(){
-        return terminanfragen;
-    }
     
     //Setter:
     public void setNachname(String nachname){
@@ -169,17 +166,7 @@ public class Benutzer implements Serializable{
      * @param absender 
      */
     public void addAnfrage(Termin termin, String absender){
-        terminanfragen.add(new Anfrage(termin, absender));
-    }
-    
-    /**
-     * 
-     * @return 
-     */
-    public Anfrage getNextAnfrage(){
-        Anfrage result = terminanfragen.getFirst();
-        terminanfragen.removeFirst();
-        return result;
+        meldungen.add(new Anfrage(absender + " lädt sie zu einem Termin ein" ,termin, absender));
     }
     
     /**

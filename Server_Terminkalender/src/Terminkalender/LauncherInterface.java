@@ -53,10 +53,9 @@ public interface LauncherInterface extends Remote{
     public void terminAnnehmen(String username, int id, Termin termin) throws RemoteException, TerminException, BenutzerException;
     public void terminAblehnen(String username, int id, Termin termin) throws RemoteException, TerminException, BenutzerException;
     
-    /* alles zu offenen Anfragen */
-    
     /* alles zu ausstehenden Meldungen */ 
     public LinkedList<Meldungen> getMeldungen() throws RemoteException, BenutzerException;
     public void deleteMeldung(int index) throws RemoteException, BenutzerException;
+    public void setMeldungenGelesen(int index) throws BenutzerException, RemoteException;
 }
 
