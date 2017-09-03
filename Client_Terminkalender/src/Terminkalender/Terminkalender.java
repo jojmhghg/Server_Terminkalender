@@ -27,10 +27,15 @@ public class Terminkalender implements Serializable{
      * 
      * @param id
      * @return 
+     * @throws Terminkalender.TerminException 
      */
-    public Termin getTerminByID(int id){
-        //TODO: suche in terminkalender nach dem Termin mit id = id, falls gefunden gebe ihn zurück, sonst werfe fehler
-        return terminkalender.getFirst(); //muss angepasst werden
+    public Termin getTerminByID(int id) throws TerminException{
+        for(Termin termin : terminkalender){
+            if(termin.getID() == id){
+                return termin;
+            }
+        }
+        throw new TerminException("kein Termin mit dieser ID vorhannden");
     }
     
     /**
@@ -98,8 +103,9 @@ public class Terminkalender implements Serializable{
     /**
      * 
      * @param id 
+     * @throws Terminkalender.TerminException 
      */
-    public void removeTerminByID(int id){
+    public void removeTerminByID(int id) throws TerminException{
         terminkalender.remove(getTerminByID(id));
     }
     

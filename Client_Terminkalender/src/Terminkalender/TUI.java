@@ -1,7 +1,13 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * ToDo und Bugs:
+ *
+ * Monats & Wochenansicht:
+ * bei auswahl der termine, wird immer nr 1 geöffnet
+ * termine nach datum sortieren
+ * mehr daten anzeigen
+ *
+ * Meldungen:
+ * meldung muss entfernt werden, falls man über monatsansicht geht
  */
 package Terminkalender;
 
@@ -231,7 +237,7 @@ public class TUI {
             System.out.println("Nachname: " + stub.getNachname() + "(2)");
             System.out.println("E-Mail-Adresse: " + stub.getEmail());
             System.out.println("Passwort ändern (3)");
-            System.out.println("Zurück (4)");
+            System.out.println("Zurück (0)");
 	    System.out.print("Eingabe: ");
             
 	    if(scanner.hasNextInt()){
@@ -246,7 +252,7 @@ public class TUI {
                     case 3:
                         changePW();
                         break;
-                    case 4:
+                    case 0:
                         wiederholen = false;
                         break;
                     default:    
@@ -327,10 +333,10 @@ public class TUI {
                       
         do{
 	    System.out.println("\n************ Kontakte ************\n");
-            System.out.println("01 - Kontakte anzeigen");
-            System.out.println("02 - Kontakt hinzufügen");
-            System.out.println("03 - Kontakt löschen");
-            System.out.println("04 - Zurück");	
+            System.out.println("1 - Kontakte anzeigen");
+            System.out.println("2 - Kontakt hinzufügen");
+            System.out.println("3 - Kontakt löschen");
+            System.out.println("0 - Zurück");	
 	    System.out.print("Eingabe: ");
             
 	    if(scanner.hasNextInt()){
@@ -345,7 +351,7 @@ public class TUI {
                     case 3:
                         removeKontakt();
                         break;
-                    case 4:
+                    case 0:
                         wiederholen = false;
                         break;
                     default:    
@@ -422,28 +428,31 @@ public class TUI {
         Scanner scanner = new Scanner(System.in);
         int eingabe;
         boolean wiederholen = true;
-                      
+        LocalDate ld = LocalDate.now();
+
+        int kw = (new Datum(ld.getDayOfMonth(), ld.getMonthValue(), ld.getYear())).getKalenderwoche();
+                        
         do{
 	    System.out.println("\n************ Terminkalender ************\n");
-            System.out.println("01 - Wochenansicht");
-            System.out.println("02 - Monatsansicht");
-            System.out.println("03 - neuer Termin anlegen");
-            System.out.println("04 - Zurück");	
+            System.out.println("1 - Wochenansicht");
+            System.out.println("2 - Monatsansicht");
+            System.out.println("3 - neuer Termin anlegen");
+            System.out.println("0 - Zurück");	
 	    System.out.print("Eingabe: ");
             
 	    if(scanner.hasNextInt()){
                 eingabe = scanner.nextInt();     
                 switch(eingabe){
                     case 1:
-                        wochenansicht();
+                        wochenansicht(kw, ld.getYear());
                         break;
                     case 2:
-                        monatsansicht();
+                        monatsansicht(ld.getMonthValue(), ld.getYear());
                         break;
                     case 3:
                         terminAnlegen();
                         break;
-                    case 4:
+                    case 0:
                         wiederholen = false;
                         break;
                     default:    
@@ -574,83 +583,75 @@ public class TUI {
      * @throws RemoteException
      * @throws BenutzerException 
      */
-    private void wochenansicht() throws RemoteException, BenutzerException, TerminException, Zeit.ZeitException {
+    private void wochenansicht(int kw, int jahr) throws RemoteException, BenutzerException, TerminException, Zeit.ZeitException {
         Scanner scanner = new Scanner(System.in);
-        LocalDate ld = LocalDate.now();
-        Datum heute;
         LinkedList<Termin> dieseWoche;
         boolean nochmal = true;
-        String eingabe;
-        int eingabe2, i, kw, jahr;
-        boolean vorherigerDurchlaufWarB = false;
+        int eingabe, i;
         
         try {
-            heute = new Datum(ld.getDayOfMonth(), ld.getMonthValue(), ld.getYear());
-            kw = heute.getKalenderwoche();
-            jahr = ld.getYear();
-
             do{
                 i = 1;
                 dieseWoche = stub.getTermineInKalenderwoche(kw, jahr);
                 System.out.println("\n-----> " + dieseWoche.size() + " Termine im Jahr " + jahr + " in KW " + kw + ":");
 
                 for(Termin termin : dieseWoche){
-                    System.out.println(i + " " + termin.getTitel());
+                    System.out.println(i + " - " + termin.getTitel() + " " + termin.getDatum().toString() + " " + termin.getBeginn().toString());
                     i++;
                 }
             
-                System.out.println("\nb zum Bearbeiten/Löschen eines Termins");
-                System.out.println("v/n für vorherige/nächste Woche eingeben");
-                System.out.println("z um zurück zu gelangen");
+                System.out.println("\n1 - Termin Bearbeiten/Löschen");
+                System.out.println("2 - vorherige Woche");
+                System.out.println("3 - nächste Woche");
+                System.out.println("0 - zurück");
                 System.out.print("Eingabe: ");
-                eingabe = scanner.nextLine();
-                if(vorherigerDurchlaufWarB == true){
-                    eingabe = scanner.nextLine();
-                }
-                vorherigerDurchlaufWarB = false;
-                if("\n".equals(eingabe)){
-                    eingabe = scanner.nextLine();
-                }
-                switch (eingabe) {
-                    case "v":
-                        if(kw == 1){
-                            kw = 53;
-                            jahr--;
-                        }
-                        else{
-                            kw--;
-                        }
-                        break;
-                    case "n":
-                        if(kw == 53){
-                            kw = 1;
-                            jahr++;
-                        }
-                        else{
-                            kw++;
-                        }
-                        break;
-                    case "z":
-                        nochmal = false;
-                        break;
-                    case "b":
-                        System.out.println("\nBitte Nummer des Termins zum Anzeigen/Bearbeiten/Löschen eingeben");
-                        System.out.println("'0' um die Eingabe abzubrechen");
-                        if(scanner.hasNextInt()){
-                            eingabe2 = scanner.nextInt();
-                            if(eingabe2 > 0 && eingabe2 <= dieseWoche.size()){
-                                terminAnzeigenBearbeiten(dieseWoche.get(eingabe2 - 1).getID());
+                
+                if(scanner.hasNextInt()){
+                    eingabe = scanner.nextInt();
+                    switch (eingabe) {
+                        case 2:
+                            if(kw == 1){
+                                kw = 53;
+                                jahr--;
                             }
-                        }
-                        else{
-                            System.out.println("ungültige Eingabe!");
-                        }
-                        vorherigerDurchlaufWarB = true;
-                        break;
-                    default:
-                        System.out.println("ungültige Eingabe!");
-                        break;
+                            else{
+                                kw--;
+                            }
+                            break;
+                        case 3:
+                            if(kw == 53){
+                                kw = 1;
+                                jahr++;
+                            }
+                            else{
+                                kw++;
+                            }
+                            break;
+                        case 0:
+                            nochmal = false;
+                            break;
+                        case 1:
+                            System.out.println("\nBitte Nummer des Termins zum Anzeigen/Bearbeiten/Löschen eingeben");
+                            System.out.println("'0' um die Eingabe abzubrechen");
+                            if(scanner.hasNextInt()){
+                                eingabe = scanner.nextInt();
+                                if(eingabe > 0 && eingabe <= dieseWoche.size()){
+                                    terminAnzeigenBearbeiten(dieseWoche.get(eingabe - 1).getID());
+                                }
+                            }
+                            else{
+                                System.out.println("\n----> ungültige Eingabe!");
+                            }
+                            break;
+                        default:
+                            System.out.println("\n----> ungültige Eingabe!");
+                            break;
+                    }
                 }
+                else{
+                    scanner.next();
+                    System.out.println("\n----> ungültige Eingabe!");
+                }        
             } while(nochmal); 
         } catch (DatumException e) {
             System.out.println(e.getMessage());
@@ -665,78 +666,73 @@ public class TUI {
      * @throws RemoteException
      * @throws TerminException 
      */
-    private void monatsansicht() throws BenutzerException, RemoteException, TerminException, DatumException, Zeit.ZeitException {
+    private void monatsansicht(int monat, int jahr) throws BenutzerException, RemoteException, TerminException, DatumException, Zeit.ZeitException {
         Scanner scanner = new Scanner(System.in);
-        LocalDate ld = LocalDate.now();
         LinkedList<Termin> dieserMonat;
         boolean nochmal = true;
-        String eingabe;
-        int eingabe2, i, monat, jahr;
-        boolean vorherigerDurchlaufWarB = false;
+        int eingabe, i, terminID;
         
-        monat = ld.getMonthValue();
-        jahr = ld.getYear();
         do{
             i = 1;
             dieserMonat = stub.getTermineInMonat(monat, jahr);
             System.out.println("\n-----> " + dieserMonat.size() + " Termine im Jahr " + jahr + " im Monat " + monat + ":");
             
             for(Termin termin : dieserMonat){
-                System.out.println(i + " " + termin.getTitel());
+                System.out.println(i + " - " + termin.getTitel() + " " + termin.getDatum().toString() + " " + termin.getBeginn().toString());
                 i++;
             }
             
-            System.out.println("\nb zum Bearbeiten/Löschen eines Termins");
-            System.out.println("v/n für vorherigen/nächsten Monat eingeben");
-            System.out.println("z um zurück zu gelangen");
+            System.out.println("\n1 - Termin Bearbeiten/Löschen");
+            System.out.println("2 - vorheriger Monat");
+            System.out.println("3 - nächster Monat");
+            System.out.println("0 - zurück");
             System.out.print("Eingabe: ");
-            eingabe = scanner.nextLine();
-            if(vorherigerDurchlaufWarB == true){
-                eingabe = scanner.nextLine();
-            }
-            vorherigerDurchlaufWarB = false;
-            if("\n".equals(eingabe)){
-                eingabe = scanner.nextLine();
-            }
-            switch (eingabe) {
-                case "v":
-                    if(monat == 1){
-                        monat = 12;
-                        jahr --;
-                    }
-                    else{
-                        monat--;
-                    }
-                    break;
-                case "n":
-                    if(monat == 12){
-                        monat = 1;
-                        jahr++;
-                    }
-                    else{
-                        monat++;
-                    }
-                    break;
-                case "z":
-                    nochmal = false;
-                    break;
-                case "b":
-                    System.out.println("\nBitte Nummer des Termins zum Anzeigen/Bearbeiten/Löschen eingeben");
-                    System.out.println("'0' um die Eingabe abzubrechen");
-                    if(scanner.hasNextInt()){
-                        eingabe2 = scanner.nextInt();
-                        if(eingabe2 > 0 && eingabe2 <= dieserMonat.size()){
-                            terminAnzeigenBearbeiten(dieserMonat.get(eingabe2 - 1).getID());
+            
+            if(scanner.hasNextInt()){
+                eingabe = scanner.nextInt();
+                switch (eingabe) {
+                    case 2:
+                        if(monat == 1){
+                            monat = 12;
+                            jahr --;
                         }
-                    }
-                    else{
-                        System.out.println("ungültige Eingabe!");
-                    }
-                    vorherigerDurchlaufWarB = true;
-                    break;
+                        else{
+                            monat--;
+                        }
+                        break;
+                    case 3:
+                        if(monat == 12){
+                            monat = 1;
+                            jahr++;
+                        }
+                        else{
+                            monat++;
+                        }
+                        break;
+                    case 0:
+                        nochmal = false;
+                        break;
+                    case 1:
+                        System.out.println("\nBitte Nummer des Termins zum Anzeigen/Bearbeiten/Löschen eingeben");
+                        System.out.println("'0' um die Eingabe abzubrechen");
+                        if(scanner.hasNextInt()){
+                            terminID = scanner.nextInt();
+                            if(terminID > 0 && terminID <= dieserMonat.size()){
+                                terminAnzeigenBearbeiten(dieserMonat.get(terminID - 1).getID());
+                            }
+                        }
+                        else{
+                            System.out.println("\n----> ungültige Eingabe!");
+                        }
+                        break;
                 default:
-                    System.out.println("ungültige Eingabe!");
+                    System.out.println("\n----> ungültige Eingabe!");
                     break;
+                }   
+            }
+            else{
+                scanner.next();
+                System.out.println("\n----> ungültige Eingabe!");
             }
         } while(nochmal);
     }
@@ -749,82 +745,142 @@ public class TUI {
      * @throws BenutzerException 
      */
     private void terminAnzeigenBearbeiten(int terminID) throws RemoteException, BenutzerException, DatumException, TerminException, Zeit.ZeitException {
+        System.out.println(terminID);
+        
         Scanner scanner = new Scanner(System.in);
         int eingabe;
-        boolean wiederholen = true;
-                      
+        boolean wiederholen = true, teilnehmer = false;
+         
+        for(Teilnehmer tn : stub.getTermin(terminID).getTeilnehmerliste()){
+            if(tn.getUsername().equals(stub.getUsername())){
+                teilnehmer = tn.checkIstTeilnehmer();
+            }
+        }
         do{
-	    System.out.println("\n************ Terminansicht ************\n");
-            System.out.println("Titel: " + stub.getTermin(terminID).getTitel() + "(1)");
-            System.out.println("Datum: " + stub.getTermin(terminID).getDatum().toString() + "(2)");
-            System.out.println("Start: " + stub.getTermin(terminID).getBeginn().toString() + "(3)");
-            System.out.println("Ende:: " + stub.getTermin(terminID).getEnde().toString() + "(4)");
-            if(stub.getTermin(terminID).getNotiz().length() > 20){
-                System.out.println("Notiz: " + stub.getTermin(terminID).getNotiz().substring(0, 20) + "...(5)");
-            }
-            else{
-                System.out.println("Notiz: " + stub.getTermin(terminID).getNotiz() + "(5)");
-            }
-            System.out.println("Ort: " + stub.getTermin(terminID).getOrt() + "(6)");
-            System.out.println("Teilnehmer anzeigen(7)");
-            if(stub.getTermin(terminID).getEditierbar()){
-                System.out.println("Bearbeitungsrecht: Jeder(8)");
-            }
-            else{
-                System.out.println("Bearbeitungsrecht: Terminersteller(8)");
-            }      
-            System.out.println("Terminersteller: " + stub.getTermin(terminID).getOwner());
-            System.out.println("Termin löschen(9)");
-            System.out.println("zurück(0)");
-	    System.out.print("Eingabe: ");
-            
-	    if(scanner.hasNextInt()){
-                eingabe = scanner.nextInt();
-                switch(eingabe){
-                    case 0:
-                        wiederholen = false;
-                        break;
-                    case 1:
-                        terminTitelBearbeiten(terminID);
-                        break;
-                    case 2:
-                        terminDatumBearbeiten(terminID);
-                        break;
-                    case 3:
-                        terminStartBearbeiten(terminID);
-                        break;
-                    case 4:
-                        terminEndeBearbeiten(terminID);
-                        break;
-                    case 5:
-                        terminNotizBearbeiten(terminID);
-                        break;
-                    case 6:
-                        terminOrtBearbeiten(terminID);
-                        break;    
-                    case 7:
-                        terminTeilnehmerlisteBearbeiten(terminID);
-                        break;
-                    case 8:
-                        try {
-                            stub.changeEditierrechte(!stub.getTermin(terminID).getEditierbar(), terminID);
-                        } catch (TerminException e) {
-                            System.out.println(e.getMessage());
-                        }
-                        break;
-                    case 9:
-                        terminLoeschen(terminID);
-                        wiederholen = false;
-                        break;
-                    default:    
-                        System.out.println("\n-----> Ungueltige Eingabe!");
-                        break;
+            if(!teilnehmer){
+                System.out.println("\n************ Terminansicht ************\n");
+                System.out.println("Titel: " + stub.getTermin(terminID).getTitel());
+                System.out.println("Datum: " + stub.getTermin(terminID).getDatum().toString());
+                System.out.println("Start: " + stub.getTermin(terminID).getBeginn().toString());
+                System.out.println("Ende:: " + stub.getTermin(terminID).getEnde().toString());
+                if(stub.getTermin(terminID).getNotiz().length() > 20){
+                    System.out.println("Notiz: " + stub.getTermin(terminID).getNotiz().substring(0, 20) + "...");
                 }
-            } 
+                else{
+                    System.out.println("Notiz: " + stub.getTermin(terminID).getNotiz());
+                }
+                System.out.println("Ort: " + stub.getTermin(terminID).getOrt());
+                System.out.println("Teilnehmer anzeigen");
+                if(stub.getTermin(terminID).getEditierbar()){
+                    System.out.println("Bearbeitungsrecht: Jeder");
+                }
+                else{
+                    System.out.println("Bearbeitungsrecht: Terminersteller");
+                }      
+                System.out.println("Terminersteller: " + stub.getTermin(terminID).getOwner());
+                System.out.println("Termin zusagen(1)");
+                System.out.println("Termin ablehnen(2)");
+                System.out.println("zurück(0)");
+                System.out.print("Eingabe: ");
+                
+                if(scanner.hasNextInt()){
+                    eingabe = scanner.nextInt();
+                    switch(eingabe){
+                        case 0:
+                            wiederholen = false;
+                            break;
+                        case 1:
+                            stub.terminAnnehmen(terminID);
+                            teilnehmer = true;
+                            break;
+                        case 2:
+                            stub.terminAblehnen(terminID);
+                            wiederholen = false;
+                            break;
+                        default:    
+                            System.out.println("\n-----> Ungueltige Eingabe!");
+                            break;
+                    }
+                } 
+                else{
+                    System.out.println("\n-----> Ungueltige Eingabe!");
+                    scanner.next();
+                } 
+                
+            }          
             else{
-                System.out.println("\n-----> Ungueltige Eingabe!");
-                scanner.next();
-            }     
+                System.out.println("\n************ Terminansicht ************\n");
+                System.out.println("Titel: " + stub.getTermin(terminID).getTitel() + "(1)");
+                System.out.println("Datum: " + stub.getTermin(terminID).getDatum().toString() + "(2)");
+                System.out.println("Start: " + stub.getTermin(terminID).getBeginn().toString() + "(3)");
+                System.out.println("Ende:: " + stub.getTermin(terminID).getEnde().toString() + "(4)");
+                if(stub.getTermin(terminID).getNotiz().length() > 20){
+                    System.out.println("Notiz: " + stub.getTermin(terminID).getNotiz().substring(0, 20) + "...(5)");
+                }
+                else{
+                    System.out.println("Notiz: " + stub.getTermin(terminID).getNotiz() + "(5)");
+                }
+                System.out.println("Ort: " + stub.getTermin(terminID).getOrt() + "(6)");
+                System.out.println("Teilnehmer anzeigen(7)");
+                if(stub.getTermin(terminID).getEditierbar()){
+                    System.out.println("Bearbeitungsrecht: Jeder(8)");
+                }
+                else{
+                    System.out.println("Bearbeitungsrecht: Terminersteller(8)");
+                }      
+                System.out.println("Terminersteller: " + stub.getTermin(terminID).getOwner());
+                System.out.println("Termin löschen(9)");
+                System.out.println("zurück(0)");
+                System.out.print("Eingabe: ");
+
+                if(scanner.hasNextInt()){
+                    eingabe = scanner.nextInt();
+                    switch(eingabe){
+                        case 0:
+                            wiederholen = false;
+                            break;
+                        case 1:
+                            terminTitelBearbeiten(terminID);
+                            break;
+                        case 2:
+                            terminDatumBearbeiten(terminID);
+                            break;
+                        case 3:
+                            terminStartBearbeiten(terminID);
+                            break;
+                        case 4:
+                            terminEndeBearbeiten(terminID);
+                            break;
+                        case 5:
+                            terminNotizBearbeiten(terminID);
+                            break;
+                        case 6:
+                            terminOrtBearbeiten(terminID);
+                            break;    
+                        case 7:
+                            terminTeilnehmerlisteBearbeiten(terminID);
+                            break;
+                        case 8:
+                            try {
+                                stub.changeEditierrechte(!stub.getTermin(terminID).getEditierbar(), terminID);
+                            } catch (TerminException e) {
+                                System.out.println(e.getMessage());
+                            }
+                            break;
+                        case 9:
+                            terminLoeschen(terminID);
+                            wiederholen = false;
+                            break;
+                        default:    
+                            System.out.println("\n-----> Ungueltige Eingabe!");
+                            break;
+                    }
+                } 
+                else{
+                    System.out.println("\n-----> Ungueltige Eingabe!");
+                    scanner.next();
+                }     
+            } 
         } while(wiederholen);
     }
     
@@ -1066,7 +1122,13 @@ public class TUI {
         
         System.out.println("\nTeilnehmerliste:");
         for(Teilnehmer teilnehmer : stub.getTermin(terminID).getTeilnehmerliste()){
-            System.out.println(teilnehmer.getUsername());
+            System.out.print(teilnehmer.getUsername());
+            if(teilnehmer.checkIstTeilnehmer()){
+                System.out.println(" (nimmt Teil)");
+            }
+            else{
+                System.out.println(" (noch offen)");
+            }
         }
         System.out.print("\nNeuen Teilnehmer hinzufügen? (j/n)");
         eingabe = scanner.nextLine();     
@@ -1082,7 +1144,7 @@ public class TUI {
         }
     }
 
-    private void meldungen() throws RemoteException, BenutzerException {
+    private void meldungen() throws RemoteException, BenutzerException, TerminException, DatumException, ZeitException {
         Scanner scanner = new Scanner(System.in);
         Scanner scanner2 =  new Scanner(System.in);
         int eingabe, i;
@@ -1129,10 +1191,17 @@ public class TUI {
                             eingabe = scanner.nextInt();   
                             switch(eingabe){
                                 case 1:
+                                    stub.terminAnnehmen(((Anfrage)stub.getMeldungen().get(i)).getTermin().getID());
+                                    stub.deleteMeldung(i);
+                                    System.out.println("\n----> Termin zugesagt!");
                                     break;
                                 case 2:
+                                    stub.terminAblehnen(((Anfrage)stub.getMeldungen().get(i)).getTermin().getID());
+                                    stub.deleteMeldung(i);
+                                    System.out.println("\n----> Termin abgelehnt!");
                                     break;
                                 case 3:
+                                    monatsansicht(((Anfrage)stub.getMeldungen().get(i)).getTermin().getDatum().getMonat(), ((Anfrage)stub.getMeldungen().get(i)).getTermin().getDatum().getJahr());
                                     break;
                                 case 0 :
                                     break;
