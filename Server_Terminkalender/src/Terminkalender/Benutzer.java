@@ -23,7 +23,7 @@ public class Benutzer implements Serializable{
     private Terminkalender terminkalender;
     private LinkedList<Anfrage> terminanfragen;
     private LinkedList<String> kontaktliste; 
-    private LinkedList<String> meldungen;
+    private LinkedList<Meldungen> meldungen;
     
     /**
      * 
@@ -74,7 +74,7 @@ public class Benutzer implements Serializable{
     public final LinkedList<String> getKontaktliste(){
         return kontaktliste;
     }
-    public LinkedList<String> getMeldungen(){
+    public LinkedList<Meldungen> getMeldungen(){
         return meldungen;
     }
     public LinkedList<Anfrage> getTerminanfragen(){
@@ -187,7 +187,7 @@ public class Benutzer implements Serializable{
      * @param meldung
      */
     public void addMeldung(String meldung){
-        meldungen.add(meldung);
+        meldungen.add(new Meldungen(meldung));
     }
     
     /**

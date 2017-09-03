@@ -509,7 +509,7 @@ public class Launcher implements LauncherInterface{
      * @throws BenutzerException 
      */
     @Override
-    public LinkedList<String> getMeldungen() throws BenutzerException{
+    public LinkedList<Meldungen> getMeldungen() throws BenutzerException{
         if(!eingeloggt){
             throw new BenutzerException("noch nicht eingeloggt");
         }

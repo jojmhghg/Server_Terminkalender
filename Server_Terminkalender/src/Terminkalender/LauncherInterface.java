@@ -56,7 +56,7 @@ public interface LauncherInterface extends Remote{
     /* alles zu offenen Anfragen */
     
     /* alles zu ausstehenden Meldungen */ 
-    public LinkedList<String> getMeldungen() throws RemoteException, BenutzerException;
+    public LinkedList<Meldungen> getMeldungen() throws RemoteException, BenutzerException;
     public void deleteMeldung(int index) throws RemoteException, BenutzerException;
 }
 
