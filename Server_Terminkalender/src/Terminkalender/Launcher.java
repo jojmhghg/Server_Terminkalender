@@ -72,9 +72,10 @@ public class Launcher implements LauncherInterface{
      * @param TerminID
      * @return
      * @throws BenutzerException 
+     * @throws Terminkalender.TerminException 
      */
     @Override
-    public Termin getTermin(int TerminID) throws BenutzerException{
+    public Termin getTermin(int TerminID) throws BenutzerException, TerminException{
         if(!eingeloggt){
             throw new BenutzerException("noch nicht eingeloggt");
         }
@@ -118,9 +119,10 @@ public class Launcher implements LauncherInterface{
      * 
      * @param id
      * @throws BenutzerException 
+     * @throws Terminkalender.TerminException 
      */
     @Override
-    public void removeTermin(int id) throws BenutzerException{
+    public void removeTermin(int id) throws BenutzerException, TerminException{
         if(!eingeloggt){
             throw new BenutzerException("noch nicht eingeloggt");
         }
