@@ -1087,7 +1087,7 @@ public class TUI {
         Scanner scanner2 =  new Scanner(System.in);
         int eingabe, i;
         boolean wiederholen = true;
-        String delete;
+        String eingabe2;
             
         do{
 	    System.out.println("\n************ Meldungen ************\n");
@@ -1117,13 +1117,43 @@ public class TUI {
                 if(eingabe > 0 && eingabe <= stub.getMeldungen().size()){
                     if(!stub.getMeldungen().get(i).getStatus()){ 
                         stub.setMeldungenGelesen(i);
+                    }      
+                    if(stub.getMeldungen().get(i) instanceof Anfrage){
+                        System.out.println("\n" + ((Anfrage)stub.getMeldungen().get(i)).getText());
+                        System.out.println("1 - Termin annehmen");
+                        System.out.println("2 - Termin ablehnen");
+                        System.out.println("3 - Termin im Kalender anzeigen");
+                        System.out.println("0 - zurück");
+                        System.out.print("Eingabe: ");
+                        if(scanner.hasNextInt()){
+                            eingabe = scanner.nextInt();   
+                            switch(eingabe){
+                                case 1:
+                                    break;
+                                case 2:
+                                    break;
+                                case 3:
+                                    break;
+                                case 0 :
+                                    break;
+                                default:
+                                    System.out.println("\n----> ungültige Eingabe!");
+                                    break;          
+                            }
+                        }
+                        else{
+                            System.out.println("\n----> ungültige Eingabe!");
+                            scanner.next();
+                        }
                     }
-                    System.out.println("\n" + stub.getMeldungen().get(i).getText());
-                    System.out.print("Meldung löschen? (j/n): ");
-                    delete = scanner2.nextLine();
-                    if(delete.equals("j")){
-                        stub.deleteMeldung(i);
-                    }
+                    else{
+                        System.out.println("\n" + stub.getMeldungen().get(i).text);
+                        System.out.print("Meldung löschen? (j/n): ");
+                        eingabe2 = scanner2.nextLine();
+                        if(eingabe2.equals("j")){
+                            stub.deleteMeldung(i);
+                        }
+                    }     
                 }
                 if(eingabe == 0){
                     wiederholen = false;

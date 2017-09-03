@@ -28,4 +28,9 @@ class Anfrage extends Meldungen implements Serializable{
     public String getAbsender(){
         return absender;
     }
+    
+    @Override
+    public String getText(){
+        return text + ": " + termin.getTitel() + " am " + termin.getDatum().toString();
+    }
 }
