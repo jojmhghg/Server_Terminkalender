@@ -75,7 +75,7 @@ public class TUI {
                         registrieren();
                         break;
                     case 3:
-                        meldungen();
+                        System.out.println("\n----> noch nicht implementiert!");
                         break;
                     case 4:
                         System.out.println("\n-----> Anwendung beendet!");
@@ -191,7 +191,7 @@ public class TUI {
                         kontakte();
                         break;
                     case 3:
-                        System.out.println("\n-----> noch nicht implementiert!");
+                        meldungen();
                         break;
                     case 4:
                         profil();
@@ -1084,30 +1084,46 @@ public class TUI {
 
     private void meldungen() throws RemoteException, BenutzerException {
         Scanner scanner = new Scanner(System.in);
+        Scanner scanner2 =  new Scanner(System.in);
         int eingabe, i;
         boolean wiederholen = true;
+        String delete;
             
         do{
 	    System.out.println("\n************ Meldungen ************\n");
             
-            i = 1;
+            i = 0;
             for(Meldungen meldung : stub.getMeldungen()){
+                i++;
                 if(meldung.getText().length() > 20){
-                    System.out.println(i  + "  " + meldung.getText().substring(0, 20) + "...");
+                    System.out.print(i  + "  " + meldung.getText().substring(0, 20) + "...");
                 }
                 else{
-                    System.out.println(i  + "  " + meldung);
-                }       
+                    System.out.print(i  + "  " + meldung);
+                }   
+                if(meldung.getStatus()){
+                    System.out.println("(gelesen)");
+                }
+                else{
+                    System.out.println("(ungelesen)");
+                }
             }
-            System.out.println("Nummer der Meldungen zum Lesen/Löschen eingeben oder '0' für zurück");
+            System.out.println("\nNummer der Meldungen zum Lesen/Löschen eingeben oder '0' für zurück");
 	    System.out.print("Eingabe: ");
             
+            i--;
 	    if(scanner.hasNextInt()){
                 eingabe = scanner.nextInt();     
                 if(eingabe > 0 && eingabe <= stub.getMeldungen().size()){
-                    System.out.println("\n" + stub.getMeldungen().get(i));
-                    System.out.print("\nMeldung löschen? (j/n): ");
-                    
+                    if(!stub.getMeldungen().get(i).getStatus()){ 
+                        stub.setMeldungenGelesen(i);
+                    }
+                    System.out.println("\n" + stub.getMeldungen().get(i).getText());
+                    System.out.print("Meldung löschen? (j/n): ");
+                    delete = scanner2.nextLine();
+                    if(delete.equals("j")){
+                        stub.deleteMeldung(i);
+                    }
                 }
                 if(eingabe == 0){
                     wiederholen = false;
