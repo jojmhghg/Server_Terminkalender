@@ -189,6 +189,14 @@ public class Benutzer implements Serializable{
     public void addMeldung(String meldung){
         meldungen.add(meldung);
     }
+    
+    /**
+     * 
+     * @param index 
+     */
+    public void deleteMeldung(int index){
+        meldungen.remove(index);
+    }
 }
     
 

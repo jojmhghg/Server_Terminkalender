@@ -6,6 +6,8 @@
 package Terminkalender;
 
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -118,6 +120,7 @@ public class Launcher implements LauncherInterface{
      * 
      * @param id
      * @throws BenutzerException 
+     * @throws Terminkalender.TerminException 
      */
     @Override
     public void removeTermin(int id) throws BenutzerException{
@@ -125,8 +128,8 @@ public class Launcher implements LauncherInterface{
             throw new BenutzerException("noch nicht eingeloggt");
         }
         if(eingeloggterBenutzer.getUsername().equals(eingeloggterBenutzer.getTerminkalender().getTerminByID(id).getOwner())){
-            for(Teilnehmer teilnehmer : eingeloggterBenutzer.getTerminkalender().getTerminByID(id).getTeilnehmerliste()){
-                if(!eingeloggterBenutzer.getUsername().equals(eingeloggterBenutzer.getTerminkalender().getTerminByID(id).getOwner())){            
+            for(Teilnehmer teilnehmer : eingeloggterBenutzer.getTerminkalender().getTerminByID(id).getTeilnehmerliste()){      
+                if(!teilnehmer.getUsername().equals(eingeloggterBenutzer.getTerminkalender().getTerminByID(id).getOwner())){                                
                     benutzerliste.getBenutzer(teilnehmer.getUsername()).getTerminkalender().removeTerminByID(id);
                     benutzerliste.getBenutzer(teilnehmer.getUsername()).addMeldung(
                             eingeloggterBenutzer.getUsername() 
@@ -140,7 +143,7 @@ public class Launcher implements LauncherInterface{
         }
         else{
             for(Teilnehmer teilnehmer : eingeloggterBenutzer.getTerminkalender().getTerminByID(id).getTeilnehmerliste()){
-                if(!eingeloggterBenutzer.getUsername().equals(teilnehmer.getUsername())){   
+                if(!eingeloggterBenutzer.getUsername().equals(teilnehmer.getUsername())){ 
                     benutzerliste.getBenutzer(teilnehmer.getUsername()).addMeldung(
                             eingeloggterBenutzer.getUsername() 
                             + " nimmt nicht mehr an dem Termin '" 
@@ -150,7 +153,12 @@ public class Launcher implements LauncherInterface{
                             + " teil"); 
                 }
             }
-        }
+            try {
+                eingeloggterBenutzer.getTerminkalender().getTerminByID(id).removeTeilnehmer(eingeloggterBenutzer.getUsername());
+            } catch (TerminException e) {
+                System.out.println(e.getMessage());
+            }
+        }  
         eingeloggterBenutzer.getTerminkalender().removeTerminByID(id);
     }
     
@@ -496,11 +504,53 @@ public class Launcher implements LauncherInterface{
     }
 
     /**
+     * 
+     * @return
+     * @throws BenutzerException 
+     */
+    @Override
+    public LinkedList<String> getMeldungen() throws BenutzerException{
+        if(!eingeloggt){
+            throw new BenutzerException("noch nicht eingeloggt");
+        }
+        return eingeloggterBenutzer.getMeldungen();
+    }
+    
+    /**
+     * 
+     * @param index
+     * @throws BenutzerException 
+     */
+    @Override
+    public void deleteMeldung(int index) throws BenutzerException{
+        if(!eingeloggt){
+            throw new BenutzerException("noch nicht eingeloggt");
+        }
+        eingeloggterBenutzer.deleteMeldung(index);
+    }
+    
+    /**
      * Hilfsmethode um Benutzerliste zu füllen
      * 
      */
-    private void ladeBenutzerliste() {
+    private void ladeBenutzerliste() {     
         //TODO: hier wird die Benutzerliste mit den Daten aus der DB gefüllt
         benutzerliste = new BenutzerListe();
+        testliste();
+    }
+
+    private void testliste(){
+        try {
+            benutzerliste.addBenutzer("timeyer", "test", "timeyer@email.de");
+            benutzerliste.addBenutzer("sanja", "test", "sanja@email.de");
+            benutzerliste.addBenutzer("marco", "test", "marco@email.de");
+            benutzerliste.getBenutzer("timeyer").addTermin(new Datum(3, 9, 2017), new Zeit(20, 30), new Zeit(21, 30), "essen gehen");
+            benutzerliste.getBenutzer("timeyer").addTermin(new Datum(4, 9, 2017), new Zeit(20, 30), new Zeit(21, 30), "laufen gehen");
+            benutzerliste.getBenutzer("timeyer").addTermin(new Datum(5, 9, 2017), new Zeit(20, 30), new Zeit(21, 30), "reden gehen");
+            benutzerliste.getBenutzer("timeyer").addTermin(new Datum(6, 9, 2017), new Zeit(20, 30), new Zeit(21, 30), "scheißen gehen");
+        } catch (BenutzerException | Datum.DatumException | Zeit.ZeitException | TerminException e) {
+            System.out.println(e.getMessage());
+        }
+        
     }
 }
