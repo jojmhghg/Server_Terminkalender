@@ -1082,43 +1082,35 @@ public class TUI {
         }
     }
 
-    private void meldungen() {
+    private void meldungen() throws RemoteException, BenutzerException {
         Scanner scanner = new Scanner(System.in);
-        int eingabe;
+        int eingabe, i;
         boolean wiederholen = true;
             
         do{
 	    System.out.println("\n************ Meldungen ************\n");
             
-            
-            System.out.println("01 - Anmelden");
-            System.out.println("02 - Registieren");
-            System.out.println("03 - Passwort vergessen");
-            System.out.println("04 - Beenden");	
+            i = 1;
+            for(String meldung : stub.getMeldungen()){
+                if(meldung.length() > 20){
+                    System.out.println(i  + "  " + meldung.substring(0, 20) + "...");
+                }
+                else{
+                    System.out.println(i  + "  " + meldung);
+                }       
+            }
+            System.out.println("Nummer der Meldungen zum Lesen/Löschen eingeben oder '0' für zurück");
 	    System.out.print("Eingabe: ");
             
 	    if(scanner.hasNextInt()){
                 eingabe = scanner.nextInt();     
-                switch(eingabe){
-                    case 1:
-                        
-                        break;
-                    case 2:
-                        
-                        break;
-                    case 3:
-                        
-                        break;
-                    case 4:
-                        System.out.println("\n-----> Anwendung beendet!");
-			wiederholen = false;
-                        break;
-                    case 43:
-                        
-                        break;
-                    default:    
-                        System.out.println("\n-----> Ungueltige Eingabe!");
-                        break;
+                if(eingabe > 0 && eingabe <= stub.getMeldungen().size()){
+                    System.out.println("\n" + stub.getMeldungen().get(i));
+                    System.out.print("\nMeldung löschen? (j/n): ");
+                    
+                }
+                if(eingabe == 0){
+                    wiederholen = false;
                 }
             } 
             else{
