@@ -271,37 +271,58 @@ public class Launcher implements LauncherInterface{
     
     /**
      * 
-     * @param username
      * @param id
-     * @param termin
      * @throws TerminException
      * @throws BenutzerException 
      */
     @Override
-    public void terminAnnehmen(String username, int id, Termin termin) throws TerminException, BenutzerException{
+    public void terminAnnehmen(int id) throws TerminException, BenutzerException{
         if(!eingeloggt){
             throw new BenutzerException("noch nicht eingeloggt");
         }
-        eingeloggterBenutzer.getTerminkalender().addTermin(termin);
-        benutzerliste.getBenutzer(username).getTerminkalender().getTerminByID(id).changeTeilnehmerNimmtTeil(username);
-        //TODO: benutzerliste.getBenutzer(username) eine Meldung schicken, dass eingeloggterBenutzer teilnimmt!
+        benutzerliste.getBenutzer(eingeloggterBenutzer.getUsername()).getTerminkalender().getTerminByID(id).changeTeilnehmerNimmtTeil(eingeloggterBenutzer.getUsername());
+        for(Teilnehmer teilnehmer : eingeloggterBenutzer.getTerminkalender().getTerminByID(id).getTeilnehmerliste()){
+                if(!eingeloggterBenutzer.getUsername().equals(teilnehmer.getUsername())){ 
+                    benutzerliste.getBenutzer(teilnehmer.getUsername()).addMeldung(
+                            eingeloggterBenutzer.getUsername() 
+                            + " nimmt an dem Termin '" 
+                            + eingeloggterBenutzer.getTerminkalender().getTerminByID(id).getTitel()
+                            + "' am "
+                            + eingeloggterBenutzer.getTerminkalender().getTerminByID(id).getDatum().toString()
+                            + " teil"); 
+                }
+            }
     }
+    
     
     /**
      * 
-     * @param username
      * @param id
-     * @param termin
      * @throws TerminException
      * @throws BenutzerException 
      */
     @Override
-    public void terminAblehnen(String username, int id, Termin termin) throws TerminException, BenutzerException{
+    public void terminAblehnen(int id) throws TerminException, BenutzerException{
         if(!eingeloggt){
             throw new BenutzerException("noch nicht eingeloggt");
         }
-        benutzerliste.getBenutzer(username).getTerminkalender().getTerminByID(id).removeTeilnehmer(username);
-        //TODO: benutzerliste.getBenutzer(username) eine Meldung schicken, dass eingeloggterBenutzer nicht teilnimmt!
+        for(Teilnehmer teilnehmer : eingeloggterBenutzer.getTerminkalender().getTerminByID(id).getTeilnehmerliste()){
+            if(!eingeloggterBenutzer.getUsername().equals(teilnehmer.getUsername())){ 
+                benutzerliste.getBenutzer(teilnehmer.getUsername()).addMeldung(
+                        eingeloggterBenutzer.getUsername() 
+                        + " hat den Termin '" 
+                        + eingeloggterBenutzer.getTerminkalender().getTerminByID(id).getTitel()
+                        + "' am "
+                        + eingeloggterBenutzer.getTerminkalender().getTerminByID(id).getDatum().toString()
+                        + " abgelehnt"); 
+            }
+        }
+        try {
+            eingeloggterBenutzer.getTerminkalender().getTerminByID(id).removeTeilnehmer(eingeloggterBenutzer.getUsername());
+        } catch (TerminException e) {
+            System.out.println(e.getMessage());
+        } 
+        eingeloggterBenutzer.getTerminkalender().removeTerminByID(id);
     }
     
     /**

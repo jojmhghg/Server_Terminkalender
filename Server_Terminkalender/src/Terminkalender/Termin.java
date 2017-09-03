@@ -40,6 +40,7 @@ public class Termin implements Serializable{
         this.ort = "";
         this.teilnehmer = new LinkedList<>();
         this.teilnehmer.add(new Teilnehmer(username));
+        teilnehmer.getFirst().setIstTeilnemer();
         this.owner = username;
         this.editierbar = true;
     }
