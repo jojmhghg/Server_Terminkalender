@@ -1091,9 +1091,9 @@ public class TUI {
 	    System.out.println("\n************ Meldungen ************\n");
             
             i = 1;
-            for(String meldung : stub.getMeldungen()){
-                if(meldung.length() > 20){
-                    System.out.println(i  + "  " + meldung.substring(0, 20) + "...");
+            for(Meldungen meldung : stub.getMeldungen()){
+                if(meldung.getText().length() > 20){
+                    System.out.println(i  + "  " + meldung.getText().substring(0, 20) + "...");
                 }
                 else{
                     System.out.println(i  + "  " + meldung);
