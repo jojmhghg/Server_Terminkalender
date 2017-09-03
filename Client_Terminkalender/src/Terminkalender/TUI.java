@@ -75,7 +75,7 @@ public class TUI {
                         registrieren();
                         break;
                     case 3:
-                        System.out.println("\n-----> noch nicht implementiert!");
+                        meldungen();
                         break;
                     case 4:
                         System.out.println("\n-----> Anwendung beendet!");
@@ -1082,7 +1082,61 @@ public class TUI {
         }
     }
 
+    private void meldungen() {
+        Scanner scanner = new Scanner(System.in);
+        int eingabe;
+        boolean wiederholen = true;
+            
+        do{
+	    System.out.println("\n************ Meldungen ************\n");
+            
+            
+            System.out.println("01 - Anmelden");
+            System.out.println("02 - Registieren");
+            System.out.println("03 - Passwort vergessen");
+            System.out.println("04 - Beenden");	
+	    System.out.print("Eingabe: ");
+            
+	    if(scanner.hasNextInt()){
+                eingabe = scanner.nextInt();     
+                switch(eingabe){
+                    case 1:
+                        
+                        break;
+                    case 2:
+                        
+                        break;
+                    case 3:
+                        
+                        break;
+                    case 4:
+                        System.out.println("\n-----> Anwendung beendet!");
+			wiederholen = false;
+                        break;
+                    case 43:
+                        
+                        break;
+                    default:    
+                        System.out.println("\n-----> Ungueltige Eingabe!");
+                        break;
+                }
+            } 
+            else{
+                System.out.println("\n-----> Ungueltige Eingabe!");
+                scanner.next();
+            }     
+        } while(wiederholen);
+    }
+    
+    
+    
+    
+    /**
+     * TUI zum Debuggen
+     */
     private void entwicklerTools() {
         
     }
+
+    
 }
