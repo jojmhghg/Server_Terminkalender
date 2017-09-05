@@ -9,7 +9,6 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.*;
 
-
 /**
  *
  * @author Tim Meyer
@@ -22,8 +21,9 @@ public class Client {
     public static void main(String[] args) {
         /* IP-Adresse des Servers */
         String ipaddr = "localhost";
+        
         if ((args.length > 2)){
-            System.err.println("java -jar client.jar <Server-IP-Adresse>");
+            System.err.println("java -jar Client_Terminkalender.jar <Server-IP-Adresse>");
         }
         else{
             /* falls IP-Adresse übergeben wurde, wird diese gesetzt */
@@ -35,11 +35,9 @@ public class Client {
                 Registry registry = LocateRegistry.getRegistry(ipaddr);
                 LauncherInterface stub = (LauncherInterface) registry.lookup("Terminkalender");
                 
-                System.out.println("Mit Server verbunden!");
-                
+                System.out.println("Mit Server verbunden!"); 
                 TUI tui = new TUI(stub);
                 tui.start();
-                
             } 
             catch (NotBoundException | RemoteException e) {
                 System.out.println("Exception: " + e.getMessage());

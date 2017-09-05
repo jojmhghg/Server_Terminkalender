@@ -11,6 +11,7 @@ package Terminkalender;
 
 import Terminkalender.Datum.DatumException;
 import Terminkalender.Zeit.ZeitException;
+import java.io.InputStream;
 import java.rmi.RemoteException;
 import java.time.LocalDate;
 import java.util.LinkedList;
@@ -21,12 +22,15 @@ import java.util.Scanner;
  * @author Tim Meyer
  */
 public class TUI {
-    LauncherInterface stub;
+    
+    private final LauncherInterface stub;
+    private final InputStream inputStream;
     
     TUI(LauncherInterface stub){
         this.stub = stub;
+        this.inputStream = System.in;
     }
-     
+    
     /**
      * Methode die TUI startet
      * 
@@ -57,7 +61,7 @@ public class TUI {
      * @throws TerminException 
      */
     private void startbildschirm() throws RemoteException, BenutzerException, TerminException, DatumException, Zeit.ZeitException{
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = new Scanner(inputStream);
         int eingabe;
         boolean wiederholen = true;
             
@@ -108,7 +112,7 @@ public class TUI {
      * @throws TerminException 
      */
     private void anmelden() throws RemoteException, BenutzerException, TerminException, DatumException, Zeit.ZeitException{
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = new Scanner(inputStream);
         String username, password;
                 
         System.out.println("\n************ Anmelden ************\n");
@@ -132,7 +136,7 @@ public class TUI {
      * @throws RemoteException 
      */
     private void registrieren() throws RemoteException{
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = new Scanner(inputStream);
         String username, password, email, again;
         boolean wiederholen;
         
@@ -172,7 +176,7 @@ public class TUI {
      * @throws TerminException 
      */
     private void hauptbildschirm() throws RemoteException, BenutzerException, TerminException, DatumException, Zeit.ZeitException{
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = new Scanner(inputStream);
         int eingabe;
         boolean wiederholen = true;
                       
@@ -224,7 +228,7 @@ public class TUI {
      * @throws BenutzerException 
      */
     private void profil() throws RemoteException, BenutzerException{
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = new Scanner(inputStream);
         int eingabe;
         boolean wiederholen = true;
                       
@@ -272,7 +276,7 @@ public class TUI {
      * @throws BenutzerException 
      */
     private void changeVorname() throws RemoteException, BenutzerException {
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = new Scanner(inputStream);
         String newName;
 
         System.out.print("Neuer Vorname: ");
@@ -288,7 +292,7 @@ public class TUI {
      * @throws BenutzerException 
      */
     private void changeNachname() throws RemoteException, BenutzerException{
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = new Scanner(inputStream);
         String newName;
 
         System.out.print("Neuer Nachname: ");
@@ -303,7 +307,7 @@ public class TUI {
      * @throws RemoteException 
      */
     private void changePW() throws RemoteException {
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = new Scanner(inputStream);
         String altesPW, neuesPW;
 
         System.out.print("Altes Passwort: ");
@@ -325,7 +329,7 @@ public class TUI {
      * @throws BenutzerException 
      */
     private void kontakte() throws RemoteException, BenutzerException {
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = new Scanner(inputStream);
         int eingabe;
         boolean wiederholen = true;
                       
@@ -370,7 +374,7 @@ public class TUI {
      * @throws RemoteException 
      */
     private void addKontakt() throws RemoteException {
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = new Scanner(inputStream);
         String username;
 
         System.out.print("Username des Kontakts: ");
@@ -389,7 +393,7 @@ public class TUI {
      * @throws RemoteException 
      */
     private void removeKontakt() throws RemoteException {
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = new Scanner(inputStream);
         String username;
 
         System.out.print("Username des Kontakts: ");
@@ -423,7 +427,7 @@ public class TUI {
      * @throws TerminException 
      */
     private void terminkalender() throws RemoteException, BenutzerException, TerminException, DatumException, Zeit.ZeitException {
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = new Scanner(inputStream);
         int eingabe;
         boolean wiederholen = true;
         LocalDate ld = LocalDate.now();
@@ -472,7 +476,7 @@ public class TUI {
      * @throws BenutzerException 
      */
     private void terminAnlegen() throws RemoteException, BenutzerException{
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = new Scanner(inputStream);
         Datum datum;
         Zeit start, ende;
         String titel;
@@ -582,7 +586,7 @@ public class TUI {
      * @throws BenutzerException 
      */
     private void wochenansicht(int kw, int jahr) throws RemoteException, BenutzerException, TerminException, Zeit.ZeitException {
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = new Scanner(inputStream);
         LinkedList<Termin> dieseWoche;
         boolean nochmal = true;
         int eingabe, i;
@@ -665,7 +669,7 @@ public class TUI {
      * @throws TerminException 
      */
     private void monatsansicht(int monat, int jahr) throws BenutzerException, RemoteException, TerminException, DatumException, Zeit.ZeitException {
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = new Scanner(inputStream);
         LinkedList<Termin> dieserMonat;
         boolean nochmal = true;
         int eingabe, i, terminID;
@@ -743,9 +747,7 @@ public class TUI {
      * @throws BenutzerException 
      */
     private void terminAnzeigenBearbeiten(int terminID) throws RemoteException, BenutzerException, DatumException, TerminException, Zeit.ZeitException {
-        System.out.println(terminID);
-        
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = new Scanner(inputStream);
         int eingabe;
         boolean wiederholen = true, teilnehmer = false;
          
@@ -890,7 +892,7 @@ public class TUI {
      * @throws RemoteException 
      */
     private void terminTitelBearbeiten(int terminID) throws BenutzerException, RemoteException {
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = new Scanner(inputStream);
         String newTitel;
         
         System.out.print("\nNeuer Titel: ");
@@ -911,7 +913,7 @@ public class TUI {
      * @throws RemoteException 
      */
     private void terminOrtBearbeiten(int terminID) throws BenutzerException, RemoteException {
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = new Scanner(inputStream);
         String newOrt;
         
         System.out.print("\nNeuer Ort: ");
@@ -934,7 +936,7 @@ public class TUI {
      * @throws TerminException 
      */
     private void terminDatumBearbeiten(int terminID) throws DatumException, BenutzerException, RemoteException, TerminException{
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = new Scanner(inputStream);
         int tag = 1, monat = 1, jahr = 1900;
         boolean nochmal = true;
         
@@ -982,7 +984,7 @@ public class TUI {
      * @throws RemoteException 
      */
     private void terminNotizBearbeiten(int terminID) throws BenutzerException, RemoteException, TerminException {
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = new Scanner(inputStream);
         String neueNotiz, eingabe;
         
         System.out.println("\n" + stub.getTermin(terminID).getNotiz());
@@ -1008,7 +1010,7 @@ public class TUI {
      * @throws RemoteException 
      */
     private void terminStartBearbeiten(int terminID) throws BenutzerException, RemoteException {
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = new Scanner(inputStream);
         int stunde = 1, minute = 1;
         boolean nochmal = true;
         
@@ -1051,7 +1053,7 @@ public class TUI {
      * @throws RemoteException 
      */
     private void terminEndeBearbeiten(int terminID) throws BenutzerException, RemoteException {
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = new Scanner(inputStream);
         int stunde = 1, minute = 1;
         boolean nochmal = true;
         
@@ -1094,7 +1096,7 @@ public class TUI {
      * @throws BenutzerException 
      */
     private void terminLoeschen(int terminID) throws RemoteException, BenutzerException, TerminException {
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = new Scanner(inputStream);
         String eingabe;
         
         System.out.println("\nSind Sie sicher, dass sie den Termin löschen wollen?");
@@ -1115,7 +1117,7 @@ public class TUI {
      * @throws BenutzerException 
      */
     private void terminTeilnehmerlisteBearbeiten(int terminID) throws RemoteException, BenutzerException, TerminException {
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = new Scanner(inputStream);
         String username, eingabe;
         
         System.out.println("\nTeilnehmerliste:");
@@ -1143,11 +1145,9 @@ public class TUI {
     }
 
     private void meldungen() throws RemoteException, BenutzerException, TerminException, DatumException, ZeitException {
-        Scanner scanner = new Scanner(System.in);
-        Scanner scanner2 =  new Scanner(System.in);
+        Scanner scanner = new Scanner(inputStream);
         int eingabe, i;
         boolean wiederholen = true;
-        String eingabe2;
             
         do{
 	    System.out.println("\n************ Meldungen ************\n");
@@ -1215,10 +1215,16 @@ public class TUI {
                     }
                     else{
                         System.out.println("\n" + stub.getMeldungen().get(i).text);
-                        System.out.print("Meldung löschen? (j/n): ");
-                        eingabe2 = scanner2.nextLine();
-                        if(eingabe2.equals("j")){
-                            stub.deleteMeldung(i);
+                        System.out.print("Meldung löschen? (ja=1): ");
+                        if(scanner.hasNextInt()){
+                            eingabe = scanner.nextInt();   
+                            if(eingabe == 1){
+                                stub.deleteMeldung(i);
+                            }
+                        }
+                        else{
+                            System.out.println("\n----> ungültige Eingabe!");
+                            scanner.next();
                         }
                     }     
                 }
