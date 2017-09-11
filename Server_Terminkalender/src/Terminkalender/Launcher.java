@@ -583,6 +583,6 @@ public class Launcher implements LauncherInterface{
                 return sitzung.getEingeloggterBenutzer();
             }
         }
-        throw new BenutzerException("noch nicht eingeloggt");
+        throw new BenutzerException("ungültige Sitzungs-ID");
     }
 }
