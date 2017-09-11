@@ -1,11 +1,6 @@
 /*
  * ToDo und Bugs:
  *
- * Monats & Wochenansicht
- * termine nach datum sortieren
- *
- * Meldungen:
- * meldung muss entfernt werden, falls man über monatsansicht geht
  */
 package Terminkalender;
 
@@ -764,13 +759,13 @@ public class TUI {
                 System.out.println("Start: " + stub.getTermin(terminID).getBeginn().toString());
                 System.out.println("Ende:: " + stub.getTermin(terminID).getEnde().toString());
                 if(stub.getTermin(terminID).getNotiz().length() > 20){
-                    System.out.println("Notiz: " + stub.getTermin(terminID).getNotiz().substring(0, 20) + "...");
+                    System.out.println("Notiz: " + stub.getTermin(terminID).getNotiz().substring(0, 20) + "...(5)");
                 }
                 else{
-                    System.out.println("Notiz: " + stub.getTermin(terminID).getNotiz());
+                    System.out.println("Notiz: " + stub.getTermin(terminID).getNotiz() + "(5)");
                 }
                 System.out.println("Ort: " + stub.getTermin(terminID).getOrt());
-                System.out.println("Teilnehmer anzeigen");
+                System.out.println("Teilnehmer anzeigen(7)");
                 if(stub.getTermin(terminID).getEditierbar()){
                     System.out.println("Bearbeitungsrecht: Jeder");
                 }
@@ -778,8 +773,7 @@ public class TUI {
                     System.out.println("Bearbeitungsrecht: Terminersteller");
                 }      
                 System.out.println("Terminersteller: " + stub.getTermin(terminID).getOwner());
-                System.out.println("Termin zusagen(1)");
-                System.out.println("Termin ablehnen(2)");
+                System.out.println("Termin löschen");
                 System.out.println("zurück(0)");
                 System.out.print("Eingabe: ");
                 
@@ -789,13 +783,11 @@ public class TUI {
                         case 0:
                             wiederholen = false;
                             break;
-                        case 1:
-                            stub.terminAnnehmen(terminID);
-                            teilnehmer = true;
+                        case 5:
+                            terminNotizAnzeigen(terminID);
                             break;
-                        case 2:
-                            stub.terminAblehnen(terminID);
-                            wiederholen = false;
+                        case 7:
+                            terminTeilnehmerAnzeigen(terminID);
                             break;
                         default:    
                             System.out.println("\n-----> Ungueltige Eingabe!");
@@ -805,8 +797,7 @@ public class TUI {
                 else{
                     System.out.println("\n-----> Ungueltige Eingabe!");
                     scanner.next();
-                } 
-                
+                }         
             }          
             else{
                 System.out.println("\n************ Terminansicht ************\n");
@@ -1001,6 +992,22 @@ public class TUI {
             }  
         }
     }
+    
+    /**
+     * TUI um Notiz eines Termins anzuzeigen
+     * 
+     * @param terminID
+     * @throws BenutzerException
+     * @throws RemoteException
+     * @throws TerminException 
+     */
+    private void terminNotizAnzeigen(int terminID) throws BenutzerException, RemoteException, TerminException {
+        Scanner scanner = new Scanner(inputStream);
+        
+        System.out.println("\n" + stub.getTermin(terminID).getNotiz()); 
+        System.out.print("\nEingabe betätigen um zurück zu gelangen: ");
+        scanner.next();
+    }
 
     /**
      * TUI zum Bearbeiten der Startzeit eines Termins
@@ -1143,11 +1150,38 @@ public class TUI {
             }    
         }
     }
+    
+    /**
+     * TUI um Teilnehmer eines Termins anzuzeigen
+     * 
+     * @param terminID
+     * @throws RemoteException
+     * @throws BenutzerException
+     * @throws TerminException 
+     */
+    private void terminTeilnehmerAnzeigen(int terminID) throws RemoteException, BenutzerException, TerminException {
+        Scanner scanner = new Scanner(inputStream);
+        
+        System.out.println("\nTeilnehmerliste:");
+        for(Teilnehmer teilnehmer : stub.getTermin(terminID).getTeilnehmerliste()){
+            System.out.print(teilnehmer.getUsername());
+            if(teilnehmer.checkIstTeilnehmer()){
+                System.out.println(" (nimmt Teil)");
+            }
+            else{
+                System.out.println(" (noch offen)");
+            }
+        }
+        System.out.print("\nEingabe betätigen um zurück zu gelangen: ");
+        scanner.nextLine();     
+    }
 
     private void meldungen() throws RemoteException, BenutzerException, TerminException, DatumException, ZeitException {
         Scanner scanner = new Scanner(inputStream);
         int eingabe, i;
         boolean wiederholen = true;
+        LocalDate ld = LocalDate.now();
+        Datum heute = new Datum(ld.getDayOfMonth(), ld.getMonthValue(), ld.getYear());
             
         do{
 	    System.out.println("\n************ Meldungen ************\n");
@@ -1182,7 +1216,7 @@ public class TUI {
                         System.out.println("\n" + ((Anfrage)stub.getMeldungen().get(i)).getText());
                         System.out.println("1 - Termin annehmen");
                         System.out.println("2 - Termin ablehnen");
-                        System.out.println("3 - Termin im Kalender anzeigen");
+                        System.out.println("3 - alle Termin dieses Tages anzeigen");
                         System.out.println("0 - zurück");
                         System.out.print("Eingabe: ");
                         if(scanner.hasNextInt()){
@@ -1199,7 +1233,7 @@ public class TUI {
                                     System.out.println("\n----> Termin abgelehnt!");
                                     break;
                                 case 3:
-                                    monatsansicht(((Anfrage)stub.getMeldungen().get(i)).getTermin().getDatum().getMonat(), ((Anfrage)stub.getMeldungen().get(i)).getTermin().getDatum().getJahr());
+                                    termineDesTagesAnzeigen(heute);
                                     break;
                                 case 0 :
                                     break;
@@ -1247,6 +1281,58 @@ public class TUI {
      */
     private void entwicklerTools() {
         
+    }
+
+    /**
+     * TUI zum Anzeigen aller Termine eines Tages (für Meldungen)
+     * 
+     * @param heute
+     * @throws RemoteException
+     * @throws TerminException
+     * @throws BenutzerException
+     * @throws Terminkalender.Zeit.ZeitException 
+     */
+    private void termineDesTagesAnzeigen(Datum heute) throws RemoteException, TerminException, BenutzerException, ZeitException {
+        Scanner scanner = new Scanner(inputStream);
+        LinkedList<Termin> dieserTag;
+        boolean nochmal = true;
+        int eingabe, i;
+        
+        try {
+            do{
+                i = 1;
+                dieserTag = stub.getTermineAmTag(heute);
+                System.out.println("\n-----> " + dieserTag.size() + " Termine am " + heute.toString() + ":");
+
+                for(Termin termin : dieserTag){
+                    System.out.println(i + " - " + termin.getTitel() + " " + termin.getDatum().toString() + " " + termin.getBeginn().toString());
+                    i++;
+                }
+            
+                System.out.println("\nx - Termin 'x' anzeigen");
+                System.out.println("0 - zurück");
+                System.out.print("Eingabe: ");
+                
+                if(scanner.hasNextInt()){
+                    eingabe = scanner.nextInt();
+                    if(eingabe == 0){
+                        nochmal = false;
+                    }
+                    else if(eingabe > 0 && eingabe <= dieserTag.size()){
+                        terminAnzeigenBearbeiten(dieserTag.get(eingabe - 1).getID());
+                    }
+                    else{
+                        System.out.println("\n----> ungültige Eingabe!");
+                    }
+                }
+                else{
+                    scanner.next();
+                    System.out.println("\n----> ungültige Eingabe!");
+                }        
+            } while(nochmal); 
+        } catch (DatumException e) {
+            System.out.println(e.getMessage());
+        }    
     }
 
     
