@@ -804,7 +804,7 @@ public class TUI {
                 System.out.println("Titel: " + stub.getTermin(terminID).getTitel() + "(1)");
                 System.out.println("Datum: " + stub.getTermin(terminID).getDatum().toString() + "(2)");
                 System.out.println("Start: " + stub.getTermin(terminID).getBeginn().toString() + "(3)");
-                System.out.println("Ende:: " + stub.getTermin(terminID).getEnde().toString() + "(4)");
+                System.out.println("Ende: " + stub.getTermin(terminID).getEnde().toString() + "(4)");
                 if(stub.getTermin(terminID).getNotiz().length() > 20){
                     System.out.println("Notiz: " + stub.getTermin(terminID).getNotiz().substring(0, 20) + "...(5)");
                 }
@@ -1210,39 +1210,45 @@ public class TUI {
                         stub.setMeldungenGelesen(eingabe - 1);
                     }      
                     if(stub.getMeldungen().get(eingabe - 1) instanceof Anfrage){
-                        System.out.println("\n" + ((Anfrage)stub.getMeldungen().get(eingabe - 1)).getText());
-                        System.out.println("1 - Termin annehmen");
-                        System.out.println("2 - Termin ablehnen");
-                        System.out.println("3 - alle Termin dieses Tages anzeigen");
-                        System.out.println("0 - zurück");
-                        System.out.print("Eingabe: ");
-                        if(scanner.hasNextInt()){
-                            i = scanner.nextInt();   
-                            switch(i){
-                                case 1:
-                                    stub.terminAnnehmen(((Anfrage)stub.getMeldungen().get(eingabe - 1)).getTermin().getID());
-                                    stub.deleteMeldung(eingabe - 1);
-                                    System.out.println("\n----> Termin zugesagt!");
-                                    break;
-                                case 2:
-                                    stub.terminAblehnen(((Anfrage)stub.getMeldungen().get(eingabe - 1)).getTermin().getID());
-                                    stub.deleteMeldung(eingabe - 1);
-                                    System.out.println("\n----> Termin abgelehnt!");
-                                    break;
-                                case 3:
-                                    termineDesTagesAnzeigen(((Anfrage)stub.getMeldungen().get(eingabe - 1)).getTermin().getDatum());
-                                    break;
-                                case 0 :
-                                    break;
-                                default:
-                                    System.out.println("\n----> ungültige Eingabe!");
-                                    break;          
+                        while(wiederholen){
+                            System.out.println("\n" + ((Anfrage)stub.getMeldungen().get(eingabe - 1)).getText());
+                            System.out.println("1 - Termin annehmen");
+                            System.out.println("2 - Termin ablehnen");
+                            System.out.println("3 - alle Termin dieses Tages anzeigen");
+                            System.out.println("0 - zurück");
+                            System.out.print("Eingabe: ");
+                            if(scanner.hasNextInt()){
+                                i = scanner.nextInt();   
+                                switch(i){
+                                    case 1:
+                                        stub.terminAnnehmen(((Anfrage)stub.getMeldungen().get(eingabe - 1)).getTermin().getID());
+                                        stub.deleteMeldung(eingabe - 1);
+                                        System.out.println("\n----> Termin zugesagt!");
+                                        wiederholen = false;
+                                        break;
+                                    case 2:
+                                        stub.terminAblehnen(((Anfrage)stub.getMeldungen().get(eingabe - 1)).getTermin().getID());
+                                        stub.deleteMeldung(eingabe - 1);
+                                        System.out.println("\n----> Termin abgelehnt!");
+                                        wiederholen = false;
+                                        break;
+                                    case 3:
+                                        termineDesTagesAnzeigen(((Anfrage)stub.getMeldungen().get(eingabe - 1)).getTermin().getDatum());
+                                        break;
+                                    case 0 :
+                                        wiederholen = false;
+                                        break;
+                                    default:
+                                        System.out.println("\n----> ungültige Eingabe!");
+                                        break;          
+                                }
+                            }
+                            else{
+                                System.out.println("\n----> ungültige Eingabe!");
+                                scanner.next();
                             }
                         }
-                        else{
-                            System.out.println("\n----> ungültige Eingabe!");
-                            scanner.next();
-                        }
+                        wiederholen = true;
                     }
                     else{
                         System.out.println("\n" + stub.getMeldungen().get(eingabe - 1).text);
@@ -1259,7 +1265,7 @@ public class TUI {
                         }
                     }     
                 }
-                if(eingabe == 0){
+                else if(eingabe == 0){
                     wiederholen = false;
                 }
             } 
