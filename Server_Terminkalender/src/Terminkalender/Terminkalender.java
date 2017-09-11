@@ -90,7 +90,7 @@ public class Terminkalender implements Serializable{
         LinkedList<Termin> monatsauszug = new LinkedList<>();
         
         for(Termin termin : terminkalender){
-            if(termin.getDatum() == datum){
+            if(termin.getDatum().equal(datum)){
                 monatsauszug.add(termin);         
             }
         }    
