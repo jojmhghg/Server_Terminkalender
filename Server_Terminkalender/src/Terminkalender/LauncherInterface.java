@@ -17,46 +17,46 @@ import java.util.LinkedList;
 public interface LauncherInterface extends Remote{
     /* initiale Methoden */
     public void createUser(String username, String passwort, String email) throws RemoteException, BenutzerException;
-    public boolean einloggen(String username, String passwort) throws RemoteException;
-    public void ausloggen() throws RemoteException;
+    public int einloggen(String username, String passwort) throws RemoteException, BenutzerException;
+    public void ausloggen(int sitzungsID) throws RemoteException;
     
     /* alles zu der Kontaktliste */
-    public void addKontakt(String username) throws RemoteException, BenutzerException;
-    public void removeKontakt(String username) throws BenutzerException, RemoteException;
-    public LinkedList<String> getKontakte() throws BenutzerException, RemoteException;
+    public void addKontakt(String username, int sitzungsID) throws RemoteException, BenutzerException;
+    public void removeKontakt(String username, int sitzungsID) throws BenutzerException, RemoteException;
+    public LinkedList<String> getKontakte(int sitzungsID) throws BenutzerException, RemoteException;
     
     /* alles zu den Benutzerdaten */
-    public void changePasswort(String altesPW, String neuesPW) throws RemoteException, BenutzerException;
-    public void changeVorname(String neuerVorname) throws RemoteException, BenutzerException;
-    public void changeNachname(String neuerNachname) throws RemoteException, BenutzerException;
-    public void changeEmail(String neueEmail) throws RemoteException, BenutzerException;
-    public String getUsername() throws RemoteException, BenutzerException;
-    public String getVorname() throws RemoteException, BenutzerException;
-    public String getNachname() throws RemoteException, BenutzerException;
-    public String getEmail() throws RemoteException, BenutzerException;
+    public void changePasswort(String altesPW, String neuesPW, int sitzungsID) throws RemoteException, BenutzerException;
+    public void changeVorname(String neuerVorname, int sitzungsID) throws RemoteException, BenutzerException;
+    public void changeNachname(String neuerNachname, int sitzungsID) throws RemoteException, BenutzerException;
+    public void changeEmail(String neueEmail, int sitzungsID) throws RemoteException, BenutzerException;
+    public String getUsername(int sitzungsID) throws RemoteException, BenutzerException;
+    public String getVorname(int sitzungsID) throws RemoteException, BenutzerException;
+    public String getNachname(int sitzungsID) throws RemoteException, BenutzerException;
+    public String getEmail(int sitzungsID) throws RemoteException, BenutzerException;
     
     /* alles zu Terminen */
-    public Termin getTermin(int TerminID) throws RemoteException, BenutzerException, TerminException;
-    public void addTermin(Termin termin) throws RemoteException, BenutzerException, TerminException; /* notwendig? */
-    public void addTermin(Datum datum, Zeit beginn, Zeit ende, String titel) throws RemoteException, BenutzerException, TerminException;
-    public void removeTermin(int id) throws RemoteException, BenutzerException, TerminException;
-    public void changeEditierrechte(boolean editierbar, int id) throws TerminException, BenutzerException, RemoteException;
-    public void changeTerminort(int id, String neuerOrt) throws BenutzerException, RemoteException, TerminException;
-    public void changeTermintitel(int id, String neuerTitel) throws BenutzerException, RemoteException, TerminException;
-    public void changeTerminnotiz(int id, String neueNotiz) throws BenutzerException, RemoteException, TerminException;
-    public void changeTerminende(int id, Zeit neuesEnde) throws BenutzerException, TerminException, RemoteException;
-    public void changeTerminbeginn(int id, Zeit neuerBeginn) throws BenutzerException, TerminException, RemoteException;  
-    public void changeTermindatum(int id, Datum neuesDatum) throws BenutzerException, RemoteException, TerminException;
-    public void addTerminteilnehmer(int id, String username) throws RemoteException, BenutzerException, TerminException;
-    public LinkedList<Termin> getTermineInKalenderwoche(int kalenderwoche, int jahr) throws RemoteException, BenutzerException;
-    public LinkedList<Termin> getTermineInMonat(int monat, int jahr) throws RemoteException, TerminException, BenutzerException;
-    public LinkedList<Termin> getTermineAmTag(Datum datum) throws RemoteException, TerminException, BenutzerException;
-    public void terminAnnehmen(int id) throws RemoteException, TerminException, BenutzerException;
-    public void terminAblehnen(int id) throws RemoteException, TerminException, BenutzerException;
+    public Termin getTermin(int TerminID, int sitzungsID) throws RemoteException, BenutzerException, TerminException;
+    public void addTermin(Termin termin, int sitzungsID) throws RemoteException, BenutzerException, TerminException; /* notwendig? */
+    public void addTermin(Datum datum, Zeit beginn, Zeit ende, String titel, int sitzungsID) throws RemoteException, BenutzerException, TerminException;
+    public void removeTermin(int id, int sitzungsID) throws RemoteException, BenutzerException, TerminException;
+    public void changeEditierrechte(boolean editierbar, int id, int sitzungsID) throws TerminException, BenutzerException, RemoteException;
+    public void changeTerminort(int id, String neuerOrt, int sitzungsID) throws BenutzerException, RemoteException, TerminException;
+    public void changeTermintitel(int id, String neuerTitel, int sitzungsID) throws BenutzerException, RemoteException, TerminException;
+    public void changeTerminnotiz(int id, String neueNotiz, int sitzungsID) throws BenutzerException, RemoteException, TerminException;
+    public void changeTerminende(int id, Zeit neuesEnde, int sitzungsID) throws BenutzerException, TerminException, RemoteException;
+    public void changeTerminbeginn(int id, Zeit neuerBeginn, int sitzungsID) throws BenutzerException, TerminException, RemoteException;  
+    public void changeTermindatum(int id, Datum neuesDatum, int sitzungsID) throws BenutzerException, RemoteException, TerminException;
+    public void addTerminteilnehmer(int id, String username, int sitzungsID) throws RemoteException, BenutzerException, TerminException;
+    public LinkedList<Termin> getTermineInKalenderwoche(int kalenderwoche, int jahr, int sitzungsID) throws RemoteException, BenutzerException;
+    public LinkedList<Termin> getTermineInMonat(int monat, int jahr, int sitzungsID) throws RemoteException, TerminException, BenutzerException;
+    public LinkedList<Termin> getTermineAmTag(Datum datum, int sitzungsID) throws RemoteException, TerminException, BenutzerException;
+    public void terminAnnehmen(int id, int sitzungsID) throws RemoteException, TerminException, BenutzerException;
+    public void terminAblehnen(int id, int sitzungsID) throws RemoteException, TerminException, BenutzerException;
     
     /* alles zu ausstehenden Meldungen */ 
-    public LinkedList<Meldungen> getMeldungen() throws RemoteException, BenutzerException;
-    public void deleteMeldung(int index) throws RemoteException, BenutzerException;
-    public void setMeldungenGelesen(int index) throws BenutzerException, RemoteException;
+    public LinkedList<Meldungen> getMeldungen(int sitzungsID) throws RemoteException, BenutzerException;
+    public void deleteMeldung(int index, int sitzungsID) throws RemoteException, BenutzerException;
+    public void setMeldungenGelesen(int index, int sitzungsID) throws BenutzerException, RemoteException;
 }
 
