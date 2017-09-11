@@ -76,8 +76,24 @@ public class Terminkalender implements Serializable{
             if(termin.getDatum().getMonat() == monat && termin.getDatum().getJahr() == jahr){
                 monatsauszug.add(termin);
             }
-        }
+        }    
+        return monatsauszug;
+    }
+    
+    /**
+     * 
+     * @param datum
+     * @return
+     * @throws TerminException 
+     */
+    public LinkedList<Termin> getTermineAmTag(Datum datum) throws TerminException{
+        LinkedList<Termin> monatsauszug = new LinkedList<>();
         
+        for(Termin termin : terminkalender){
+            if(termin.getDatum() == datum){
+                monatsauszug.add(termin);         
+            }
+        }    
         return monatsauszug;
     }
     
@@ -95,8 +111,7 @@ public class Terminkalender implements Serializable{
             if(termin.getDatum().getKalenderwoche() == kalenderwoche && termin.getDatum().getJahr() == jahr){
                 wochenauszug.add(termin);
             }
-        }
-        
+        }       
         return wochenauszug;
     }
 

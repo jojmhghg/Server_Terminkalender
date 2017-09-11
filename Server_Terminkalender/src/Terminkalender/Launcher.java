@@ -494,6 +494,21 @@ public class Launcher implements LauncherInterface{
     
     /**
      * 
+     * @param datum
+     * @return
+     * @throws TerminException
+     * @throws BenutzerException 
+     */
+    @Override
+    public LinkedList<Termin> getTermineAmTag(Datum datum) throws TerminException, BenutzerException{
+        if(!eingeloggt){
+            throw new BenutzerException("noch nicht eingeloggt");
+        }
+        return eingeloggterBenutzer.getTerminkalender().getTermineAmTag(datum);
+    }
+    
+    /**
+     * 
      * @param monat
      * @param jahr
      * @return
