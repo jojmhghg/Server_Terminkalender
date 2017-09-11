@@ -116,6 +116,9 @@ public class Datum implements Serializable{
         return this.tag + "." + this.monat + "." + this.jahr;
     }
     
+    public boolean equal(Datum datum){
+        return datum.getTag() == this.tag && datum.getMonat() == this.monat && datum.getJahr() == this.jahr;
+    }
     
     /**
      * testet ob übergebener Tag im Monat 'monat' und Jahr 'jahr' existiert

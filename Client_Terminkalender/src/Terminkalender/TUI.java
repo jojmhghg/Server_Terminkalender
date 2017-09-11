@@ -1180,8 +1180,6 @@ public class TUI {
         Scanner scanner = new Scanner(inputStream);
         int eingabe, i;
         boolean wiederholen = true;
-        LocalDate ld = LocalDate.now();
-        Datum heute = new Datum(ld.getDayOfMonth(), ld.getMonthValue(), ld.getYear());
             
         do{
 	    System.out.println("\n************ Meldungen ************\n");
@@ -1205,35 +1203,34 @@ public class TUI {
             System.out.println("\nNummer der Meldungen zum Lesen/Löschen eingeben oder '0' für zurück");
 	    System.out.print("Eingabe: ");
             
-            i--;
 	    if(scanner.hasNextInt()){
                 eingabe = scanner.nextInt();     
                 if(eingabe > 0 && eingabe <= stub.getMeldungen().size()){
-                    if(!stub.getMeldungen().get(i).getStatus()){ 
-                        stub.setMeldungenGelesen(i);
+                    if(!stub.getMeldungen().get(eingabe - 1).getStatus()){ 
+                        stub.setMeldungenGelesen(eingabe - 1);
                     }      
-                    if(stub.getMeldungen().get(i) instanceof Anfrage){
-                        System.out.println("\n" + ((Anfrage)stub.getMeldungen().get(i)).getText());
+                    if(stub.getMeldungen().get(eingabe - 1) instanceof Anfrage){
+                        System.out.println("\n" + ((Anfrage)stub.getMeldungen().get(eingabe - 1)).getText());
                         System.out.println("1 - Termin annehmen");
                         System.out.println("2 - Termin ablehnen");
                         System.out.println("3 - alle Termin dieses Tages anzeigen");
                         System.out.println("0 - zurück");
                         System.out.print("Eingabe: ");
                         if(scanner.hasNextInt()){
-                            eingabe = scanner.nextInt();   
-                            switch(eingabe){
+                            i = scanner.nextInt();   
+                            switch(i){
                                 case 1:
-                                    stub.terminAnnehmen(((Anfrage)stub.getMeldungen().get(i)).getTermin().getID());
-                                    stub.deleteMeldung(i);
+                                    stub.terminAnnehmen(((Anfrage)stub.getMeldungen().get(eingabe - 1)).getTermin().getID());
+                                    stub.deleteMeldung(eingabe - 1);
                                     System.out.println("\n----> Termin zugesagt!");
                                     break;
                                 case 2:
-                                    stub.terminAblehnen(((Anfrage)stub.getMeldungen().get(i)).getTermin().getID());
-                                    stub.deleteMeldung(i);
+                                    stub.terminAblehnen(((Anfrage)stub.getMeldungen().get(eingabe - 1)).getTermin().getID());
+                                    stub.deleteMeldung(eingabe - 1);
                                     System.out.println("\n----> Termin abgelehnt!");
                                     break;
                                 case 3:
-                                    termineDesTagesAnzeigen(heute);
+                                    termineDesTagesAnzeigen(((Anfrage)stub.getMeldungen().get(eingabe - 1)).getTermin().getDatum());
                                     break;
                                 case 0 :
                                     break;
@@ -1248,12 +1245,12 @@ public class TUI {
                         }
                     }
                     else{
-                        System.out.println("\n" + stub.getMeldungen().get(i).text);
+                        System.out.println("\n" + stub.getMeldungen().get(eingabe - 1).text);
                         System.out.print("Meldung löschen? (ja=1): ");
                         if(scanner.hasNextInt()){
                             eingabe = scanner.nextInt();   
                             if(eingabe == 1){
-                                stub.deleteMeldung(i);
+                                stub.deleteMeldung(eingabe - 1);
                             }
                         }
                         else{
@@ -1272,16 +1269,6 @@ public class TUI {
             }     
         } while(wiederholen);
     }
-    
-    
-    
-    
-    /**
-     * TUI zum Debuggen
-     */
-    private void entwicklerTools() {
-        
-    }
 
     /**
      * TUI zum Anzeigen aller Termine eines Tages (für Meldungen)
@@ -1296,7 +1283,7 @@ public class TUI {
         Scanner scanner = new Scanner(inputStream);
         LinkedList<Termin> dieserTag;
         boolean nochmal = true;
-        int eingabe, i;
+        int eingabe, i;  
         
         try {
             do{
@@ -1335,5 +1322,10 @@ public class TUI {
         }    
     }
 
-    
+    /**
+     * TUI zum Debuggen
+     */
+    private void entwicklerTools() {
+        
+    }
 }
