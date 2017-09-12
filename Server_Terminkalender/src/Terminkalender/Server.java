@@ -29,7 +29,7 @@ public class Server {
         Registry registry = LocateRegistry.createRegistry(1099);
         registry.bind("Terminkalender", stub);
             
-        System.out.println("Server lÃ¤uft!");
+        System.out.println("Server laueft!");
 
     }      
     
