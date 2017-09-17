@@ -71,6 +71,11 @@ public class Launcher implements LauncherInterface{
         }
     }
     
+    @Override
+    public void resetPassword(String username) throws BenutzerException{
+        benutzerliste.getBenutzer(username).resetPasswort();
+    }
+    
     /**
      * 
      * @param TerminID

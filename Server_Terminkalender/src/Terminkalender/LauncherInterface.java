@@ -19,6 +19,7 @@ public interface LauncherInterface extends Remote{
     public void createUser(String username, String passwort, String email) throws RemoteException, BenutzerException;
     public int einloggen(String username, String passwort) throws RemoteException, BenutzerException;
     public void ausloggen(int sitzungsID) throws RemoteException;
+    public void resetPassword(String username) throws RemoteException, BenutzerException;
     
     /* alles zu der Kontaktliste */
     public void addKontakt(String username, int sitzungsID) throws RemoteException, BenutzerException;

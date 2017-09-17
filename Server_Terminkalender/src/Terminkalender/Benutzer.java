@@ -7,6 +7,9 @@ package Terminkalender;
 
 import java.util.LinkedList;
 import java.io.Serializable;
+import java.util.Properties;
+import javax.mail.*;
+import javax.mail.internet.*;
 
 /**
  *
@@ -21,7 +24,6 @@ public class Benutzer implements Serializable{
     private String email;
     private String passwort;
     private Terminkalender terminkalender;
-    private LinkedList<Anfrage> terminanfragen;
     private LinkedList<String> kontaktliste; 
     private LinkedList<Meldungen> meldungen;
     
@@ -49,7 +51,6 @@ public class Benutzer implements Serializable{
         this.terminkalender = new Terminkalender(userID);
         this.kontaktliste = new LinkedList<>();
         this.meldungen = new LinkedList<>();
-        this.terminanfragen = new LinkedList<>();
     } 
     
     //Getter:
@@ -93,6 +94,29 @@ public class Benutzer implements Serializable{
             throw new BenutzerException("Das Passwort sollte zwischen 4 und 12 Zeichen lang sein");
         }
         this.passwort = neuesPasswort;
+    }
+    
+    public void resetPasswort(){
+        String newPW = "";
+        String to = "abcd@gmail.com";
+        String from = "web@gmail.com";
+        String host = "localhost";
+        Properties properties = System.getProperties();
+
+        properties.setProperty("mail.smtp.host", host);
+        Session session = Session.getDefaultInstance(properties);
+
+        try {
+            MimeMessage message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(from));
+            message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
+            message.setSubject("Passwort wurde erfolgreich zurückgesetzt!");
+            message.setText("Ihr Passwort wurde erfolgreich zurückgesetzt\nIhr neues Passwort lautet: " + newPW);
+            Transport.send(message);
+        }
+        catch (MessagingException e) {
+            System.out.println(e.getMessage());
+        }
     }
        
     /**
