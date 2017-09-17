@@ -97,21 +97,18 @@ public class Benutzer implements Serializable{
     }
     
     public void resetPasswort(){
-        String newPW = "";
-        String to = "abcd@gmail.com";
-        String from = "web@gmail.com";
-        String host = "localhost";
         Properties properties = System.getProperties();
-
-        properties.setProperty("mail.smtp.host", host);
+        properties.setProperty("mail.smtp.host", "smtp.gmail.de");
         Session session = Session.getDefaultInstance(properties);
 
+        passwort = "hallo123";
+        
         try {
             MimeMessage message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(from));
-            message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
+            message.setFrom(new InternetAddress("terminkalenderServiceTeam@gmail.com"));
+            message.addRecipient(Message.RecipientType.TO, new InternetAddress(email));
             message.setSubject("Passwort wurde erfolgreich zurückgesetzt!");
-            message.setText("Ihr Passwort wurde erfolgreich zurückgesetzt\nIhr neues Passwort lautet: " + newPW);
+            message.setText("Ihr Passwort wurde erfolgreich zurückgesetzt\nIhr neues Passwort lautet: " + passwort);
             Transport.send(message);
         }
         catch (MessagingException e) {
