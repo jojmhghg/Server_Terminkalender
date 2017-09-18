@@ -96,7 +96,7 @@ public class Benutzer implements Serializable{
         this.passwort = neuesPasswort;
     }
     
-    public void resetPasswort(){
+    public String resetPasswort(){
         Properties properties = System.getProperties();
         properties.setProperty("mail.smtp.host", "smtp.gmail.de");
         Session session = Session.getDefaultInstance(properties);
@@ -114,6 +114,8 @@ public class Benutzer implements Serializable{
         catch (MessagingException e) {
             System.out.println(e.getMessage());
         }
+        
+        return passwort;
     }
        
     /**

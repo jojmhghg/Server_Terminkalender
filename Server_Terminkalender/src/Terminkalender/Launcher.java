@@ -93,8 +93,7 @@ public class Launcher implements LauncherInterface{
      */
     @Override
     public void resetPassword(String username) throws BenutzerException, SQLException{
-        benutzerliste.getBenutzer(username).resetPasswort();
-        datenbank.resetPassword(username, "neuesPW1231");
+        datenbank.resetPassword(username, benutzerliste.getBenutzer(username).resetPasswort());
     }
     
     /**
