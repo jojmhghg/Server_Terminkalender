@@ -7,6 +7,7 @@ package Terminkalender;
  */
 
 import java.rmi.*;
+import java.sql.SQLException;
 import java.util.LinkedList;
 
 
@@ -16,10 +17,10 @@ import java.util.LinkedList;
  */
 public interface LauncherInterface extends Remote{
     /* initiale Methoden */
-    public void createUser(String username, String passwort, String email) throws RemoteException, BenutzerException;
+    public void createUser(String username, String passwort, String email) throws RemoteException, BenutzerException, SQLException;
     public int einloggen(String username, String passwort) throws RemoteException, BenutzerException;
     public void ausloggen(int sitzungsID) throws RemoteException;
-    public void resetPassword(String username) throws RemoteException, BenutzerException;
+    public void resetPassword(String username) throws RemoteException, BenutzerException, SQLException;
     
     /* alles zu der Kontaktliste */
     public void addKontakt(String username, int sitzungsID) throws RemoteException, BenutzerException;

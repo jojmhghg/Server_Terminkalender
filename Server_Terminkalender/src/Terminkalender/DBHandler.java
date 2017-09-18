@@ -3,14 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package terminkalender;
+package Terminkalender;
 
 /**
  *
  * @author Müller_Admin
  */
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -18,14 +16,18 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Base64;
 import java.util.Scanner;
 
 public class DBHandler {
-    boolean abfrage = true;
+    boolean abfrage;
     private static Connection con;
-    private static boolean hasData = false;
+    private static boolean hasData;
     ResultSet rs;
+    
+    public DBHandler(){
+        abfrage = true;
+        hasData = false;
+    }
     
     public void displayAuswahl() throws ClassNotFoundException, SQLException, NoSuchAlgorithmException{
         if(con == null){
@@ -38,9 +40,10 @@ public class DBHandler {
     }
     
     private void getConnection() throws ClassNotFoundException, SQLException, NoSuchAlgorithmException {
-       Class.forName("org.sqlite.JDBC");
-       con = DriverManager.getConnection("jdbc:sqlite:Kalender.db");
-       initialise();   
+        
+        Class.forName("org.sqlite.JDBC");
+        con = DriverManager.getConnection("jdbc:sqlite:Kalender.db");
+        initialise();  
     }
     
     private void initialise() throws SQLException, NoSuchAlgorithmException{
@@ -165,76 +168,27 @@ public class DBHandler {
                         + "foreign key(rausgeworfenerUserID) references user(userID),"
                         + "foreign key(terminID) references termin(terminID),"
                         + "primary key(meldungID, rausgeworfenerUserID, terminID))");
-                }
             }
-            while(abfrage){
-            dialog();
-            System.out.println("--------------------------------------------");
         }
     }
     
-    public void dialog() throws SQLException, NoSuchAlgorithmException{
-        System.out.print("(1) Neuen Benutzer anlegen\n(2) Neuen Termin anlegen\n(3) User zu Termin einladen\n(4) Termine von gewuenschtem User anzeigen\n"
-                + "(5) Alle Teilnehmer vom gewuenschten Termin anzeigen\n(6) Alle User anzeigen\n"
-                + "(7) Beenden und Ausgeben \nGewuenschte Operation angeben: ");
-        Scanner sc = new Scanner(System.in);
-        int operation = sc.nextInt();
+    public void addUser(String username, String passwort, String email, int idCounter) throws SQLException{
+        PreparedStatement prepuser = con.prepareStatement("INSERT INTO user values(?,?,?,?,?,?,?);");
         
-        switch(operation){
-            case 1:
-                addUser();
-                break;
-                
-            case 2:
-                addTermin(whoIsIt());
-                break;
-                
-            case 3:
-                addTeilnehmer();
-                break;
-                
-            case 4:
-                showTermine();
-                break;
-                
-            case 5:
-                showTeilnehmer();
-                break;
-               
-            case 6:
-                showUser();
-                break;
-                
-            case 7:
-                abfrage = false;
-                break;
-                
-            default:
-                System.out.println("Gewuenschte Operation gibt es nicht");
-        }
-    }
-    
-    public void addUser() throws SQLException, NoSuchAlgorithmException{
-        PreparedStatement prepuser = con.prepareStatement("INSERT INTO user values(?,?,?,?);");
-        Scanner sc = new Scanner(System.in);
-        System.out.print("Bitte Vorname eingeben: ");
-        String fName = sc.next();
-        System.out.print("Bitte Nachnamen eingeben: ");
-        String lName = sc.next();
-        System.out.print("Bitte Passwort eingeben: ");
-        String pw = sc.next();
-        
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
-        byte[] hash = digest.digest(pw.getBytes(StandardCharsets.UTF_8));
-        
-        byte[] encodedBytes = Base64.getEncoder().encode("hash".getBytes());
-        
-        String pwHash = new String(encodedBytes, StandardCharsets.UTF_8);
-        
-        prepuser.setString(2, fName);
-        prepuser.setString(3, lName);
-        prepuser.setString(4, pwHash);
+        prepuser.setString(2, username);
+        prepuser.setString(3, email);
+        prepuser.setString(4, "");
+        prepuser.setString(5, "");
+        prepuser.setString(6, passwort);
+        prepuser.setInt(7, idCounter);
         prepuser.execute(); 
+    }
+    
+    public void resetPassword(String username, String passwort) throws SQLException{
+        PreparedStatement prepResetPW = con.prepareStatement("UPDATE user SET pw = ? WHERE userName = ?");
+        prepResetPW.setString(1, passwort);
+        prepResetPW.setString(2, username);
+        prepResetPW.execute();      
     }
     
     public void addTermin(int userID) throws SQLException{

@@ -34,9 +34,12 @@ public class BenutzerListe implements Serializable{
         if(existiertBenutzer(username)){
             throw new BenutzerException(username + " existiert bereits!");
         }
-        //TODO: teste ob email in benutzerliste vorhanden ist, wenn ja: werfe Fehler
-        benutzerliste.add(new Benutzer(username, passwort, email, userIDCounter));
+        benutzerliste.add(new Benutzer(username, passwort, email, userIDCounter));      
         userIDCounter++;
+    }
+    
+    public int getIDCounter(){
+        return this.userIDCounter;
     }
     
     public boolean existiertBenutzer(String username){

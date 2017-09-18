@@ -5,7 +5,11 @@
  */
 package Terminkalender;
 
+import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -15,13 +19,21 @@ public class Launcher implements LauncherInterface{
     
     private BenutzerListe benutzerliste;
     // Liste mit Benutzer + SitzungID
-    private LinkedList<Sitzung> aktiveSitzungen;
-    int sitzungscounter;
+    private final LinkedList<Sitzung> aktiveSitzungen;
+    private int sitzungscounter;
+    private final DBHandler datenbank;
     
     public Launcher(){
+        datenbank = new DBHandler(); 
+        try {
+            datenbank.displayAuswahl();
+        } catch (ClassNotFoundException | SQLException | NoSuchAlgorithmException ex) {
+            Logger.getLogger(Launcher.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         aktiveSitzungen = new LinkedList<>();
-        ladeBenutzerliste();
         sitzungscounter = 1;
+        ladeBenutzerliste();
     }
 
     /**
@@ -43,10 +55,12 @@ public class Launcher implements LauncherInterface{
      * @param passwort
      * @param email
      * @throws BenutzerException 
+     * @throws java.sql.SQLException 
      */
     @Override
-    public void createUser(String username, String passwort, String email) throws BenutzerException{
+    public void createUser(String username, String passwort, String email) throws BenutzerException, SQLException{
         benutzerliste.addBenutzer(username, passwort, email);
+        datenbank.addUser(username, passwort, email, benutzerliste.getIDCounter()-1);
     }
     
     /**
@@ -71,9 +85,16 @@ public class Launcher implements LauncherInterface{
         }
     }
     
+    /**
+     * 
+     * @param username
+     * @throws BenutzerException
+     * @throws SQLException 
+     */
     @Override
-    public void resetPassword(String username) throws BenutzerException{
+    public void resetPassword(String username) throws BenutzerException, SQLException{
         benutzerliste.getBenutzer(username).resetPasswort();
+        datenbank.resetPassword(username, "neuesPW1231");
     }
     
     /**
