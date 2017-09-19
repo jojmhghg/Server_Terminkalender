@@ -6,7 +6,9 @@
 package Terminkalender;
 
 import Terminkalender.GUIPart.Fenster;
+import Terminkalender.GUIPart.Hauptfenster;
 import java.io.InputStream;
+import java.rmi.RemoteException;
 
 /**
  *
@@ -26,10 +28,49 @@ public class GUI {
         this.inputStream = System.in;
     }
     
-    public static void startGUI() {
+    public void startGUI(){
+        try{
+            guibildschirm();
+	}
+        
+	catch (RemoteException e){
+            System.err.println(e.getMessage());
+	}
+        
+        catch (BenutzerException e) {
+            System.err.println(e.getMessage());
+        }
+        
+        catch (TerminException e) {
+            System.err.println(e.getMessage());
+        } 
+        
+        catch (Datum.DatumException e) {
+            System.err.println(e.getMessage());
+        } 
+        
+        catch (Zeit.ZeitException e) {
+            System.err.println(e.getMessage());
+        }
+    }
+    
+    private void guibildschirm() throws RemoteException, BenutzerException, TerminException, Datum.DatumException, Zeit.ZeitException{ 
         Fenster start = new Fenster();
         start.setVisible(true);
         
+        String username;
+        String password;
+        
+        username = start.getTexte();
+        password = start.getTexte();
+        
+        if(stub.einloggen(username, password)) {
+            Hauptfenster start2 = new Hauptfenster();
+        }
+        
+        else {
+            
+        }
         
     }
     

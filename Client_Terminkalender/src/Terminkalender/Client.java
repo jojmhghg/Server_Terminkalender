@@ -5,7 +5,7 @@
  */
 package Terminkalender;
 
-import static Terminkalender.GUI.startGUI;
+//import Terminkalender.GUI.startGUI;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.*;
@@ -37,7 +37,8 @@ public class Client {
                 LauncherInterface stub = (LauncherInterface) registry.lookup("Terminkalender");
                 
                 System.out.println("Mit Server verbunden!"); 
-                startGUI();
+                GUI gui = new GUI(stub);
+                gui.startGUI();
                 TUI tui = new TUI(stub);
                 tui.start();
             } 
