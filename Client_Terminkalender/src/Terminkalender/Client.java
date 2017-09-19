@@ -5,6 +5,7 @@
  */
 package Terminkalender;
 
+import static Terminkalender.GUI.startGUI;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.*;
@@ -14,7 +15,7 @@ import java.rmi.registry.*;
  * @author Tim Meyer
  */
 public class Client {
-   
+    
     /**
      * @param args the command line arguments
      */
@@ -36,6 +37,7 @@ public class Client {
                 LauncherInterface stub = (LauncherInterface) registry.lookup("Terminkalender");
                 
                 System.out.println("Mit Server verbunden!"); 
+                startGUI();
                 TUI tui = new TUI(stub);
                 tui.start();
             } 
@@ -43,6 +45,7 @@ public class Client {
                 System.out.println("Exception: " + e.getMessage());
             }
         }
+        
     }
     
 }
