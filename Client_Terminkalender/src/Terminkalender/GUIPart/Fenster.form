@@ -121,11 +121,17 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Registrieren"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jRegistrierenActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="jBeenden">
       <Properties>
         <Property name="text" type="java.lang.String" value="Beenden"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jBeendenActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

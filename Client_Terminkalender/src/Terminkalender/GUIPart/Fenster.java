@@ -5,7 +5,6 @@
  */
 package Terminkalender.GUIPart;
 
-import Terminkalender.LauncherInterface;
 
 /**
  *
@@ -18,6 +17,24 @@ public class Fenster extends javax.swing.JFrame {
      */
     public Fenster() {
         initComponents();
+    }
+    
+    private String username, password;
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     /**
@@ -56,8 +73,18 @@ public class Fenster extends javax.swing.JFrame {
         });
 
         jRegistrieren.setText("Registrieren");
+        jRegistrieren.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRegistrierenActionPerformed(evt);
+            }
+        });
 
         jBeenden.setText("Beenden");
+        jBeenden.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jBeendenActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -116,14 +143,28 @@ public class Fenster extends javax.swing.JFrame {
 
     private void jAnmeldenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jAnmeldenActionPerformed
         // TODO add your handling code here:
-        String username, password;
+        
         username = this.jBenutzernameField.getText();
+        this.setUsername(username);
+        
         password = this.jPasswortField.getText();
+        this.setPassword(password);
         
         
         
     }//GEN-LAST:event_jAnmeldenActionPerformed
 
+    private void jRegistrierenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRegistrierenActionPerformed
+        // TODO add your handling code here:
+        Registrieren startReg = new Registrieren();
+        startReg.setVisible(true);
+    }//GEN-LAST:event_jRegistrierenActionPerformed
+
+    private void jBeendenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBeendenActionPerformed
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_jBeendenActionPerformed
+    
     /**
      * @param args the command line arguments
      */
