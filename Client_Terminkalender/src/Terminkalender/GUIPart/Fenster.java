@@ -5,6 +5,13 @@
  */
 package Terminkalender.GUIPart;
 
+import Terminkalender.BenutzerException;
+import Terminkalender.Datum;
+import Terminkalender.LauncherInterface;
+import Terminkalender.TerminException;
+import Terminkalender.Zeit;
+import java.rmi.RemoteException;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -12,29 +19,29 @@ package Terminkalender.GUIPart;
  */
 public class Fenster extends javax.swing.JFrame {
 
+    private final LauncherInterface stub;
+
     /**
      * Creates new form Fenster
+     *
+     * @param stub
      */
-    public Fenster() {
+    public Fenster(LauncherInterface stub) {
         initComponents();
-    }
-    
-    private String username, password;
-
-    public String getUsername() {
-        return username;
+        this.stub = stub;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    private Fenster() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public String getPassword() {
-        return password;
-    }
+    public void zuweisen(String username, String password) throws RemoteException, BenutzerException, TerminException, Datum.DatumException, Zeit.ZeitException {
 
-    public void setPassword(String password) {
-        this.password = password;
+        if (stub.einloggen(username, password)) {
+            JOptionPane.showInputDialog("Anmelden erfolgreich!");
+        } else {
+            JOptionPane.showInputDialog("Anmelden gescheitert!");
+        }
     }
 
     /**
@@ -143,15 +150,26 @@ public class Fenster extends javax.swing.JFrame {
 
     private void jAnmeldenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jAnmeldenActionPerformed
         // TODO add your handling code here:
-        
+        String username, password;
+
         username = this.jBenutzernameField.getText();
-        this.setUsername(username);
-        
+
         password = this.jPasswortField.getText();
-        this.setPassword(password);
+
         
-        
-        
+        try {
+            this.zuweisen(username, password);
+        } catch (RemoteException e) {
+            System.err.println(e.getMessage());
+        } catch (BenutzerException e) {
+            System.err.println(e.getMessage());
+        } catch (TerminException e) {
+            System.err.println(e.getMessage());
+        } catch (Datum.DatumException e) {
+            System.err.println(e.getMessage());
+        } catch (Zeit.ZeitException e) {
+            System.err.println(e.getMessage());
+        }
     }//GEN-LAST:event_jAnmeldenActionPerformed
 
     private void jRegistrierenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRegistrierenActionPerformed
@@ -162,9 +180,9 @@ public class Fenster extends javax.swing.JFrame {
 
     private void jBeendenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBeendenActionPerformed
         // TODO add your handling code here:
-        
+
     }//GEN-LAST:event_jBeendenActionPerformed
-    
+
     /**
      * @param args the command line arguments
      */

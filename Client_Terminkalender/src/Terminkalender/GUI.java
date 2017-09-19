@@ -71,22 +71,8 @@ public class GUI {
      * @throws Terminkalender.Zeit.ZeitException 
      */
     private void anmeldenGUI() throws RemoteException, BenutzerException, TerminException, Datum.DatumException, Zeit.ZeitException{ 
-        Fenster start = new Fenster();
+        Fenster start = new Fenster(stub);
         start.setVisible(true);
-        
-        String username;
-        String password;
-        
-        username = start.getUsername();
-        password = start.getPassword();
-        
-        if(stub.einloggen(username, password)) {
-            
-        }
-        
-        else {
-            System.out.println("\n-----> Anmelden gescheitert!");
-        }
         
     }
     
