@@ -60,7 +60,7 @@ public class Launcher implements LauncherInterface{
     @Override
     public void createUser(String username, String passwort, String email) throws BenutzerException, SQLException{
         benutzerliste.addBenutzer(username, passwort, email);
-        datenbank.addUser(username, passwort, email, benutzerliste.getBenutzer(username).getUserID(), benutzerliste.getBenutzer(username).getMeldungsCounter());
+        datenbank.addUser(username, passwort, email, benutzerliste.getBenutzer(username).getMeldungsCounter(), benutzerliste.getBenutzer(username).getUserID());
     }
     
     /**
@@ -566,15 +566,17 @@ public class Launcher implements LauncherInterface{
     /**
      * 
      * @param editierbar
-     * @param id
+     * @param terminID
      * @param sitzungsID
      * @throws TerminException 
      * @throws Terminkalender.BenutzerException 
+     * @throws java.sql.SQLException 
      */
     @Override
-    public void changeEditierrechte(boolean editierbar, int id, int sitzungsID) throws TerminException, BenutzerException{
+    public void changeEditierrechte(boolean editierbar, int terminID, int sitzungsID) throws TerminException, BenutzerException, SQLException{
         Benutzer eingeloggterBenutzer = istEingeloggt(sitzungsID);
-        eingeloggterBenutzer.getTerminkalender().getTerminByID(id).setEditierbar(editierbar, eingeloggterBenutzer.getUsername());
+        eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).setEditierbar(editierbar, eingeloggterBenutzer.getUsername());
+        datenbank.changeEditierrechte(editierbar, terminID);
     }
 
     /**

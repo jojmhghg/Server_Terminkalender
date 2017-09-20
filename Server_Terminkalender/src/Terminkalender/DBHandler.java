@@ -227,8 +227,16 @@ public class DBHandler {
         deleteTermin.execute(); 
     }
     
-    public void changeEditierrechte(boolean editierbar, int id, int sitzungsID) throws SQLException{
-        
+    public void changeEditierrechte(boolean editierbar, int terminID) throws SQLException{
+        PreparedStatement prepResetPW = con.prepareStatement("UPDATE termin SET editEveryone = ? WHERE terminID = ?");
+        if(editierbar){
+            prepResetPW.setInt(1, 1);
+        }
+        else{
+            prepResetPW.setInt(1, 0);
+        }
+        prepResetPW.setInt(2, terminID);
+        prepResetPW.execute();
     }
             
     public void changeTerminort(int terminID, String neuerOrt) throws SQLException{
@@ -253,7 +261,7 @@ public class DBHandler {
     }
     
     public void changeTerminende(int terminID, Zeit neuesEnde) throws  SQLException{
-        PreparedStatement prepResetPW = con.prepareStatement("UPDATE termin SET to_hours = ? AND to_minutes = ? WHERE terminID = ?");
+        PreparedStatement prepResetPW = con.prepareStatement("UPDATE termin SET to_hours = ?, to_minutes = ? WHERE terminID = ?");
         prepResetPW.setInt(1, neuesEnde.getStunde());
         prepResetPW.setInt(2, neuesEnde.getMinute());
         prepResetPW.setInt(2, terminID);
@@ -261,7 +269,7 @@ public class DBHandler {
     }
     
     public void changeTerminbeginn(int terminID, Zeit neuerBeginn) throws SQLException{
-        PreparedStatement prepResetPW = con.prepareStatement("UPDATE termin SET from_hours = ? AND from_minutes = ? WHERE terminID = ?");
+        PreparedStatement prepResetPW = con.prepareStatement("UPDATE termin SET from_hours = ?, from_minutes = ? WHERE terminID = ?");
         prepResetPW.setInt(1, neuerBeginn.getStunde());
         prepResetPW.setInt(2, neuerBeginn.getMinute());
         prepResetPW.setInt(2, terminID);
@@ -269,7 +277,7 @@ public class DBHandler {
     }
     
     public void changeTermindatum(int terminID, Datum neuesDatum) throws SQLException{
-        PreparedStatement prepResetPW = con.prepareStatement("UPDATE termin SET day = ? AND month = ? AND year = ? WHERE terminID = ?");
+        PreparedStatement prepResetPW = con.prepareStatement("UPDATE termin SET day = ?, month = ?, year = ? WHERE terminID = ?");
         prepResetPW.setInt(1, neuesDatum.getTag());
         prepResetPW.setInt(2, neuesDatum.getMonat());
         prepResetPW.setInt(2, neuesDatum.getJahr());
@@ -277,9 +285,6 @@ public class DBHandler {
         prepResetPW.execute(); 
     }
     
-    public void addTerminteilnehmer(int id, String username, int sitzungsID) throws SQLException{
-        
-    }
     public void terminAnnehmen(int id, int sitzungsID) throws SQLException{
         
     }
