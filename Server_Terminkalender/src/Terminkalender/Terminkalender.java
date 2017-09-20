@@ -45,11 +45,13 @@ public class Terminkalender implements Serializable{
      * @param ende
      * @param titel
      * @param username
+     * @return 
      * @throws TerminException 
      */
-    public void addTermin(Datum datum, Zeit beginn, Zeit ende, String titel, String username) throws TerminException{
+    public int addTermin(Datum datum, Zeit beginn, Zeit ende, String titel, String username) throws TerminException{
         terminkalender.add(new Termin(datum, beginn, ende, titel, idCounter, username));
         idCounter++;
+        return idCounter - 1;
     }
     
     /**

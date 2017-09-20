@@ -177,11 +177,13 @@ public class Benutzer implements Serializable{
      * @param beginn
      * @param ende
      * @param titel
+     * @return 
      * @throws TerminException 
      */
-    public void addTermin(Datum datum, Zeit beginn, Zeit ende, String titel) throws TerminException{
-        terminkalender.addTermin(datum, beginn, ende, titel, username);
+    public int addTermin(Datum datum, Zeit beginn, Zeit ende, String titel) throws TerminException{
+        return terminkalender.addTermin(datum, beginn, ende, titel, username);
     }
+
     
     /**
      * 
@@ -196,19 +198,23 @@ public class Benutzer implements Serializable{
      * 
      * @param termin
      * @param absender 
+     * @return  
      */
-    public void addAnfrage(Termin termin, String absender){
+    public int addAnfrage(Termin termin, String absender){
         meldungen.add(new Anfrage(absender + " lädt sie zu einem Termin ein" ,termin, absender, meldungsCounter));
         meldungsCounter++;
+        return meldungsCounter - 1;
     }
     
     /**
      *
      * @param meldung
+     * @return 
      */
-    public void addMeldung(String meldung){
+    public int addMeldung(String meldung){
         meldungen.add(new Meldungen(meldung, meldungsCounter));
         meldungsCounter++;
+        return meldungsCounter - 1;
     }
     
     /**

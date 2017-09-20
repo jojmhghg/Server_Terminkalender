@@ -60,7 +60,7 @@ public class Launcher implements LauncherInterface{
     @Override
     public void createUser(String username, String passwort, String email) throws BenutzerException, SQLException{
         benutzerliste.addBenutzer(username, passwort, email);
-        datenbank.addUser(username, passwort, email, benutzerliste.getIDCounter()-1, benutzerliste.getBenutzer(username).getUserID());
+        datenbank.addUser(username, passwort, email, benutzerliste.getBenutzer(username).getUserID(), benutzerliste.getBenutzer(username).getMeldungsCounter());
     }
     
     /**
@@ -118,11 +118,13 @@ public class Launcher implements LauncherInterface{
      * @param sitzungsID
      * @throws BenutzerException
      * @throws TerminException 
+     * @throws java.sql.SQLException 
      */
     @Override
-    public void addTermin(Termin termin, int sitzungsID) throws BenutzerException, TerminException{
+    public void addTermin(Termin termin, int sitzungsID) throws BenutzerException, TerminException, SQLException{
         Benutzer eingeloggterBenutzer = istEingeloggt(sitzungsID);
         eingeloggterBenutzer.getTerminkalender().addTermin(termin);
+        datenbank.addTermin(termin.getID(), sitzungsID, 0);
     }
     
     /**
@@ -135,160 +137,182 @@ public class Launcher implements LauncherInterface{
      * @param sitzungsID
      * @throws BenutzerException
      * @throws TerminException 
+     * @throws java.sql.SQLException 
      */
     @Override
-    public void addTermin(Datum datum, Zeit beginn, Zeit ende, String titel, int sitzungsID) throws BenutzerException, TerminException{
+    public void addTermin(Datum datum, Zeit beginn, Zeit ende, String titel, int sitzungsID) throws BenutzerException, TerminException, SQLException{
         Benutzer eingeloggterBenutzer = istEingeloggt(sitzungsID);
-        eingeloggterBenutzer.getTerminkalender().addTermin(datum, beginn, ende, titel, eingeloggterBenutzer.getUsername());
+        int terminID = eingeloggterBenutzer.getTerminkalender().addTermin(datum, beginn, ende, titel, eingeloggterBenutzer.getUsername());
+        datenbank.addnewTermin(datum, beginn, ende, titel, terminID, eingeloggterBenutzer.getUserID());
     }
     
     /**
      * entfernt den termin mit angegebener id
      * 
-     * @param id
+     * @param terminID
      * @param sitzungsID
      * @throws BenutzerException 
      * @throws Terminkalender.TerminException 
+     * @throws java.sql.SQLException 
      */
     @Override
-    public void removeTermin(int id, int sitzungsID) throws BenutzerException, TerminException{
+    public void removeTermin(int terminID, int sitzungsID) throws BenutzerException, TerminException, SQLException{
         Benutzer eingeloggterBenutzer = istEingeloggt(sitzungsID);
-        if(eingeloggterBenutzer.getUsername().equals(eingeloggterBenutzer.getTerminkalender().getTerminByID(id).getOwner())){
-            for(Teilnehmer teilnehmer : eingeloggterBenutzer.getTerminkalender().getTerminByID(id).getTeilnehmerliste()){      
-                if(!teilnehmer.getUsername().equals(eingeloggterBenutzer.getTerminkalender().getTerminByID(id).getOwner())){                                
-                    benutzerliste.getBenutzer(teilnehmer.getUsername()).getTerminkalender().removeTerminByID(id);
-                    benutzerliste.getBenutzer(teilnehmer.getUsername()).addMeldung(
+        if(eingeloggterBenutzer.getUsername().equals(eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).getOwner())){
+            for(Teilnehmer teilnehmer : eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).getTeilnehmerliste()){      
+                if(!teilnehmer.getUsername().equals(eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).getOwner())){                                
+                    benutzerliste.getBenutzer(teilnehmer.getUsername()).getTerminkalender().removeTerminByID(terminID);
+                    int meldungsID = benutzerliste.getBenutzer(teilnehmer.getUsername()).addMeldung(
                             eingeloggterBenutzer.getUsername() 
                             + " hat den Termin '" 
-                            + eingeloggterBenutzer.getTerminkalender().getTerminByID(id).getTitel()
+                            + eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).getTitel()
                             + "' am "
-                            + eingeloggterBenutzer.getTerminkalender().getTerminByID(id).getDatum().toString()
+                            + eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).getDatum().toString()
                             + " gelöscht");   
+                    datenbank.addMeldung(meldungsID, benutzerliste.getBenutzer(teilnehmer.getUsername()).getUserID());
                 }            
             }
+            datenbank.deleteTermin(terminID);
         }
         else{
-            for(Teilnehmer teilnehmer : eingeloggterBenutzer.getTerminkalender().getTerminByID(id).getTeilnehmerliste()){
+            datenbank.removeTermin(terminID, eingeloggterBenutzer.getUserID());
+            for(Teilnehmer teilnehmer : eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).getTeilnehmerliste()){
                 if(!eingeloggterBenutzer.getUsername().equals(teilnehmer.getUsername())){ 
-                    benutzerliste.getBenutzer(teilnehmer.getUsername()).addMeldung(
+                    int meldungsID = benutzerliste.getBenutzer(teilnehmer.getUsername()).addMeldung(
                             eingeloggterBenutzer.getUsername() 
                             + " nimmt nicht mehr an dem Termin '" 
-                            + eingeloggterBenutzer.getTerminkalender().getTerminByID(id).getTitel()
+                            + eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).getTitel()
                             + "' am "
-                            + eingeloggterBenutzer.getTerminkalender().getTerminByID(id).getDatum().toString()
+                            + eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).getDatum().toString()
                             + " teil"); 
+                    datenbank.addMeldung(meldungsID, benutzerliste.getBenutzer(teilnehmer.getUsername()).getUserID());
                 }
             }
             try {
-                eingeloggterBenutzer.getTerminkalender().getTerminByID(id).removeTeilnehmer(eingeloggterBenutzer.getUsername());
+                eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).removeTeilnehmer(eingeloggterBenutzer.getUsername());
             } catch (TerminException e) {
                 System.out.println(e.getMessage());
             }
         }  
-        eingeloggterBenutzer.getTerminkalender().removeTerminByID(id);
+        eingeloggterBenutzer.getTerminkalender().removeTerminByID(terminID);
     }
     
     /**
      * 
-     * @param id
+     * @param terminID
      * @param neuesDatum
      * @param sitzungsID
      * @throws BenutzerException 
      * @throws TerminException 
+     * @throws java.sql.SQLException 
      */
     @Override
-    public void changeTermindatum(int id, Datum neuesDatum, int sitzungsID) throws BenutzerException, TerminException{
+    public void changeTermindatum(int terminID, Datum neuesDatum, int sitzungsID) throws BenutzerException, TerminException, SQLException{
         Benutzer eingeloggterBenutzer = istEingeloggt(sitzungsID);
-        eingeloggterBenutzer.getTerminkalender().getTerminByID(id).setDatum(neuesDatum, eingeloggterBenutzer.getUsername());
+        eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).setDatum(neuesDatum, eingeloggterBenutzer.getUsername());
+        datenbank.changeTermindatum(terminID, neuesDatum);
     }
     
     /**
      * 
-     * @param id
+     * @param terminID
      * @param neuerBeginn
      * @param sitzungsID
      * @throws BenutzerException
      * @throws TerminException 
+     * @throws java.sql.SQLException 
      */
     @Override
-    public void changeTerminbeginn(int id, Zeit neuerBeginn, int sitzungsID) throws BenutzerException, TerminException{
+    public void changeTerminbeginn(int terminID, Zeit neuerBeginn, int sitzungsID) throws BenutzerException, TerminException, SQLException{
         Benutzer eingeloggterBenutzer = istEingeloggt(sitzungsID);
-        eingeloggterBenutzer.getTerminkalender().getTerminByID(id).setBeginn(neuerBeginn, eingeloggterBenutzer.getUsername());
+        eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).setBeginn(neuerBeginn, eingeloggterBenutzer.getUsername());
+        datenbank.changeTerminbeginn(terminID, neuerBeginn);
     }
     
     /**
      * 
-     * @param id
+     * @param terminID
      * @param neuesEnde
      * @param sitzungsID
      * @throws BenutzerException 
      * @throws TerminException 
+     * @throws java.sql.SQLException 
      */
     @Override
-    public void changeTerminende(int id, Zeit neuesEnde, int sitzungsID) throws BenutzerException, TerminException{
+    public void changeTerminende(int terminID, Zeit neuesEnde, int sitzungsID) throws BenutzerException, TerminException, SQLException{
         Benutzer eingeloggterBenutzer = istEingeloggt(sitzungsID);
-        eingeloggterBenutzer.getTerminkalender().getTerminByID(id).setEnde(neuesEnde, eingeloggterBenutzer.getUsername());
+        eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).setEnde(neuesEnde, eingeloggterBenutzer.getUsername());
+        datenbank.changeTerminende(terminID, neuesEnde);
     }
     
     /**
      * 
-     * @param id
+     * @param terminID
      * @param neueNotiz
      * @param sitzungsID
      * @throws BenutzerException 
      * @throws TerminException 
+     * @throws java.sql.SQLException 
      */
     @Override
-    public void changeTerminnotiz(int id, String neueNotiz, int sitzungsID) throws BenutzerException, TerminException{
+    public void changeTerminnotiz(int terminID, String neueNotiz, int sitzungsID) throws BenutzerException, TerminException, SQLException{
         Benutzer eingeloggterBenutzer = istEingeloggt(sitzungsID);
-        eingeloggterBenutzer.getTerminkalender().getTerminByID(id).setNotiz(neueNotiz, eingeloggterBenutzer.getUsername());
+        eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).setNotiz(neueNotiz, eingeloggterBenutzer.getUsername());
+        datenbank.changeTerminnotiz(terminID, neueNotiz);
     }
     
     /**
      * 
-     * @param id
+     * @param terminID
      * @param neuerTitel
      * @param sitzungsID
      * @throws BenutzerException 
      * @throws TerminException 
+     * @throws java.sql.SQLException 
      */
     @Override
-    public void changeTermintitel(int id, String neuerTitel, int sitzungsID) throws BenutzerException, TerminException{
+    public void changeTermintitel(int terminID, String neuerTitel, int sitzungsID) throws BenutzerException, TerminException, SQLException{
         Benutzer eingeloggterBenutzer = istEingeloggt(sitzungsID);
-        eingeloggterBenutzer.getTerminkalender().getTerminByID(id).setTitel(neuerTitel, eingeloggterBenutzer.getUsername());
+        eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).setTitel(neuerTitel, eingeloggterBenutzer.getUsername());
+        datenbank.changeTermintitel(terminID, neuerTitel);
     }
     
     /**
      * 
-     * @param id
+     * @param terminID
      * @param neuerOrt
      * @param sitzungsID
      * @throws BenutzerException 
      * @throws TerminException 
+     * @throws java.sql.SQLException 
      */
     @Override
-    public void changeTerminort(int id, String neuerOrt, int sitzungsID) throws BenutzerException, TerminException{
+    public void changeTerminort(int terminID, String neuerOrt, int sitzungsID) throws BenutzerException, TerminException, SQLException{
         Benutzer eingeloggterBenutzer = istEingeloggt(sitzungsID);
-        eingeloggterBenutzer.getTerminkalender().getTerminByID(id).setOrt(neuerOrt, eingeloggterBenutzer.getUsername());
+        eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).setOrt(neuerOrt, eingeloggterBenutzer.getUsername());
+        datenbank.changeTerminort(terminID, neuerOrt);
     }
     
     /**
      * 
-     * @param id
+     * @param terminID
      * @param username
      * @param sitzungsID
      * @throws BenutzerException 
      * @throws Terminkalender.TerminException 
+     * @throws java.sql.SQLException 
      */
     @Override
-    public void addTerminteilnehmer(int id, String username, int sitzungsID) throws BenutzerException, TerminException{
+    public void addTerminteilnehmer(int terminID, String username, int sitzungsID) throws BenutzerException, TerminException, SQLException{
         Benutzer eingeloggterBenutzer = istEingeloggt(sitzungsID);
         if(!benutzerliste.existiertBenutzer(username)){
             throw new BenutzerException("Benutzer: " + username + " exisitert nicht!");
         }
-        benutzerliste.getBenutzer(username).addAnfrage(eingeloggterBenutzer.getTerminkalender().getTerminByID(id), eingeloggterBenutzer.getUsername());
-        benutzerliste.getBenutzer(username).addTermin(eingeloggterBenutzer.getTerminkalender().getTerminByID(id));
-        eingeloggterBenutzer.getTerminkalender().getTerminByID(id).addTeilnehmer(username);
+        int anfrageID = benutzerliste.getBenutzer(username).addAnfrage(eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID), eingeloggterBenutzer.getUsername());
+        benutzerliste.getBenutzer(username).addTermin(eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID));
+        datenbank.addTermin(terminID, benutzerliste.getBenutzer(username).getUserID(), 0);
+        datenbank.addAnfrage(anfrageID, benutzerliste.getBenutzer(username).getUserID(), terminID, eingeloggterBenutzer.getUserID());
+        eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).addTeilnehmer(username);
     }
     
     /**
@@ -351,14 +375,16 @@ public class Launcher implements LauncherInterface{
      * @param neuesPW
      * @param sitzungsID
      * @throws BenutzerException 
+     * @throws java.sql.SQLException 
      */
     @Override
-    public void changePasswort(String altesPW, String neuesPW, int sitzungsID) throws BenutzerException{
+    public void changePasswort(String altesPW, String neuesPW, int sitzungsID) throws BenutzerException, SQLException{
         Benutzer eingeloggterBenutzer = istEingeloggt(sitzungsID);
         if(!eingeloggterBenutzer.istPasswort(altesPW)){
             throw new BenutzerException("altes Passwort war falsch!");
         }
         eingeloggterBenutzer.setPasswort(neuesPW);
+        datenbank.changePasswort(neuesPW, eingeloggterBenutzer.getUserID());
     }
     
     /**
@@ -366,11 +392,13 @@ public class Launcher implements LauncherInterface{
      * @param neuerVorname
      * @param sitzungsID
      * @throws BenutzerException 
+     * @throws java.sql.SQLException 
      */
     @Override
-    public void changeVorname(String neuerVorname, int sitzungsID) throws BenutzerException{
+    public void changeVorname(String neuerVorname, int sitzungsID) throws BenutzerException, SQLException{
         Benutzer eingeloggterBenutzer = istEingeloggt(sitzungsID);
         eingeloggterBenutzer.setVorname(neuerVorname);
+        datenbank.changeVorname(neuerVorname, eingeloggterBenutzer.getUserID());
     }
     
     /**
@@ -378,11 +406,13 @@ public class Launcher implements LauncherInterface{
      * @param neuerNachname
      * @param sitzungsID
      * @throws BenutzerException 
+     * @throws java.sql.SQLException 
      */
     @Override
-    public void changeNachname(String neuerNachname, int sitzungsID) throws BenutzerException{
+    public void changeNachname(String neuerNachname, int sitzungsID) throws BenutzerException, SQLException{
         Benutzer eingeloggterBenutzer = istEingeloggt(sitzungsID);
         eingeloggterBenutzer.setNachname(neuerNachname);
+        datenbank.changeNachname(neuerNachname, eingeloggterBenutzer.getUserID());
     }
     
     /**
@@ -390,11 +420,13 @@ public class Launcher implements LauncherInterface{
      * @param neueEmail
      * @param sitzungsID
      * @throws BenutzerException 
+     * @throws java.sql.SQLException 
      */
     @Override
-    public void changeEmail(String neueEmail, int sitzungsID) throws BenutzerException{
+    public void changeEmail(String neueEmail, int sitzungsID) throws BenutzerException, SQLException{
         Benutzer eingeloggterBenutzer = istEingeloggt(sitzungsID);
         eingeloggterBenutzer.setEmail(neueEmail);
+        datenbank.changeEmail(neueEmail, eingeloggterBenutzer.getUserID());
     }
     
     /**
