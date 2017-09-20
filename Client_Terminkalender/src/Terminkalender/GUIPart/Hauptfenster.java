@@ -5,17 +5,27 @@
  */
 package Terminkalender.GUIPart;
 
+import Terminkalender.LauncherInterface;
+
 /**
  *
  * @author niroshan
  */
 public class Hauptfenster extends javax.swing.JFrame {
 
+    private final LauncherInterface stub;
+
     /**
      * Creates new form HauptFenster
+     * @param stub
      */
-    public Hauptfenster() {
+    public Hauptfenster(LauncherInterface stub) {
         initComponents();
+        this.stub = stub;
+    }
+    
+    private Hauptfenster() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     /**

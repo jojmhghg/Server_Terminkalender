@@ -34,13 +34,16 @@ public class Fenster extends javax.swing.JFrame {
     private Fenster() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+    
 
     public void zuweisen(String username, String password) throws RemoteException, BenutzerException, TerminException, Datum.DatumException, Zeit.ZeitException {
 
         if (stub.einloggen(username, password)) {
-            JOptionPane.showInputDialog("Anmelden erfolgreich!");
+            Hauptfenster start = new Hauptfenster(stub);
+            start.setVisible(true);
+            
         } else {
-            JOptionPane.showInputDialog("Anmelden gescheitert!");
+            JOptionPane.showMessageDialog(null, "Anmelden gescheitert!", "anmelden", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -57,10 +60,10 @@ public class Fenster extends javax.swing.JFrame {
         jPasswort = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jBenutzernameField = new javax.swing.JTextField();
-        jPasswortField = new javax.swing.JPasswordField();
         jAnmelden = new javax.swing.JButton();
         jRegistrieren = new javax.swing.JButton();
         jBeenden = new javax.swing.JButton();
+        jPasswortField = new javax.swing.JPasswordField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -69,8 +72,6 @@ public class Fenster extends javax.swing.JFrame {
         jPasswort.setText("Passwort");
 
         jLabel3.setText("jLabel3");
-
-        jPasswortField.setText("jPasswordField1");
 
         jAnmelden.setText("Anmelden");
         jAnmelden.addActionListener(new java.awt.event.ActionListener() {
@@ -105,23 +106,19 @@ public class Fenster extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jRegistrieren)
                         .addGap(18, 18, 18)
-                        .addComponent(jBeenden)
-                        .addGap(0, 0, Short.MAX_VALUE))
+                        .addComponent(jBeenden))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(333, 333, 333)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jPasswort)
-                                .addGap(49, 49, 49)
-                                .addComponent(jPasswortField))
+                                .addGap(18, 18, 18)
+                                .addComponent(jPasswortField, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabel3)
                             .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel3)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jBenutzername)
-                                        .addGap(49, 49, 49)
-                                        .addComponent(jBenutzernameField, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                .addGap(0, 0, Short.MAX_VALUE)))))
+                                .addComponent(jBenutzername)
+                                .addGap(49, 49, 49)
+                                .addComponent(jBenutzernameField, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -156,26 +153,25 @@ public class Fenster extends javax.swing.JFrame {
 
         password = this.jPasswortField.getText();
 
-        
         try {
             this.zuweisen(username, password);
         } catch (RemoteException e) {
-            System.err.println(e.getMessage());
+            JOptionPane.showInputDialog(e.getMessage());
         } catch (BenutzerException e) {
-            System.err.println(e.getMessage());
+            JOptionPane.showInputDialog(e.getMessage());
         } catch (TerminException e) {
-            System.err.println(e.getMessage());
+            JOptionPane.showInputDialog(e.getMessage());
         } catch (Datum.DatumException e) {
-            System.err.println(e.getMessage());
+            JOptionPane.showInputDialog(e.getMessage());
         } catch (Zeit.ZeitException e) {
-            System.err.println(e.getMessage());
+            JOptionPane.showInputDialog(e.getMessage());
         }
     }//GEN-LAST:event_jAnmeldenActionPerformed
 
     private void jRegistrierenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRegistrierenActionPerformed
         // TODO add your handling code here:
-        Registrieren startReg = new Registrieren();
-        startReg.setVisible(true);
+        Registrieren start = new Registrieren(stub);
+        start.setVisible(true);
     }//GEN-LAST:event_jRegistrierenActionPerformed
 
     private void jBeendenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBeendenActionPerformed

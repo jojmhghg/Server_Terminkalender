@@ -39,12 +39,13 @@
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace min="-2" pref="40" max="-2" attributes="0"/>
+                              <Component id="regAbbrButton" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="1" attributes="0">
+                              <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="regAbbrButton" min="-2" max="-2" attributes="0"/>
-                                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                      <Component id="regPasswordField" max="32767" attributes="0"/>
-                                      <Component id="regEmailField" max="32767" attributes="0"/>
-                                  </Group>
+                                  <Component id="regPasswordField" alignment="1" min="-2" pref="128" max="-2" attributes="0"/>
+                                  <Component id="regEmailField" alignment="1" min="-2" pref="128" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                       </Group>
@@ -105,9 +106,6 @@
     <Component class="javax.swing.JTextField" name="regUsernameField">
     </Component>
     <Component class="javax.swing.JPasswordField" name="regPasswordField">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="jPasswordField1"/>
-      </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="regEmailField">
     </Component>

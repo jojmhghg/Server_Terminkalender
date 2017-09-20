@@ -76,40 +76,4 @@ public class GUI {
         
     }
     
-    /**
-     * GUI zum Registrieren
-     * 
-     * 
-     */
-    private void registrierenGUI() throws RemoteException {
-        Registrieren registrieren = new Registrieren();
-        registrieren.setVisible(true);
-        
-        String username, password, email, again;
-        boolean wiederholen = false;
-        
-        do {
-            username = registrieren.getRegUsername();
-            password = registrieren.getRegUsername();
-            email = registrieren.getRegEmail();
-
-            try{
-                stub.createUser(username, password, email);
-            }
-            catch(BenutzerException e){
-                JOptionPane.showInputDialog(e.getMessage());
-            int input = JOptionPane.showOptionDialog(null, "Eingabe wiederholen?", "Registrieren", JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE, null, null, null);
-
-            if(input == JOptionPane.OK_OPTION)
-                wiederholen = true;
-            
-            else{
-                
-            }
-                JOptionPane.showInputDialog("Registrierung abgebrochen");
-            }
-            
-            
-        }while(wiederholen);
-    }
 }

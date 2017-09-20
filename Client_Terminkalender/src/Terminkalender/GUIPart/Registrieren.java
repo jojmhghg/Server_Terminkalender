@@ -5,43 +5,54 @@
  */
 package Terminkalender.GUIPart;
 
+import Terminkalender.BenutzerException;
+import Terminkalender.Datum;
+import Terminkalender.LauncherInterface;
+import Terminkalender.TerminException;
+import Terminkalender.Zeit;
+import java.rmi.RemoteException;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author niroshan
  */
 public class Registrieren extends javax.swing.JFrame {
 
+    private final LauncherInterface stub;
+
     /**
      * Creates new form Registrieren
+     *
+     * @param stub
      */
-    public Registrieren() {
-        initComponents();    
+    public Registrieren(LauncherInterface stub) {
+        initComponents();
+        this.stub = stub;
     }
-    
-    private String username, password, email;
-    
-    public void setRegUsername (String username){
-        this.username = username;
+
+    private Registrieren() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
-    public String getRegUsername () {
-        return username;
-    }
-    
-    public void setRegPassword (String password){
-        this.password = password;
-    }
-    
-    public String getRegPassword () {
-        return password;
-    }
-    
-    public void setRegEmail (String email){
-        this.email = email;
-    }
-    
-    public String getRegEmail () {
-        return email;
+
+    public void zuweisen(String username, String password, String email) throws RemoteException, BenutzerException, TerminException, Datum.DatumException, Zeit.ZeitException {
+
+        boolean wiederholen = false;
+
+        try {
+            stub.createUser(username, password, email);
+            JOptionPane.showMessageDialog(null, "Registrierung erfolgreich", "Registrieren", JOptionPane.INFORMATION_MESSAGE);
+            
+            regUsername.setText(null);
+            regPassword.setText(null);
+            regEmail.setText(null);
+
+            this.setVisible(false);
+            
+        } catch (BenutzerException e) {
+            //JOptionPane.showInputDialog();
+            JOptionPane.showMessageDialog(null,e.getMessage(), "Registrieren", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     /**
@@ -69,8 +80,6 @@ public class Registrieren extends javax.swing.JFrame {
         regPassword.setText("Passwort");
 
         regEmail.setText("email");
-
-        regPasswordField.setText("jPasswordField1");
 
         regButton.setText("registrieren");
         regButton.addActionListener(new java.awt.event.ActionListener() {
@@ -104,11 +113,12 @@ public class Registrieren extends javax.swing.JFrame {
                                 .addComponent(regUsernameField, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(40, 40, 40)
+                                .addComponent(regAbbrButton))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(regAbbrButton)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                        .addComponent(regPasswordField)
-                                        .addComponent(regEmailField))))))
+                                    .addComponent(regPasswordField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(regEmailField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(37, 37, 37)
                         .addComponent(regButton)))
@@ -141,16 +151,27 @@ public class Registrieren extends javax.swing.JFrame {
 
     private void regButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regButtonActionPerformed
         // TODO add your handling code here:
-        
+        String username, password, email;
+
         username = this.regUsernameField.getText();
-        this.setRegUsername(username);
-        
+
         password = this.regPasswordField.getText();
-        this.setRegPassword(password);
-        
+
         email = this.regEmailField.getText();
-        this.setRegEmail(password);
-        
+
+        try {
+            this.zuweisen(username, password, email);
+        } catch (RemoteException e) {
+            JOptionPane.showInputDialog(e.getMessage());
+        } catch (BenutzerException e) {
+            JOptionPane.showInputDialog(e.getMessage());
+        } catch (TerminException e) {
+            JOptionPane.showInputDialog(e.getMessage());
+        } catch (Datum.DatumException e) {
+            JOptionPane.showInputDialog(e.getMessage());
+        } catch (Zeit.ZeitException e) {
+            JOptionPane.showInputDialog(e.getMessage());
+        }
     }//GEN-LAST:event_regButtonActionPerformed
 
     private void regAbbrButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regAbbrButtonActionPerformed
@@ -158,10 +179,10 @@ public class Registrieren extends javax.swing.JFrame {
         regUsername.setText(null);
         regPassword.setText(null);
         regEmail.setText(null);
-        
+
         this.setVisible(false);
-        
-        
+
+
     }//GEN-LAST:event_regAbbrButtonActionPerformed
 
     /**
@@ -178,16 +199,24 @@ public class Registrieren extends javax.swing.JFrame {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
+
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Registrieren.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Registrieren.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Registrieren.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Registrieren.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Registrieren.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Registrieren.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Registrieren.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Registrieren.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
