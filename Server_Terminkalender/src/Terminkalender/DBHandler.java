@@ -108,6 +108,7 @@ public class DBHandler {
                 Statement statefreundschaftsanfrage = con.createStatement();
                 statefreundschaftsanfrage.execute("CREATE TABLE meldung(meldungsID integer,"
                         + "userID integer,"
+                        + "text varchar(60),"
                         + "terminID integer,"
                         + "absenderID integer,"
                         + "gelesen integer,"
@@ -292,14 +293,15 @@ public class DBHandler {
         
     }
     
-    public void addMeldung(int meldungsID, int userID) throws SQLException{
-        PreparedStatement prepResetPW = con.prepareStatement("INSERT INTO meldung values(?,?,?,?,?,?);");
+    public void addMeldung(int meldungsID, int userID, String text) throws SQLException{
+        PreparedStatement prepResetPW = con.prepareStatement("INSERT INTO meldung values(?,?,?,?,?,?,?);");
         prepResetPW.setInt(1, meldungsID);
         prepResetPW.setInt(2, userID);
-        prepResetPW.setInt(3, 0);
+        prepResetPW.setString(3, text);
         prepResetPW.setInt(4, 0);
         prepResetPW.setInt(5, 0);
         prepResetPW.setInt(6, 0);
+        prepResetPW.setInt(7, 0);
         prepResetPW.execute();
     }
     
@@ -307,10 +309,11 @@ public class DBHandler {
         PreparedStatement prepResetPW = con.prepareStatement("INSERT INTO meldung values(?,?,?,?,?,?);");
         prepResetPW.setInt(1, anfrageID);
         prepResetPW.setInt(2, userID);
-        prepResetPW.setInt(3, terminID);
-        prepResetPW.setInt(4, absenderID);
-        prepResetPW.setInt(5, 0);
-        prepResetPW.setInt(6, 1);
+        prepResetPW.setString(3, "");
+        prepResetPW.setInt(4, terminID);
+        prepResetPW.setInt(5, absenderID);
+        prepResetPW.setInt(6, 0);
+        prepResetPW.setInt(7, 1);
         prepResetPW.execute();
     }
     

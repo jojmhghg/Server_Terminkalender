@@ -162,14 +162,14 @@ public class Launcher implements LauncherInterface{
             for(Teilnehmer teilnehmer : eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).getTeilnehmerliste()){      
                 if(!teilnehmer.getUsername().equals(eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).getOwner())){                                
                     benutzerliste.getBenutzer(teilnehmer.getUsername()).getTerminkalender().removeTerminByID(terminID);
-                    int meldungsID = benutzerliste.getBenutzer(teilnehmer.getUsername()).addMeldung(
-                            eingeloggterBenutzer.getUsername() 
+                    String text = eingeloggterBenutzer.getUsername() 
                             + " hat den Termin '" 
                             + eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).getTitel()
                             + "' am "
                             + eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).getDatum().toString()
-                            + " gelöscht");   
-                    datenbank.addMeldung(meldungsID, benutzerliste.getBenutzer(teilnehmer.getUsername()).getUserID());
+                            + " gelöscht";
+                    int meldungsID = benutzerliste.getBenutzer(teilnehmer.getUsername()).addMeldung(text);   
+                    datenbank.addMeldung(meldungsID, benutzerliste.getBenutzer(teilnehmer.getUsername()).getUserID(), text);
                 }            
             }
             datenbank.deleteTermin(terminID);
@@ -178,14 +178,14 @@ public class Launcher implements LauncherInterface{
             datenbank.removeTermin(terminID, eingeloggterBenutzer.getUserID());
             for(Teilnehmer teilnehmer : eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).getTeilnehmerliste()){
                 if(!eingeloggterBenutzer.getUsername().equals(teilnehmer.getUsername())){ 
-                    int meldungsID = benutzerliste.getBenutzer(teilnehmer.getUsername()).addMeldung(
-                            eingeloggterBenutzer.getUsername() 
-                            + " nimmt nicht mehr an dem Termin '" 
+                    String text = eingeloggterBenutzer.getUsername() 
+                            + " hat den Termin '" 
                             + eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).getTitel()
                             + "' am "
                             + eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).getDatum().toString()
-                            + " teil"); 
-                    datenbank.addMeldung(meldungsID, benutzerliste.getBenutzer(teilnehmer.getUsername()).getUserID());
+                            + " gelöscht";
+                    int meldungsID = benutzerliste.getBenutzer(teilnehmer.getUsername()).addMeldung(text); 
+                    datenbank.addMeldung(meldungsID, benutzerliste.getBenutzer(teilnehmer.getUsername()).getUserID(), text);
                 }
             }
             try {
