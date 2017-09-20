@@ -15,8 +15,8 @@ class Anfrage extends Meldungen implements Serializable{
     private final Termin termin;
     private final String absender;
     
-    Anfrage(String text, Termin termin, String absender){
-        super(text);
+    Anfrage(String text, Termin termin, String absender, int meldungsID){
+        super(text, meldungsID);
         this.termin = termin;
         this.absender = absender;
     }

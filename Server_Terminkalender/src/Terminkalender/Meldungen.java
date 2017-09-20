@@ -14,10 +14,12 @@ import java.io.Serializable;
 public class Meldungen implements Serializable{
     protected final String text;
     protected boolean gelesen;
+    protected int meldungsID;
     
-    Meldungen(String text){
+    Meldungen(String text, int meldungsID){
         this.text = text;
         this.gelesen = false;
+        this.meldungsID = meldungsID;
     }
     
     public void meldungGelesen(){

@@ -26,6 +26,7 @@ public class Benutzer implements Serializable{
     private Terminkalender terminkalender;
     private LinkedList<String> kontaktliste; 
     private LinkedList<Meldungen> meldungen;
+    private int meldungsCounter;
     
     /**
      * 
@@ -51,6 +52,7 @@ public class Benutzer implements Serializable{
         this.terminkalender = new Terminkalender(userID);
         this.kontaktliste = new LinkedList<>();
         this.meldungen = new LinkedList<>();
+        this.meldungsCounter = 0;
     } 
     
     //Getter:
@@ -69,6 +71,9 @@ public class Benutzer implements Serializable{
     public String getEmail(){
         return email;
     } 
+    public int getMeldungsCounter(){
+        return meldungsCounter;
+    }
     public Terminkalender getTerminkalender(){
         return terminkalender;
     }
@@ -77,6 +82,10 @@ public class Benutzer implements Serializable{
     }
     public LinkedList<Meldungen> getMeldungen(){
         return meldungen;
+    }
+    
+    public int getUserID(){
+        return this.userID;
     }
     
     //Setter:
@@ -189,7 +198,8 @@ public class Benutzer implements Serializable{
      * @param absender 
      */
     public void addAnfrage(Termin termin, String absender){
-        meldungen.add(new Anfrage(absender + " lädt sie zu einem Termin ein" ,termin, absender));
+        meldungen.add(new Anfrage(absender + " lädt sie zu einem Termin ein" ,termin, absender, meldungsCounter));
+        meldungsCounter++;
     }
     
     /**
@@ -197,7 +207,8 @@ public class Benutzer implements Serializable{
      * @param meldung
      */
     public void addMeldung(String meldung){
-        meldungen.add(new Meldungen(meldung));
+        meldungen.add(new Meldungen(meldung, meldungsCounter));
+        meldungsCounter++;
     }
     
     /**

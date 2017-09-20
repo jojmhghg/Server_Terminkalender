@@ -23,8 +23,8 @@ public interface LauncherInterface extends Remote{
     public void resetPassword(String username) throws RemoteException, BenutzerException, SQLException;
     
     /* alles zu der Kontaktliste */
-    public void addKontakt(String username, int sitzungsID) throws RemoteException, BenutzerException;
-    public void removeKontakt(String username, int sitzungsID) throws BenutzerException, RemoteException;
+    public void addKontakt(String username, int sitzungsID) throws RemoteException, BenutzerException, SQLException;
+    public void removeKontakt(String username, int sitzungsID) throws BenutzerException, RemoteException, SQLException;
     public LinkedList<String> getKontakte(int sitzungsID) throws BenutzerException, RemoteException;
     
     /* alles zu den Benutzerdaten */
