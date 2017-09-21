@@ -265,7 +265,7 @@ public class DBHandler {
         PreparedStatement prepResetPW = con.prepareStatement("UPDATE termin SET to_hours = ?, to_minutes = ? WHERE terminID = ?");
         prepResetPW.setInt(1, neuesEnde.getStunde());
         prepResetPW.setInt(2, neuesEnde.getMinute());
-        prepResetPW.setInt(2, terminID);
+        prepResetPW.setInt(3, terminID);
         prepResetPW.execute(); 
     }
     
@@ -273,7 +273,7 @@ public class DBHandler {
         PreparedStatement prepResetPW = con.prepareStatement("UPDATE termin SET from_hours = ?, from_minutes = ? WHERE terminID = ?");
         prepResetPW.setInt(1, neuerBeginn.getStunde());
         prepResetPW.setInt(2, neuerBeginn.getMinute());
-        prepResetPW.setInt(2, terminID);
+        prepResetPW.setInt(3, terminID);
         prepResetPW.execute(); 
     }
     
@@ -281,16 +281,16 @@ public class DBHandler {
         PreparedStatement prepResetPW = con.prepareStatement("UPDATE termin SET day = ?, month = ?, year = ? WHERE terminID = ?");
         prepResetPW.setInt(1, neuesDatum.getTag());
         prepResetPW.setInt(2, neuesDatum.getMonat());
-        prepResetPW.setInt(2, neuesDatum.getJahr());
-        prepResetPW.setInt(2, terminID);
+        prepResetPW.setInt(3, neuesDatum.getJahr());
+        prepResetPW.setInt(4, terminID);
         prepResetPW.execute(); 
     }
     
-    public void terminAnnehmen(int id, int sitzungsID) throws SQLException{
-        
-    }
-    public void terminAblehnen(int id, int sitzungsID) throws SQLException{
-        
+    public void nimmtTeil(int terminID, int userID) throws SQLException{
+        PreparedStatement prepResetPW = con.prepareStatement("UPDATE terminkalender SET nimmtTeil = 1 WHERE terminID = ? AND userID = ?");
+        prepResetPW.setInt(1, terminID);
+        prepResetPW.setInt(2, userID);
+        prepResetPW.execute();
     }
     
     public void addMeldung(int meldungsID, int userID, String text) throws SQLException{

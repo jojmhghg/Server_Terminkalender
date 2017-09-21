@@ -317,56 +317,62 @@ public class Launcher implements LauncherInterface{
     
     /**
      * 
-     * @param id
+     * @param terminID
      * @param sitzungsID
      * @throws TerminException
      * @throws BenutzerException 
+     * @throws java.sql.SQLException 
      */
     @Override
-    public void terminAnnehmen(int id, int sitzungsID) throws TerminException, BenutzerException{
+    public void terminAnnehmen(int terminID, int sitzungsID) throws TerminException, BenutzerException, SQLException{
         Benutzer eingeloggterBenutzer = istEingeloggt(sitzungsID);
-        benutzerliste.getBenutzer(eingeloggterBenutzer.getUsername()).getTerminkalender().getTerminByID(id).changeTeilnehmerNimmtTeil(eingeloggterBenutzer.getUsername());
-        for(Teilnehmer teilnehmer : eingeloggterBenutzer.getTerminkalender().getTerminByID(id).getTeilnehmerliste()){
+        benutzerliste.getBenutzer(eingeloggterBenutzer.getUsername()).getTerminkalender().getTerminByID(terminID).changeTeilnehmerNimmtTeil(eingeloggterBenutzer.getUsername());
+        for(Teilnehmer teilnehmer : eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).getTeilnehmerliste()){
                 if(!eingeloggterBenutzer.getUsername().equals(teilnehmer.getUsername())){ 
-                    benutzerliste.getBenutzer(teilnehmer.getUsername()).addMeldung(
-                            eingeloggterBenutzer.getUsername() 
+                    String text= eingeloggterBenutzer.getUsername() 
                             + " nimmt an dem Termin '" 
-                            + eingeloggterBenutzer.getTerminkalender().getTerminByID(id).getTitel()
+                            + eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).getTitel()
                             + "' am "
-                            + eingeloggterBenutzer.getTerminkalender().getTerminByID(id).getDatum().toString()
-                            + " teil"); 
+                            + eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).getDatum().toString()
+                            + " teil";
+                    int meldungsID = benutzerliste.getBenutzer(teilnehmer.getUsername()).addMeldung(text); 
+                    datenbank.addMeldung(meldungsID, benutzerliste.getBenutzer(teilnehmer.getUsername()).getUserID(), text);
                 }
             }
+        datenbank.nimmtTeil(terminID, eingeloggterBenutzer.getUserID());
     }
     
     
     /**
      * 
-     * @param id
+     * @param terminID
      * @param sitzungsID
      * @throws TerminException
      * @throws BenutzerException 
+     * @throws java.sql.SQLException 
      */
     @Override
-    public void terminAblehnen(int id, int sitzungsID) throws TerminException, BenutzerException{
+    public void terminAblehnen(int terminID, int sitzungsID) throws TerminException, BenutzerException, SQLException{
         Benutzer eingeloggterBenutzer = istEingeloggt(sitzungsID);
-        for(Teilnehmer teilnehmer : eingeloggterBenutzer.getTerminkalender().getTerminByID(id).getTeilnehmerliste()){
+        for(Teilnehmer teilnehmer : eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).getTeilnehmerliste()){
             if(!eingeloggterBenutzer.getUsername().equals(teilnehmer.getUsername())){ 
-                benutzerliste.getBenutzer(teilnehmer.getUsername()).addMeldung(
-                        eingeloggterBenutzer.getUsername() 
+                String text = eingeloggterBenutzer.getUsername() 
                         + " hat den Termin '" 
-                        + eingeloggterBenutzer.getTerminkalender().getTerminByID(id).getTitel()
+                        + eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).getTitel()
                         + "' am "
-                        + eingeloggterBenutzer.getTerminkalender().getTerminByID(id).getDatum().toString()
-                        + " abgelehnt"); 
+                        + eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).getDatum().toString()
+                        + " abgelehnt";
+                int meldungsID = benutzerliste.getBenutzer(teilnehmer.getUsername()).addMeldung(text); 
+                datenbank.addMeldung(meldungsID, terminID, text);
             }
         }
         try {
-            eingeloggterBenutzer.getTerminkalender().getTerminByID(id).removeTeilnehmer(eingeloggterBenutzer.getUsername());
+            eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).removeTeilnehmer(eingeloggterBenutzer.getUsername());
         } catch (TerminException e) {
             System.out.println(e.getMessage());
         } 
-        eingeloggterBenutzer.getTerminkalender().removeTerminByID(id);
+        eingeloggterBenutzer.getTerminkalender().removeTerminByID(terminID);
+        datenbank.removeTermin(terminID, eingeloggterBenutzer.getUserID());
     }
     
     /**
@@ -626,7 +632,7 @@ public class Launcher implements LauncherInterface{
     }
 
     private void testliste(){
-        try {
+        /*try {
             benutzerliste.addBenutzer("timeyer", "test", "timeyer@email.de");
             benutzerliste.addBenutzer("sanja", "test", "sanja@email.de");
             benutzerliste.addBenutzer("marco", "test", "marco@email.de");
@@ -637,7 +643,7 @@ public class Launcher implements LauncherInterface{
         } catch (BenutzerException | Datum.DatumException | Zeit.ZeitException | TerminException e) {
             System.out.println(e.getMessage());
         }
-        
+        */
     }
 
     private Benutzer istEingeloggt(int sitzungsID) throws BenutzerException {
