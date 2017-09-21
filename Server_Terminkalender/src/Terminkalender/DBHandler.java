@@ -1,4 +1,4 @@
-/*
+ /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -323,5 +323,33 @@ public class DBHandler {
     
     public void setMeldungenGelesen(int index, int sitzungsID) throws SQLException{
         
+    }
+    
+    public ResultSet showTermine(int sitzungsID) throws SQLException{
+        Statement state = con.createStatement();
+        ResultSet res = state.executeQuery("Select * From termin\n" +
+        "Join usertermin on termin.terminID = usertermin.terminID\n" +
+        "Where usertermin.userID = " + sitzungsID);
+        return res;
+    }
+     
+    public ResultSet showUser(int sitzungsID) throws SQLException{
+        Statement state = con.createStatement();
+        ResultSet res = state.executeQuery("Select * FROM user\n" +
+                "Where userID = " + sitzungsID);
+        return res;
+    }
+    
+    public ResultSet showKontaktliste(int sitzungsID) throws SQLException{
+        Statement state = con.createStatement();
+        ResultSet res = state.executeQuery("Select * FROM kontaktliste\n" +
+                "Where userID = " + sitzungsID);
+        return res;
+    }
+    
+    public void showBenutzer(int sitzungsID) throws SQLException{
+        ResultSet termin = showTermine(sitzungsID);
+        ResultSet user = showUser(sitzungsID);
+        ResultSet kontaktliste = showKontaktliste(sitzungsID);
     }
 }
