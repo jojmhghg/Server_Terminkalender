@@ -1,4 +1,4 @@
-/*
+ /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -134,7 +134,7 @@ public class DBHandler {
     }
     
     public void resetPassword(String username, String passwort) throws SQLException{
-        PreparedStatement prepResetPW = con.prepareStatement("UPDATE user SET password = ? WHERE userName = ?");
+        PreparedStatement prepResetPW = con.prepareStatement("UPDATE user SET p = ? WHERE userName = ?");
         prepResetPW.setString(1, passwort);
         prepResetPW.setString(2, username);
         prepResetPW.execute();      
@@ -265,7 +265,7 @@ public class DBHandler {
         PreparedStatement prepResetPW = con.prepareStatement("UPDATE termin SET to_hours = ?, to_minutes = ? WHERE terminID = ?");
         prepResetPW.setInt(1, neuesEnde.getStunde());
         prepResetPW.setInt(2, neuesEnde.getMinute());
-        prepResetPW.setInt(3, terminID);
+        prepResetPW.setInt(2, terminID);
         prepResetPW.execute(); 
     }
     
@@ -273,7 +273,7 @@ public class DBHandler {
         PreparedStatement prepResetPW = con.prepareStatement("UPDATE termin SET from_hours = ?, from_minutes = ? WHERE terminID = ?");
         prepResetPW.setInt(1, neuerBeginn.getStunde());
         prepResetPW.setInt(2, neuerBeginn.getMinute());
-        prepResetPW.setInt(3, terminID);
+        prepResetPW.setInt(2, terminID);
         prepResetPW.execute(); 
     }
     
@@ -281,17 +281,16 @@ public class DBHandler {
         PreparedStatement prepResetPW = con.prepareStatement("UPDATE termin SET day = ?, month = ?, year = ? WHERE terminID = ?");
         prepResetPW.setInt(1, neuesDatum.getTag());
         prepResetPW.setInt(2, neuesDatum.getMonat());
-        prepResetPW.setInt(3, neuesDatum.getJahr());
-        prepResetPW.setInt(4, terminID);
+        prepResetPW.setInt(2, neuesDatum.getJahr());
+        prepResetPW.setInt(2, terminID);
         prepResetPW.execute(); 
     }
     
-    public void nimmtTeil(int terminID, int userID) throws SQLException{
-        PreparedStatement prepResetPW = con.prepareStatement("UPDATE terminkalender SET nimmtTeil = ? WHERE terminID = ? AND userID = ?");
-        prepResetPW.setInt(1, 1);
-        prepResetPW.setInt(2, terminID);
-        prepResetPW.setInt(3, userID);
-        prepResetPW.execute();
+    public void terminAnnehmen(int id, int sitzungsID) throws SQLException{
+        
+    }
+    public void terminAblehnen(int id, int sitzungsID) throws SQLException{
+        
     }
     
     public void addMeldung(int meldungsID, int userID, String text) throws SQLException{
@@ -307,7 +306,7 @@ public class DBHandler {
     }
     
     public void addAnfrage(int anfrageID, int userID, int terminID, int absenderID) throws SQLException{
-        PreparedStatement prepResetPW = con.prepareStatement("INSERT INTO meldung values(?,?,?,?,?,?,?);");
+        PreparedStatement prepResetPW = con.prepareStatement("INSERT INTO meldung values(?,?,?,?,?,?);");
         prepResetPW.setInt(1, anfrageID);
         prepResetPW.setInt(2, userID);
         prepResetPW.setString(3, "");
@@ -324,5 +323,33 @@ public class DBHandler {
     
     public void setMeldungenGelesen(int index, int sitzungsID) throws SQLException{
         
+    }
+    
+    public ResultSet showTermine(int userID) throws SQLException{
+        Statement state = con.createStatement();
+        ResultSet res = state.executeQuery("Select * From termin\n" +
+        "Join usertermin on termin.terminID = usertermin.terminID\n" +
+        "Where usertermin.userID = " + userID);
+        return res;
+    }
+     
+    public ResultSet showUser(int userID) throws SQLException{
+        Statement state = con.createStatement();
+        ResultSet res = state.executeQuery("Select * FROM user\n" +
+                "Where userID = " + userID);
+        return res;
+    }
+    
+    public ResultSet showKontaktliste(int userID) throws SQLException{
+        Statement state = con.createStatement();
+        ResultSet res = state.executeQuery("Select * FROM kontaktliste\n" +
+                "Where userID = " + userID);
+        return res;
+    }
+    
+    public void showBenutzer(int userID) throws SQLException{
+        ResultSet termin = showTermine(userID);
+        ResultSet user = showUser(userID);
+        ResultSet kontaktliste = showKontaktliste(userID);
     }
 }

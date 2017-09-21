@@ -52,8 +52,35 @@ public class Benutzer implements Serializable{
         this.terminkalender = new Terminkalender(userID);
         this.kontaktliste = new LinkedList<>();
         this.meldungen = new LinkedList<>();
-        this.meldungsCounter = 1 + userID * 1000000;
+        this.meldungsCounter = 1;
     } 
+    
+    /**
+     * 
+     * @param username
+     * @param passwort
+     * @param email
+     * @throws BenutzerException 
+     */
+    Benutzer(String username, String passwort, String email, int userID, String vorname, String nachname, int meldungsCounter) throws BenutzerException{
+        if(username.length() < 4 || username.length() > 12){
+            throw new BenutzerException("Der Username sollte zwischen 4 und 12 Zeichen lang sein");
+        }
+        if(passwort.length() < 4 || passwort.length() > 12){
+            throw new BenutzerException("Das Passwort sollte zwischen 4 und 12 Zeichen lang sein");
+        }
+        
+        this.userID = userID;
+        this.email = email;
+        this.username = username;
+        this.passwort = passwort;
+        this.nachname = nachname;
+        this.vorname = vorname;
+        this.terminkalender = new Terminkalender(userID);
+        this.kontaktliste = new LinkedList<>();
+        this.meldungen = new LinkedList<>();
+        this.meldungsCounter = meldungsCounter;
+    }
     
     //Getter:
     public String getUsername(){
