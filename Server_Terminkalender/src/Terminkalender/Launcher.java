@@ -308,11 +308,11 @@ public class Launcher implements LauncherInterface{
         if(!benutzerliste.existiertBenutzer(username)){
             throw new BenutzerException("Benutzer: " + username + " exisitert nicht!");
         }
+        eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).addTeilnehmer(username);
         int anfrageID = benutzerliste.getBenutzer(username).addAnfrage(eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID), eingeloggterBenutzer.getUsername());
-        benutzerliste.getBenutzer(username).addTermin(eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID));
+        benutzerliste.getBenutzer(username).addTermin(eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID));      
         datenbank.addTermin(terminID, benutzerliste.getBenutzer(username).getUserID(), 0);
         datenbank.addAnfrage(anfrageID, benutzerliste.getBenutzer(username).getUserID(), terminID, eingeloggterBenutzer.getUserID());
-        eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).addTeilnehmer(username);
     }
     
     /**
@@ -363,7 +363,7 @@ public class Launcher implements LauncherInterface{
                         + eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).getDatum().toString()
                         + " abgelehnt";
                 int meldungsID = benutzerliste.getBenutzer(teilnehmer.getUsername()).addMeldung(text); 
-                datenbank.addMeldung(meldungsID, terminID, text);
+                datenbank.addMeldung(meldungsID, benutzerliste.getBenutzer(teilnehmer.getUsername()).getUserID(), text);
             }
         }
         try {

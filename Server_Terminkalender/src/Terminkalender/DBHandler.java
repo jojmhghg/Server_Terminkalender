@@ -287,9 +287,10 @@ public class DBHandler {
     }
     
     public void nimmtTeil(int terminID, int userID) throws SQLException{
-        PreparedStatement prepResetPW = con.prepareStatement("UPDATE terminkalender SET nimmtTeil = 1 WHERE terminID = ? AND userID = ?");
-        prepResetPW.setInt(1, terminID);
-        prepResetPW.setInt(2, userID);
+        PreparedStatement prepResetPW = con.prepareStatement("UPDATE terminkalender SET nimmtTeil = ? WHERE terminID = ? AND userID = ?");
+        prepResetPW.setInt(1, 1);
+        prepResetPW.setInt(2, terminID);
+        prepResetPW.setInt(3, userID);
         prepResetPW.execute();
     }
     
@@ -306,7 +307,7 @@ public class DBHandler {
     }
     
     public void addAnfrage(int anfrageID, int userID, int terminID, int absenderID) throws SQLException{
-        PreparedStatement prepResetPW = con.prepareStatement("INSERT INTO meldung values(?,?,?,?,?,?);");
+        PreparedStatement prepResetPW = con.prepareStatement("INSERT INTO meldung values(?,?,?,?,?,?,?);");
         prepResetPW.setInt(1, anfrageID);
         prepResetPW.setInt(2, userID);
         prepResetPW.setString(3, "");
