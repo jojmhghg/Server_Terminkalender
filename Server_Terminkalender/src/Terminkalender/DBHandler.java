@@ -134,7 +134,7 @@ public class DBHandler {
     }
     
     public void resetPassword(String username, String passwort) throws SQLException{
-        PreparedStatement prepResetPW = con.prepareStatement("UPDATE user SET p = ? WHERE userName = ?");
+        PreparedStatement prepResetPW = con.prepareStatement("UPDATE user SET password = ? WHERE userName = ?");
         prepResetPW.setString(1, passwort);
         prepResetPW.setString(2, username);
         prepResetPW.execute();      
