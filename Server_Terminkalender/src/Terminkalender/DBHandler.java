@@ -141,87 +141,86 @@ public class DBHandler {
     }
     
     public void addKontakt(int userID, int kontaktID) throws SQLException{
-        PreparedStatement prepResetPW = con.prepareStatement("INSERT INTO kontaktliste values(?,?);");
-        prepResetPW.setInt(1, userID);
-        prepResetPW.setInt(2, kontaktID);
-        prepResetPW.execute();   
+        PreparedStatement prepAddKontakt = con.prepareStatement("INSERT INTO kontaktliste values(?,?);");
+        prepAddKontakt.setInt(1, userID);
+        prepAddKontakt.setInt(2, kontaktID);
+        prepAddKontakt.execute();   
     }
     
     public void removeKontakt(int userID, int kontaktID) throws SQLException{
-        PreparedStatement prepResetPW = con.prepareStatement("DELETE FROM kontaktliste WHERE userID = ? AND kontaktID = ?;");
+        PreparedStatement prepRemoveKontakt = con.prepareStatement("DELETE FROM kontaktliste WHERE userID = ? AND kontaktID = ?;");
         
-        prepResetPW.setInt(1, userID);
-        prepResetPW.setInt(2, kontaktID);
-        prepResetPW.execute(); 
+        prepRemoveKontakt.setInt(1, userID);
+        prepRemoveKontakt.setInt(2, kontaktID);
+        prepRemoveKontakt.execute(); 
     }
     
     public void changePasswort(String neuesPW, int userID) throws SQLException{
-        PreparedStatement prepResetPW = con.prepareStatement("UPDATE user SET password = ? WHERE userID = ?");
-        prepResetPW.setString(1, neuesPW);
-        prepResetPW.setInt(2, userID);
-        prepResetPW.execute(); 
+        PreparedStatement prepChangePasswort = con.prepareStatement("UPDATE user SET password = ? WHERE userID = ?");
+        prepChangePasswort.setString(1, neuesPW);
+        prepChangePasswort.setInt(2, userID);
+        prepChangePasswort.execute(); 
     }
     
     public void changeVorname(String neuerVorname, int userID) throws SQLException{
-        PreparedStatement prepResetPW = con.prepareStatement("UPDATE user SET name = ? WHERE userID = ?");
-        prepResetPW.setString(1, neuerVorname);
-        prepResetPW.setInt(2, userID);
-        prepResetPW.execute(); 
+        PreparedStatement prepChangeVorname = con.prepareStatement("UPDATE user SET name = ? WHERE userID = ?");
+        prepChangeVorname.setString(1, neuerVorname);
+        prepChangeVorname.setInt(2, userID);
+        prepChangeVorname.execute(); 
     }
     
     public void changeNachname(String neuerNachname, int userID) throws SQLException{
-        PreparedStatement prepResetPW = con.prepareStatement("UPDATE user SET lastname = ? WHERE userID = ?");
-        prepResetPW.setString(1, neuerNachname);
-        prepResetPW.setInt(2, userID);
-        prepResetPW.execute(); 
+        PreparedStatement prepChangeNachname = con.prepareStatement("UPDATE user SET lastname = ? WHERE userID = ?");
+        prepChangeNachname.setString(1, neuerNachname);
+        prepChangeNachname.setInt(2, userID);
+        prepChangeNachname.execute(); 
     }
     
     public void changeEmail(String neueEmail, int userID) throws SQLException{
-        PreparedStatement prepResetPW = con.prepareStatement("UPDATE user SET eMail = ? WHERE userID = ?");
-        prepResetPW.setString(1, neueEmail);
-        prepResetPW.setInt(2, userID);
-        prepResetPW.execute(); 
+        PreparedStatement prepChangeEmail = con.prepareStatement("UPDATE user SET eMail = ? WHERE userID = ?");
+        prepChangeEmail.setString(1, neueEmail);
+        prepChangeEmail.setInt(2, userID);
+        prepChangeEmail.execute(); 
     }
     
     public void addnewTermin(Datum datum, Zeit beginn, Zeit ende, String titel, int terminID, int userID) throws SQLException{
-        PreparedStatement prepResetPW = con.prepareStatement("INSERT INTO termin values(?,?,?,?,?,?,?,?,?,?,?,?,?);");
-        prepResetPW.setInt(1, terminID);
-        prepResetPW.setString(2, titel);
-        prepResetPW.setInt(3, datum.getTag());
-        prepResetPW.setInt(4, datum.getMonat());
-        prepResetPW.setInt(5, datum.getJahr());
-        prepResetPW.setInt(6, beginn.getStunde());
-        prepResetPW.setInt(7, beginn.getMinute());
-        prepResetPW.setInt(8, ende.getStunde());
-        prepResetPW.setInt(9, ende.getMinute());
-        prepResetPW.setString(10, "");
-        prepResetPW.setString(11, "");
-        prepResetPW.setInt(12, userID);
-        prepResetPW.setInt(13, 1);
-       
-        prepResetPW.execute();
+        PreparedStatement prepAddNewTermin = con.prepareStatement("INSERT INTO termin values(?,?,?,?,?,?,?,?,?,?,?,?,?);");
+        prepAddNewTermin.setInt(1, terminID);
+        prepAddNewTermin.setString(2, titel);
+        prepAddNewTermin.setInt(3, datum.getTag());
+        prepAddNewTermin.setInt(4, datum.getMonat());
+        prepAddNewTermin.setInt(5, datum.getJahr());
+        prepAddNewTermin.setInt(6, beginn.getStunde());
+        prepAddNewTermin.setInt(7, beginn.getMinute());
+        prepAddNewTermin.setInt(8, ende.getStunde());
+        prepAddNewTermin.setInt(9, ende.getMinute());
+        prepAddNewTermin.setString(10, "");
+        prepAddNewTermin.setString(11, "");
+        prepAddNewTermin.setInt(12, userID);
+        prepAddNewTermin.setInt(13, 1);
+        prepAddNewTermin.execute();
         addTermin(terminID, userID, 1);
     }
     
     public void addTermin(int terminID, int userID, int nimmtTeil) throws SQLException{
-        PreparedStatement prepResetPW = con.prepareStatement("INSERT INTO terminkalender values(?,?,?);");
-        prepResetPW.setInt(1, userID);
-        prepResetPW.setInt(2, terminID);
-        prepResetPW.setInt(3, nimmtTeil);
-        prepResetPW.execute();
+        PreparedStatement prepAddTermin = con.prepareStatement("INSERT INTO terminkalender values(?,?,?);");
+        prepAddTermin.setInt(1, userID);
+        prepAddTermin.setInt(2, terminID);
+        prepAddTermin.setInt(3, nimmtTeil);
+        prepAddTermin.execute();
     }
     
     public void removeTermin(int terminID, int userID) throws SQLException{
-        PreparedStatement prepResetPW = con.prepareStatement("DELETE FROM terminkalender WHERE userID = ? AND terminID = ?;");      
-        prepResetPW.setInt(1, userID);
-        prepResetPW.setInt(2, terminID);
-        prepResetPW.execute(); 
+        PreparedStatement prepRemoveTermin = con.prepareStatement("DELETE FROM terminkalender WHERE userID = ? AND terminID = ?;");      
+        prepRemoveTermin.setInt(1, userID);
+        prepRemoveTermin.setInt(2, terminID);
+        prepRemoveTermin.execute(); 
     }
     
     public void deleteTermin(int terminID) throws SQLException{
-        PreparedStatement removeTermin = con.prepareStatement("DELETE FROM terminkalender WHERE terminID = ?;");      
-        removeTermin.setInt(1, terminID);
-        removeTermin.execute(); 
+        PreparedStatement prepDeleteTermin = con.prepareStatement("DELETE FROM terminkalender WHERE terminID = ?;");      
+        prepDeleteTermin.setInt(1, terminID);
+        prepDeleteTermin.execute(); 
         
         PreparedStatement deleteTermin = con.prepareStatement("DELETE FROM termin WHERE terminID = ?;");      
         deleteTermin.setInt(1, terminID);
@@ -229,92 +228,109 @@ public class DBHandler {
     }
     
     public void changeEditierrechte(boolean editierbar, int terminID) throws SQLException{
-        PreparedStatement prepResetPW = con.prepareStatement("UPDATE termin SET editEveryone = ? WHERE terminID = ?");
+        PreparedStatement prepChangeEditierrechte = con.prepareStatement("UPDATE termin SET editEveryone = ? WHERE terminID = ?");
         if(editierbar){
-            prepResetPW.setInt(1, 1);
+            prepChangeEditierrechte.setInt(1, 1);
         }
         else{
-            prepResetPW.setInt(1, 0);
+            prepChangeEditierrechte.setInt(1, 0);
         }
-        prepResetPW.setInt(2, terminID);
-        prepResetPW.execute();
+        prepChangeEditierrechte.setInt(2, terminID);
+        prepChangeEditierrechte.execute();
     }
             
     public void changeTerminort(int terminID, String neuerOrt) throws SQLException{
-        PreparedStatement prepResetPW = con.prepareStatement("UPDATE termin SET location = ? WHERE terminID = ?");
-        prepResetPW.setString(1, neuerOrt);
-        prepResetPW.setInt(2, terminID);
-        prepResetPW.execute();
+        PreparedStatement prepChangeTerminort = con.prepareStatement("UPDATE termin SET location = ? WHERE terminID = ?");
+        prepChangeTerminort.setString(1, neuerOrt);
+        prepChangeTerminort.setInt(2, terminID);
+        prepChangeTerminort.execute();
     }
     
     public void changeTermintitel(int terminID, String neuerTitel) throws SQLException{
-        PreparedStatement prepResetPW = con.prepareStatement("UPDATE termin SET titel = ? WHERE terminID = ?");
-        prepResetPW.setString(1, neuerTitel);
-        prepResetPW.setInt(2, terminID);
-        prepResetPW.execute();
+        PreparedStatement prepChangeTermintitel = con.prepareStatement("UPDATE termin SET titel = ? WHERE terminID = ?");
+        prepChangeTermintitel.setString(1, neuerTitel);
+        prepChangeTermintitel.setInt(2, terminID);
+        prepChangeTermintitel.execute();
     }
     
     public void changeTerminnotiz(int terminID, String neueNotiz) throws  SQLException{
-        PreparedStatement prepResetPW = con.prepareStatement("UPDATE termin SET note = ? WHERE terminID = ?");
-        prepResetPW.setString(1, neueNotiz);
-        prepResetPW.setInt(2, terminID);
-        prepResetPW.execute();
+        PreparedStatement prepChangeTerminnotiz = con.prepareStatement("UPDATE termin SET note = ? WHERE terminID = ?");
+        prepChangeTerminnotiz.setString(1, neueNotiz);
+        prepChangeTerminnotiz.setInt(2, terminID);
+        prepChangeTerminnotiz.execute();
     }
     
     public void changeTerminende(int terminID, Zeit neuesEnde) throws  SQLException{
-        PreparedStatement prepResetPW = con.prepareStatement("UPDATE termin SET to_hours = ?, to_minutes = ? WHERE terminID = ?");
-        prepResetPW.setInt(1, neuesEnde.getStunde());
-        prepResetPW.setInt(2, neuesEnde.getMinute());
-        prepResetPW.setInt(2, terminID);
-        prepResetPW.execute(); 
+        PreparedStatement prepChangeTerminende = con.prepareStatement("UPDATE termin SET to_hours = ?, to_minutes = ? WHERE terminID = ?");
+        prepChangeTerminende.setInt(1, neuesEnde.getStunde());
+        prepChangeTerminende.setInt(2, neuesEnde.getMinute());
+        prepChangeTerminende.setInt(2, terminID);
+        prepChangeTerminende.execute(); 
     }
     
     public void changeTerminbeginn(int terminID, Zeit neuerBeginn) throws SQLException{
-        PreparedStatement prepResetPW = con.prepareStatement("UPDATE termin SET from_hours = ?, from_minutes = ? WHERE terminID = ?");
-        prepResetPW.setInt(1, neuerBeginn.getStunde());
-        prepResetPW.setInt(2, neuerBeginn.getMinute());
-        prepResetPW.setInt(2, terminID);
-        prepResetPW.execute(); 
+        PreparedStatement prepChangeTerminbeginn = con.prepareStatement("UPDATE termin SET from_hours = ?, from_minutes = ? WHERE terminID = ?");
+        prepChangeTerminbeginn.setInt(1, neuerBeginn.getStunde());
+        prepChangeTerminbeginn.setInt(2, neuerBeginn.getMinute());
+        prepChangeTerminbeginn.setInt(2, terminID);
+        prepChangeTerminbeginn.execute(); 
     }
     
     public void changeTermindatum(int terminID, Datum neuesDatum) throws SQLException{
-        PreparedStatement prepResetPW = con.prepareStatement("UPDATE termin SET day = ?, month = ?, year = ? WHERE terminID = ?");
-        prepResetPW.setInt(1, neuesDatum.getTag());
-        prepResetPW.setInt(2, neuesDatum.getMonat());
-        prepResetPW.setInt(2, neuesDatum.getJahr());
-        prepResetPW.setInt(2, terminID);
-        prepResetPW.execute(); 
+        PreparedStatement prepChangeTermin = con.prepareStatement("UPDATE termin SET day = ?, month = ?, year = ? WHERE terminID = ?");
+        prepChangeTermin.setInt(1, neuesDatum.getTag());
+        prepChangeTermin.setInt(2, neuesDatum.getMonat());
+        prepChangeTermin.setInt(2, neuesDatum.getJahr());
+        prepChangeTermin.setInt(2, terminID);
+        prepChangeTermin.execute(); 
     }
     
-    public void terminAnnehmen(int id, int sitzungsID) throws SQLException{
-        
-    }
-    public void terminAblehnen(int id, int sitzungsID) throws SQLException{
-        
+    public void nimmtTeil(int terminID, int userID) throws SQLException{
+        PreparedStatement prepNimmtTeil = con.prepareStatement("UPDATE terminkalender SET nimmtTeil = ? WHERE terminID = ? AND userID = ?");
+        prepNimmtTeil.setInt(1, 1);
+        prepNimmtTeil.setInt(2, terminID);
+        prepNimmtTeil.setInt(3, userID);
+        prepNimmtTeil.execute();
     }
     
     public void addMeldung(int meldungsID, int userID, String text) throws SQLException{
-        PreparedStatement prepResetPW = con.prepareStatement("INSERT INTO meldung values(?,?,?,?,?,?,?);");
-        prepResetPW.setInt(1, meldungsID);
-        prepResetPW.setInt(2, userID);
-        prepResetPW.setString(3, text);
-        prepResetPW.setInt(4, 0);
-        prepResetPW.setInt(5, 0);
-        prepResetPW.setInt(6, 0);
-        prepResetPW.setInt(7, 0);
-        prepResetPW.execute();
+        PreparedStatement prepAddMeldung = con.prepareStatement("INSERT INTO meldung values(?,?,?,?,?,?,?);");
+        prepAddMeldung.setInt(1, meldungsID);
+        prepAddMeldung.setInt(2, userID);
+        prepAddMeldung.setString(3, text);
+        prepAddMeldung.setInt(4, 0);
+        prepAddMeldung.setInt(5, 0);
+        prepAddMeldung.setInt(6, 0);
+        prepAddMeldung.setInt(7, 0);
+        prepAddMeldung.execute();
+        Statement state = con.createStatement();
+        ResultSet res;
+        res = state.executeQuery("SELECT meldungsCounter FROM user" +
+                "Where userID = " + userID);
+        int meldungsCounter = res.getInt("meldungsCounter");
+        PreparedStatement prepAddMeldungsCounter = con.prepareStatement("INSERT INTO user values(?,?,?,?,?,?,?);");
+        prepAddMeldungsCounter.setInt(7, (meldungsCounter + 1));
+        prepAddMeldungsCounter.execute();
     }
     
     public void addAnfrage(int anfrageID, int userID, int terminID, int absenderID) throws SQLException{
-        PreparedStatement prepResetPW = con.prepareStatement("INSERT INTO meldung values(?,?,?,?,?,?);");
-        prepResetPW.setInt(1, anfrageID);
-        prepResetPW.setInt(2, userID);
-        prepResetPW.setString(3, "");
-        prepResetPW.setInt(4, terminID);
-        prepResetPW.setInt(5, absenderID);
-        prepResetPW.setInt(6, 0);
-        prepResetPW.setInt(7, 1);
-        prepResetPW.execute();
+        PreparedStatement prepAddAnfrage = con.prepareStatement("INSERT INTO meldung values(?,?,?,?,?,?);");
+        prepAddAnfrage.setInt(1, anfrageID);
+        prepAddAnfrage.setInt(2, userID);
+        prepAddAnfrage.setString(3, "");
+        prepAddAnfrage.setInt(4, terminID);
+        prepAddAnfrage.setInt(5, absenderID);
+        prepAddAnfrage.setInt(6, 0);
+        prepAddAnfrage.setInt(7, 1);
+        prepAddAnfrage.execute();
+        Statement state = con.createStatement();
+        ResultSet res;
+        res = state.executeQuery("SELECT meldungsCounter FROM user" +
+                "Where userID = " + userID);
+        int meldungsCounter = res.getInt("meldungsCounter");
+        PreparedStatement prepAddMeldungsCounter = con.prepareStatement("INSERT INTO user values(?,?,?,?,?,?,?);");
+        prepAddMeldungsCounter.setInt(7, (meldungsCounter + 1));
+        prepAddMeldungsCounter.execute();
     }
     
     public void deleteMeldung(int index, int sitzungsID) throws SQLException{
@@ -332,7 +348,7 @@ public class DBHandler {
         "Where usertermin.userID = " + userID);
         return res;
     }
-     
+    
     public ResultSet showUser(int userID) throws SQLException{
         Statement state = con.createStatement();
         ResultSet res = state.executeQuery("Select * FROM user\n" +
@@ -352,4 +368,5 @@ public class DBHandler {
         ResultSet user = showUser(userID);
         ResultSet kontaktliste = showKontaktliste(userID);
     }
+    
 }
