@@ -333,6 +333,7 @@ public class DBHandler {
         prepAddMeldungsCounter.execute();
     }
     
+    
     public void deleteMeldung(int index, int sitzungsID) throws SQLException{
         
     }
