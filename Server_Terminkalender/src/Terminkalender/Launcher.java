@@ -26,7 +26,7 @@ public class Launcher implements LauncherInterface{
     public Launcher(){
         datenbank = new DBHandler(); 
         try {
-            datenbank.displayAuswahl();
+            datenbank.getConnection();
         } catch (ClassNotFoundException | SQLException | NoSuchAlgorithmException ex) {
             Logger.getLogger(Launcher.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -60,7 +60,7 @@ public class Launcher implements LauncherInterface{
     @Override
     public void createUser(String username, String passwort, String email) throws BenutzerException, SQLException{
         benutzerliste.addBenutzer(username, passwort, email);
-        datenbank.addUser(username, passwort, email, benutzerliste.getBenutzer(username).getMeldungsCounter(), benutzerliste.getBenutzer(username).getUserID());
+        datenbank.addUser(username, passwort, email, benutzerliste.getBenutzer(username).getMeldungsCounter(), benutzerliste.getBenutzer(username).getUserID(), benutzerliste.getBenutzer(username).getTerminCounter());
     }
     
     /**
@@ -79,8 +79,11 @@ public class Launcher implements LauncherInterface{
 
         try {
             benutzerliste.addBenutzer(datenbank.getBenutzer(username));
-        } catch (SQLException | DatenbankException ex) {
+            System.out.println(benutzerliste.getBenutzer(username).getUserID() + benutzerliste.getBenutzer(username).getEmail());
+        } catch (SQLException ex) {
             Logger.getLogger(Launcher.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (DatenbankException e) {
+            throw new BenutzerException(e.getMessage());
         }
 
         if(benutzerliste.existiertBenutzer(username)){
@@ -151,7 +154,7 @@ public class Launcher implements LauncherInterface{
     public void addTermin(Datum datum, Zeit beginn, Zeit ende, String titel, int sitzungsID) throws BenutzerException, TerminException, SQLException{
         Benutzer eingeloggterBenutzer = istEingeloggt(sitzungsID);
         int terminID = eingeloggterBenutzer.getTerminkalender().addTermin(datum, beginn, ende, titel, eingeloggterBenutzer.getUsername());
-        datenbank.addnewTermin(datum, beginn, ende, titel, terminID, eingeloggterBenutzer.getUserID());
+        datenbank.addnewTermin(datum, beginn, ende, titel, terminID, eingeloggterBenutzer.getUserID(), eingeloggterBenutzer.getTerminCounter());
     }
     
     /**
@@ -177,7 +180,7 @@ public class Launcher implements LauncherInterface{
                             + eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).getDatum().toString()
                             + " gelöscht";
                     int meldungsID = benutzerliste.getBenutzer(teilnehmer.getUsername()).addMeldung(text);   
-                    datenbank.addMeldung(meldungsID, benutzerliste.getBenutzer(teilnehmer.getUsername()).getUserID(), text);
+                    datenbank.addMeldung(meldungsID, benutzerliste.getBenutzer(teilnehmer.getUsername()).getUserID(), text, false);
                 }            
             }
             datenbank.deleteTermin(terminID);
@@ -193,7 +196,7 @@ public class Launcher implements LauncherInterface{
                             + eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).getDatum().toString()
                             + " gelöscht";
                     int meldungsID = benutzerliste.getBenutzer(teilnehmer.getUsername()).addMeldung(text); 
-                    datenbank.addMeldung(meldungsID, benutzerliste.getBenutzer(teilnehmer.getUsername()).getUserID(), text);
+                    datenbank.addMeldung(meldungsID, benutzerliste.getBenutzer(teilnehmer.getUsername()).getUserID(), text, false);
                 }
             }
             try {
@@ -344,7 +347,7 @@ public class Launcher implements LauncherInterface{
                             + eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).getDatum().toString()
                             + " teil";
                     int meldungsID = benutzerliste.getBenutzer(teilnehmer.getUsername()).addMeldung(text); 
-                    datenbank.addMeldung(meldungsID, benutzerliste.getBenutzer(teilnehmer.getUsername()).getUserID(), text);
+                    datenbank.addMeldung(meldungsID, benutzerliste.getBenutzer(teilnehmer.getUsername()).getUserID(), text, false);
                 }
             }
         datenbank.nimmtTeil(terminID, eingeloggterBenutzer.getUserID());
@@ -371,7 +374,7 @@ public class Launcher implements LauncherInterface{
                         + eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).getDatum().toString()
                         + " abgelehnt";
                 int meldungsID = benutzerliste.getBenutzer(teilnehmer.getUsername()).addMeldung(text); 
-                datenbank.addMeldung(meldungsID, benutzerliste.getBenutzer(teilnehmer.getUsername()).getUserID(), text);
+                datenbank.addMeldung(meldungsID, benutzerliste.getBenutzer(teilnehmer.getUsername()).getUserID(), text, false);
             }
         }
         try {

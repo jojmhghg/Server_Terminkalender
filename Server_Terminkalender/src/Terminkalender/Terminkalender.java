@@ -15,11 +15,11 @@ import java.util.LinkedList;
 public class Terminkalender implements Serializable{
 
     private final LinkedList<Termin> terminkalender;
-    private int idCounter;
+    private int terminCounter;
     
     Terminkalender(int userID){
         terminkalender = new LinkedList<>();
-        idCounter = userID * 1000000 + 1;
+        terminCounter = userID * 1000000 + 1;
     }
        
     /**
@@ -48,9 +48,9 @@ public class Terminkalender implements Serializable{
      * @throws TerminException 
      */
     public int addTermin(Datum datum, Zeit beginn, Zeit ende, String titel, String username) throws TerminException{
-        terminkalender.add(new Termin(datum, beginn, ende, titel, idCounter, username));
-        idCounter++;
-        return idCounter - 1;
+        terminkalender.add(new Termin(datum, beginn, ende, titel, terminCounter, username));
+        terminCounter++;
+        return terminCounter - 1;
     }
     
     /**
@@ -123,6 +123,10 @@ public class Terminkalender implements Serializable{
      */
     public void removeTerminByID(int id) throws TerminException{
         terminkalender.remove(getTerminByID(id));
+    }
+    
+    public int getTerminCounter(){
+        return terminCounter;
     }
     
 }
