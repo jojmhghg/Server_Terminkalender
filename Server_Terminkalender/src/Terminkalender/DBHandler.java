@@ -47,6 +47,7 @@ public class DBHandler {
             Statement state4 = con.createStatement();
             Statement state5 = con.createStatement();
             Statement state6 = con.createStatement();
+            Statement state7 = con.createStatement();
             
             ResultSet res1 = state1.executeQuery("SELECT name FROM sqlite_master WHERE type='table' AND name='benutzer'");
             ResultSet res2 = state2.executeQuery("SELECT name FROM sqlite_master WHERE type='table' AND name='termine'");
@@ -54,6 +55,7 @@ public class DBHandler {
             ResultSet res4 = state4.executeQuery("SELECT name FROM sqlite_master WHERE type='table' AND name='kontaktliste'");
             ResultSet res5 = state5.executeQuery("SELECT name FROM sqlite_master WHERE type='table' AND name='meldungen'");
             ResultSet res6 = state6.executeQuery("SELECT name FROM sqlite_master WHERE type='table' AND name='anfragen'");
+            ResultSet res7 = state7.executeQuery("SELECT name FROM sqlite_master WHERE type='table' AND name='benutzerliste'");
             
             if(!res1.next()){
                 System.out.println("Building the User table with prepopulated values.");
@@ -132,10 +134,23 @@ public class DBHandler {
                         + "foreign key(absenderID) references benutzer(userID),"
                         + "primary key(meldungsID))");
             }
+            
+            if(!res7.next()){
+                System.out.println("Building the Benutzerliste table with prepopulated values.");
+                Statement stateAnfragen = con.createStatement();
+                stateAnfragen.execute("CREATE TABLE benutzerliste(benutzerlisteID integer,"
+                        + "userCounter integer,"
+                        + "primary key(benutzerlisteID))");
+                
+                PreparedStatement prepuser = con.prepareStatement("INSERT INTO benutzerliste values(?,?);");        
+                prepuser.setInt(1, 1);
+                prepuser.setInt(2, 1);
+                prepuser.execute(); 
+            }
         }
     }
     
-    public void addUser(String username, String passwort, String email, int meldungsCounter, int userID, int terminCounter) throws SQLException{
+    public void addUser(String username, String passwort, String email, int meldungsCounter, int userID, int terminCounter) throws SQLException, DatenbankException{
         PreparedStatement prepuser = con.prepareStatement("INSERT INTO benutzer values(?,?,?,?,?,?,?,?);");        
         prepuser.setInt(1, userID);
         prepuser.setString(2, username);
@@ -146,6 +161,21 @@ public class DBHandler {
         prepuser.setInt(7, meldungsCounter);
         prepuser.setInt(8, terminCounter);
         prepuser.execute(); 
+        
+        Statement state = con.createStatement();   
+        ResultSet res = state.executeQuery("SELECT * FROM benutzerliste " +
+                "WHERE benutzerlisteID = " + 1); 
+        
+        if(res.next()){           
+            int userCounter = res.getInt("userCounter");
+            userCounter++;
+
+            PreparedStatement prepIncUserCounter = con.prepareStatement("UPDATE benutzerliste SET userCounter = ? WHERE benutzerlisteID = ?");
+            prepIncUserCounter.setInt(1, userCounter);
+            prepIncUserCounter.setInt(2, 1);
+            prepIncUserCounter.execute(); 
+        }
+        throw new DatenbankException("Counter konnte nich hochgezaehlt werden!"); 
     }
     
     public void resetPassword(String username, String passwort) throws SQLException{
@@ -349,6 +379,16 @@ public class DBHandler {
     
     // ****************************** GETTER ****************************** //
     
+    public int getUserCounter() throws SQLException, DatenbankException{
+        Statement state = con.createStatement();
+        ResultSet res = state.executeQuery("Select * FROM benutzerliste " +
+                "Where benutzerlisteID = 1");
+        if(res.next()){
+            return res.getInt("userCounter");
+        }
+        throw new DatenbankException("kein user Counter!!");
+    }
+    
     public ResultSet getUserDetails(int userID) throws SQLException{
         Statement state = con.createStatement();
         ResultSet res = state.executeQuery("Select * FROM benutzer " +
@@ -365,13 +405,17 @@ public class DBHandler {
         return new LinkedList<>();
     }
       
-    public LinkedList<String> getKontaktliste(int userID) throws SQLException{
-        /*Statement state = con.createStatement();
-        ResultSet res = state.executeQuery("Select * FROM kontaktliste" +
+    public LinkedList<String> getKontaktliste(int userID) throws SQLException, DatenbankException{
+        LinkedList<String> kontaktliste = new LinkedList<>();
+        Statement state = con.createStatement();
+        ResultSet resSet = state.executeQuery("Select * FROM kontaktliste " +
                 "Where userID = " + userID);
-        */
         
-        return new LinkedList<>();
+        while(resSet.next()){
+            kontaktliste.add(getUsernameByUserID(resSet.getInt("kontaktID")));
+        } 
+        
+        return kontaktliste;
     }
     
     public LinkedList<Meldungen> getMeldungen(int userID) throws SQLException{
@@ -388,7 +432,7 @@ public class DBHandler {
         return new LinkedList<>();
     }
     
-    public Benutzer getBenutzer(int userID) throws SQLException{
+    public Benutzer getBenutzer(int userID) throws SQLException, DatenbankException{
         Benutzer benutzer;
         
         ResultSet user = getUserDetails(userID);
@@ -416,9 +460,11 @@ public class DBHandler {
             for(Termin termin : termine){
                 benutzer.addTermin(termin);
             }
+             
+            return benutzer;
         }
         
-        return null;
+        throw new DatenbankException("user " + userID + " nicht in Datenbank vorhanden!");
     }
 
     public Benutzer getBenutzer(String username) throws SQLException, DatenbankException{
@@ -426,15 +472,28 @@ public class DBHandler {
         Statement state = con.createStatement();
         
         //hier gibt es Probleme :S
-        ResultSet res = state.executeQuery("SELECT userID FROM benutzer " +
-                "WHERE username = username");
+        ResultSet res = state.executeQuery("SELECT * FROM benutzer " +
+                "WHERE username = username");       
         
         if(res.next()){
             userID = res.getInt("userID");
             return getBenutzer(userID);
         }
         
-        throw new DatenbankException("username nicht in Datenbank vorhanden!");
+        throw new DatenbankException(username + " nicht in Datenbank vorhanden!");
     }
     
+    private String getUsernameByUserID(int userID) throws SQLException, DatenbankException{
+        String username;
+        Statement state = con.createStatement();
+        
+        ResultSet res = state.executeQuery("SELECT * FROM benutzer " +
+                "WHERE userID = " + userID); 
+        
+        if(res.next()){
+            username = res.getString("username");
+            return username;
+        }
+        throw new DatenbankException(userID + " nicht in Datenbank vorhanden!"); 
+    }
 }

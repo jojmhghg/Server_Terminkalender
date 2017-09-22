@@ -17,9 +17,9 @@ public class BenutzerListe implements Serializable{
     private final LinkedList<Benutzer> benutzerliste;
     private int userIDCounter;
     
-    BenutzerListe(){
-        benutzerliste = new LinkedList<>();
-        userIDCounter = 1;
+    BenutzerListe(int userIDCounter){
+        this.benutzerliste = new LinkedList<>();
+        this.userIDCounter = userIDCounter;
     }
     
     /**

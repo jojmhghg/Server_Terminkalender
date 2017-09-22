@@ -17,23 +17,22 @@ import java.util.logging.Logger;
  */
 public class Launcher implements LauncherInterface{
     
-    private BenutzerListe benutzerliste;
+    private final BenutzerListe benutzerliste;
     // Liste mit Benutzer + SitzungID
     private final LinkedList<Sitzung> aktiveSitzungen;
     private int sitzungscounter;
     private final DBHandler datenbank;
     
-    public Launcher(){
+    public Launcher() throws SQLException, DatenbankException{
         datenbank = new DBHandler(); 
         try {
             datenbank.getConnection();
         } catch (ClassNotFoundException | SQLException | NoSuchAlgorithmException ex) {
             Logger.getLogger(Launcher.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+        benutzerliste = new BenutzerListe(datenbank.getUserCounter());
         aktiveSitzungen = new LinkedList<>();
         sitzungscounter = 1;
-        ladeBenutzerliste();
     }
 
     /**
@@ -60,7 +59,11 @@ public class Launcher implements LauncherInterface{
     @Override
     public void createUser(String username, String passwort, String email) throws BenutzerException, SQLException{
         benutzerliste.addBenutzer(username, passwort, email);
-        datenbank.addUser(username, passwort, email, benutzerliste.getBenutzer(username).getMeldungsCounter(), benutzerliste.getBenutzer(username).getUserID(), benutzerliste.getBenutzer(username).getTerminCounter());
+        try {
+            datenbank.addUser(username, passwort, email, benutzerliste.getBenutzer(username).getMeldungsCounter(), benutzerliste.getBenutzer(username).getUserID(), benutzerliste.getBenutzer(username).getTerminCounter());
+        } catch (DatenbankException ex) {
+            Logger.getLogger(Launcher.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     /**
@@ -79,7 +82,6 @@ public class Launcher implements LauncherInterface{
 
         try {
             benutzerliste.addBenutzer(datenbank.getBenutzer(username));
-            System.out.println(benutzerliste.getBenutzer(username).getUserID() + benutzerliste.getBenutzer(username).getEmail());
         } catch (SQLException ex) {
             Logger.getLogger(Launcher.class.getName()).log(Level.SEVERE, null, ex);
         } catch (DatenbankException e) {
@@ -630,16 +632,6 @@ public class Launcher implements LauncherInterface{
     public void setMeldungenGelesen(int index, int sitzungsID) throws BenutzerException{
         Benutzer eingeloggterBenutzer = istEingeloggt(sitzungsID);
         eingeloggterBenutzer.getMeldungen().get(index).meldungGelesen();
-    }
-    
-    /**
-     * Hilfsmethode um Benutzerliste zu füllen
-     * 
-     */
-    private void ladeBenutzerliste() {     
-        //TODO: hier wird die Benutzerliste mit den Daten aus der DB gefüllt
-        benutzerliste = new BenutzerListe();
-        testliste();
     }
 
     private void testliste(){
