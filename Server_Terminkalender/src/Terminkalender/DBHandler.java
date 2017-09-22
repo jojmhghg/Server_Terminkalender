@@ -318,6 +318,7 @@ public class DBHandler {
         prepResetPW.execute();
     }
     
+    
     public void deleteMeldung(int index, int sitzungsID) throws SQLException{
         
     }
