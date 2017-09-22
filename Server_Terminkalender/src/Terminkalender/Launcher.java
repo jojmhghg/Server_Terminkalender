@@ -76,13 +76,21 @@ public class Launcher implements LauncherInterface{
     public int einloggen(String username, String passwort) throws BenutzerException{
         int sitzungsID = 10000000 * sitzungscounter + (int)(Math.random() * 1000000 + 1);
         sitzungscounter++;
-        if(benutzerliste.getBenutzer(username).istPasswort(passwort)){
-            aktiveSitzungen.add(new Sitzung(benutzerliste.getBenutzer(username), sitzungsID));
-            return sitzungsID;
+
+        try {
+            benutzerliste.addBenutzer(datenbank.getBenutzer(username));
+        } catch (SQLException | DatenbankException ex) {
+            Logger.getLogger(Launcher.class.getName()).log(Level.SEVERE, null, ex);
         }
-        else{
-            return -1;
-        }
+
+        if(benutzerliste.existiertBenutzer(username)){
+            if(benutzerliste.getBenutzer(username).istPasswort(passwort)){
+                aktiveSitzungen.add(new Sitzung(benutzerliste.getBenutzer(username), sitzungsID));
+                return sitzungsID;
+            }
+        } 
+        
+        return -1;
     }
     
     /**

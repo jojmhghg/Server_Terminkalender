@@ -38,6 +38,12 @@ public class BenutzerListe implements Serializable{
         userIDCounter++;
     }
     
+    public void addBenutzer(Benutzer benutzer){
+        if(!existiertBenutzer(benutzer.getUsername())){
+            benutzerliste.add(benutzer); 
+        }    
+    }
+    
     public int getIDCounter(){
         return this.userIDCounter;
     }

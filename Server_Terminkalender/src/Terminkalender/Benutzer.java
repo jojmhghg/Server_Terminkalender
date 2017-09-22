@@ -131,6 +131,14 @@ public class Benutzer implements Serializable{
         }
         this.passwort = neuesPasswort;
     }
+    public void setKontaktliste(LinkedList<String> kontaktliste){
+        this.kontaktliste = kontaktliste;
+    }
+    public void setMeldungen(LinkedList<Meldungen> meldungen){
+        this.meldungen = meldungen;
+    }
+    
+    
     
     public String resetPasswort(){
         Properties properties = System.getProperties();

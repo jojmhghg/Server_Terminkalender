@@ -22,7 +22,6 @@ public class Terminkalender implements Serializable{
         idCounter = userID * 1000000 + 1;
     }
        
-
     /**
      * 
      * @param id

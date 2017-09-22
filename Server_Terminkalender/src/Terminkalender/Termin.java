@@ -44,6 +44,25 @@ public class Termin implements Serializable{
         this.owner = username;
         this.editierbar = true;
     }
+    
+    Termin(Datum datum, Zeit beginn, Zeit ende, String titel, int id, String owner, String ort, String notiz, Boolean editierbar) throws TerminException{
+        if(!anfangVorEnde(beginn, ende)){
+            throw new TerminException("Startzeitpunkt darf nicht nach dem Endzeitpunkt liegen!");
+        }
+        
+        this.id = id;
+        this.datum = datum;
+        this.beginn = beginn;
+        this.ende = ende;
+        this.titel = titel;
+        this.notiz = notiz;
+        this.ort = ort;
+        this.teilnehmer = new LinkedList<>();
+        this.teilnehmer.add(new Teilnehmer(owner));
+        teilnehmer.getFirst().setIstTeilnemer();
+        this.owner = owner;
+        this.editierbar = editierbar;
+    }
 
     /**
      * fügt der Teilnehmerliste 'teilnehmer' den Teilnehmer 'usename' hinzu
