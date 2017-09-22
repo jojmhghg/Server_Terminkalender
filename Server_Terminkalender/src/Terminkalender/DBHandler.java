@@ -67,6 +67,7 @@ public class DBHandler {
                         + "lastname varchar(60),"
                         + "password varchar(60),"
                         + "meldungsCounter integer,"
+                        + "idCounter integer,"
                         + "PRIMARY KEY (username))");
                 
                 System.out.println("Building the Termin table with prepopulated values.");
@@ -105,18 +106,25 @@ public class DBHandler {
                         + "primary key(userID, kontaktID))");
                 
                 System.out.println("Building the Meldung table with prepopulated values.");
-                Statement statefreundschaftsanfrage = con.createStatement();
-                statefreundschaftsanfrage.execute("CREATE TABLE meldung(meldungsID integer,"
+                Statement statemeldung = con.createStatement();
+                statemeldung.execute("CREATE TABLE meldung(meldungsID integer,"
                         + "userID integer,"
+                        + "typ string(60),"            //Sollte es eine Anfrage sein braucht man noch einen der ihn anfragt ... deswegen die Tabelle "MeldungAnfrage". Frage nun: bei ablehnen oder annehmen ... bekommt da der anfrage eine benachrichtigung?
                         + "text varchar(60),"
                         + "terminID integer,"
-                        + "absenderID integer,"
                         + "gelesen integer,"
                         + "anfrage integer,"
-                        + "foreign key(userID) references meldung(userID),"
-                        + "foreign key(terminID) references user(terminID),"
-                        + "foreign key(absenderID) references user(userID),"
+                        + "foreign key(userID) references user(userID),"
+                        + "foreign key(terminID) references termin(terminID),"
                         + "primary key(meldungsID))"); 
+                
+                System.out.println("Building the MeldungAnfrage table with prepopulated values.");
+                Statement statemeldunganfrage = con.createStatement();
+                statemeldung.execute("CREATE TABLE meldunganfrage(meldungsID integer,"
+                        + "absenderID integer,"
+                        + "foreign key(meldungsID) references meldung(meldungsID),"
+                        + "foreign key(absenderID) references user(userID),"
+                        + "primary key(meldungsID, absenderID");
             }
         }
     }
@@ -325,11 +333,13 @@ public class DBHandler {
         prepAddAnfrage.execute();
         Statement state = con.createStatement();
         ResultSet res;
-        res = state.executeQuery("SELECT meldungsCounter FROM user" +
+        res = state.executeQuery("SELECT meldungsCounter, idCounter FROM user" +
                 "Where userID = " + userID);
         int meldungsCounter = res.getInt("meldungsCounter");
-        PreparedStatement prepAddMeldungsCounter = con.prepareStatement("INSERT INTO user values(?,?,?,?,?,?,?);");
+        int idCounter = res.getInt("idCounter");
+        PreparedStatement prepAddMeldungsCounter = con.prepareStatement("INSERT INTO user values(?,?,?,?,?,?,?,?);");
         prepAddMeldungsCounter.setInt(7, (meldungsCounter + 1));
+        prepAddMeldungsCounter.setInt(8, (idCounter + 1));
         prepAddMeldungsCounter.execute();
     }
     
@@ -343,24 +353,37 @@ public class DBHandler {
     
     public ResultSet showTermine(int userID) throws SQLException{
         Statement state = con.createStatement();
-        ResultSet res = state.executeQuery("Select * From termin\n" +
-        "Join usertermin on termin.terminID = usertermin.terminID\n" +
+        ResultSet res = state.executeQuery("Select * From termin" +
+        "Join usertermin on termin.terminID = usertermin.terminID" +
         "Where usertermin.userID = " + userID);
         return res;
     }
     
     public ResultSet showUser(int userID) throws SQLException{
         Statement state = con.createStatement();
-        ResultSet res = state.executeQuery("Select * FROM user\n" +
+        ResultSet res = state.executeQuery("Select * FROM user" +
                 "Where userID = " + userID);
         return res;
     }
     
     public ResultSet showKontaktliste(int userID) throws SQLException{
         Statement state = con.createStatement();
-        ResultSet res = state.executeQuery("Select * FROM kontaktliste\n" +
+        ResultSet res = state.executeQuery("Select * FROM kontaktliste" +
                 "Where userID = " + userID);
         return res;
+    }
+    
+    public ResultSet showMeldungen(int userID) throws SQLException{
+        Statement state = con.createStatement();
+        ResultSet res = state.executeQuery("Select * FROM meldung" +
+                "Where userID = " + userID);
+        while(res.next()){
+            if(res.getString("typ") == "anfrage"){
+                ResultSet res2 = state.executeQuery("Select * FROM meldunganfrage"
+                        + "Where userID = +" res.getInt("userID");
+                        //TODO
+            }
+        }
     }
     
     public void showBenutzer(int userID) throws SQLException{
@@ -368,5 +391,4 @@ public class DBHandler {
         ResultSet user = showUser(userID);
         ResultSet kontaktliste = showKontaktliste(userID);
     }
-    
 }
