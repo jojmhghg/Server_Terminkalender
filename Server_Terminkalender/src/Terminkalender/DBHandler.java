@@ -281,7 +281,7 @@ public class DBHandler {
         PreparedStatement prepChangeTerminende = con.prepareStatement("UPDATE termin SET to_hours = ?, to_minutes = ? WHERE terminID = ?");
         prepChangeTerminende.setInt(1, neuesEnde.getStunde());
         prepChangeTerminende.setInt(2, neuesEnde.getMinute());
-        prepChangeTerminende.setInt(2, terminID);
+        prepChangeTerminende.setInt(3, terminID);
         prepChangeTerminende.execute(); 
     }
     
@@ -289,7 +289,7 @@ public class DBHandler {
         PreparedStatement prepChangeTerminbeginn = con.prepareStatement("UPDATE termin SET from_hours = ?, from_minutes = ? WHERE terminID = ?");
         prepChangeTerminbeginn.setInt(1, neuerBeginn.getStunde());
         prepChangeTerminbeginn.setInt(2, neuerBeginn.getMinute());
-        prepChangeTerminbeginn.setInt(2, terminID);
+        prepChangeTerminbeginn.setInt(3, terminID);
         prepChangeTerminbeginn.execute(); 
     }
     
@@ -297,8 +297,8 @@ public class DBHandler {
         PreparedStatement prepChangeTermin = con.prepareStatement("UPDATE termin SET day = ?, month = ?, year = ? WHERE terminID = ?");
         prepChangeTermin.setInt(1, neuesDatum.getTag());
         prepChangeTermin.setInt(2, neuesDatum.getMonat());
-        prepChangeTermin.setInt(2, neuesDatum.getJahr());
-        prepChangeTermin.setInt(2, terminID);
+        prepChangeTermin.setInt(3, neuesDatum.getJahr());
+        prepChangeTermin.setInt(4, terminID);
         prepChangeTermin.execute(); 
     }
     
@@ -331,7 +331,7 @@ public class DBHandler {
     }
     
     public void addAnfrage(int anfrageID, int userID, int terminID, int absenderID) throws SQLException{
-        PreparedStatement prepAddAnfrage = con.prepareStatement("INSERT INTO meldung values(?,?,?,?,?,?);");
+        PreparedStatement prepAddAnfrage = con.prepareStatement("INSERT INTO meldung values(?,?,?,?,?,?,?);");
         prepAddAnfrage.setInt(1, anfrageID);
         prepAddAnfrage.setInt(2, userID);
         prepAddAnfrage.setString(3, "");
@@ -351,6 +351,7 @@ public class DBHandler {
         prepAddMeldungsCounter.setInt(8, (idCounter + 1));
         prepAddMeldungsCounter.execute();
     }
+    
     
     public void deleteMeldung(int index, int sitzungsID) throws SQLException{
         
@@ -405,4 +406,5 @@ public class DBHandler {
         ResultSet meldungen = showMeldungen(userID);
         ResultSet anfragen = showAnfragen(userID);
     }
+  
 }
