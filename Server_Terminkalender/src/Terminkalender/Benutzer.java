@@ -52,7 +52,7 @@ public class Benutzer implements Serializable{
         this.terminkalender = new Terminkalender(userID);
         this.kontaktliste = new LinkedList<>();
         this.meldungen = new LinkedList<>();
-        this.meldungsCounter = 1;
+        this.meldungsCounter = 1 + userID * 1000000;
     } 
     
     /**
