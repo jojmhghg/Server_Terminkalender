@@ -15,7 +15,7 @@ public class Zeit implements Serializable{
     private int stunde;
     private int minute;
     
-    Zeit(int stunde, int minute) throws ZeitException{
+    public Zeit(int stunde, int minute) throws ZeitException{
         if(stunde > 23 || stunde < 0){
             throw new ZeitException("Stunde zwischen 0 und 23 wählen");
         }

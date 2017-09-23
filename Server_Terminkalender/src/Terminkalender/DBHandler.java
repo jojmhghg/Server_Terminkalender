@@ -67,8 +67,7 @@ public class DBHandler {
                         + "lastname varchar(60),"
                         + "password varchar(60),"
                         + "meldungsCounter integer,"
-                        + "idCounter integer,"
-                        + "PRIMARY KEY (username))");
+                        + "PRIMARY KEY (userID))");
                 
                 System.out.println("Building the Termin table with prepopulated values.");
                 Statement statetermin = con.createStatement();
@@ -110,9 +109,9 @@ public class DBHandler {
                 statemeldungstyp.execute("CREATE TABLE meldungstyp(meldungsTypID integer,"
                         + "userID integer,"
                         + "anfrage integer,"
-                        + "notiz varchar(60)"
+                        + "notiz varchar(60),"
                         + "foreign key(userID) references user(userID),"
-                        + "primary key(meldungsTypID");
+                        + "primary key(meldungsTypID))");
                 
                 System.out.println("Building the Meldung table with prepopulated values.");
                 Statement statemeldung = con.createStatement();
@@ -127,7 +126,7 @@ public class DBHandler {
                         
                 System.out.println("Building the MeldungAnfrage table with prepopulated values.");
                 Statement statemeldunganfrage = con.createStatement();
-                statemeldung.execute("CREATE TABLE meldungsanfrage(meldungsTypID integer,"
+                statemeldunganfrage.execute("CREATE TABLE meldungsanfrage(meldungsTypID integer,"
                         + "text varchar(60),"
                         + "terminID integer,"
                         + "gelesen integer,"
@@ -135,7 +134,7 @@ public class DBHandler {
                         + "foreign key(terminID) references termin(terminID),"
                         + "foreign key(meldungsTypID) references meldungstyp(meldungsTypID),"
                         + "foreign key(absenderID) references user(userID),"
-                        + "primary key(meldungsTypID");
+                        + "primary key(meldungsTypID))");
             }
         }
     }
@@ -153,7 +152,7 @@ public class DBHandler {
     }
     
     public void resetPassword(String username, String passwort) throws SQLException{
-        PreparedStatement prepResetPW = con.prepareStatement("UPDATE user SET p = ? WHERE userName = ?");
+        PreparedStatement prepResetPW = con.prepareStatement("UPDATE user SET password = ? WHERE userName = ?");
         prepResetPW.setString(1, passwort);
         prepResetPW.setString(2, username);
         prepResetPW.execute();      
@@ -163,12 +162,11 @@ public class DBHandler {
         PreparedStatement prepAddKontakt = con.prepareStatement("INSERT INTO kontaktliste values(?,?);");
         prepAddKontakt.setInt(1, userID);
         prepAddKontakt.setInt(2, kontaktID);
-        prepAddKontakt.execute();   
+        prepAddKontakt.execute();
     }
     
     public void removeKontakt(int userID, int kontaktID) throws SQLException{
         PreparedStatement prepRemoveKontakt = con.prepareStatement("DELETE FROM kontaktliste WHERE userID = ? AND kontaktID = ?;");
-        
         prepRemoveKontakt.setInt(1, userID);
         prepRemoveKontakt.setInt(2, kontaktID);
         prepRemoveKontakt.execute(); 
@@ -386,28 +384,18 @@ public class DBHandler {
     
     public ResultSet showMeldungen(int userID) throws SQLException{
         Statement state = con.createStatement();
-        ResultSet res2 = null;
-        ResultSet res = state.executeQuery("Select * FROM meldungstyp" +
-                "Where userID = " + userID +
-                "Where anfrage =" + 0);
-        while(res.next()){
-            res2 = state.executeQuery("Select * FROM meldung" +
-                    "Where meldungsTypID = " + res.getInt("meldungsTypID"));
-            }
-        return res2;
+        ResultSet res = state.executeQuery("Select * FROM meldungsanfrage" +
+                "Where meldungsTypID in (Select meldungsID from meldungstyp" +
+                "Where userID = userID And anfrage = 0");
+        return res;
     }
     
     public ResultSet showAnfragen(int userID) throws SQLException{
         Statement state = con.createStatement();
-        ResultSet res2 = null;
-        ResultSet res = state.executeQuery("Select * FROM meldungstyp" +
-                "Where userID = " + userID +
-                "Where anfrage =" + 1);
-        while(res.next()){
-            res2 = state.executeQuery("Select * FROM meldungsanfrage" +
-                    "Where meldungsTypID = " + res.getInt("meldungsTypID"));
-            }
-        return res2;
+        ResultSet res = state.executeQuery("Select * FROM meldungsanfrage" +
+                "Where meldungsTypID in (Select meldungsID from meldungstyp" +
+                "Where userID = userID And anfrage = 1");
+        return res;
     }
     
     public void showBenutzer(int userID) throws SQLException{
