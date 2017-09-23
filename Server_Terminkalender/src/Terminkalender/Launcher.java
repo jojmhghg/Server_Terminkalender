@@ -59,11 +59,7 @@ public class Launcher implements LauncherInterface{
     @Override
     public void createUser(String username, String passwort, String email) throws BenutzerException, SQLException{
         benutzerliste.addBenutzer(username, passwort, email);
-        try {
-            datenbank.addUser(username, passwort, email, benutzerliste.getBenutzer(username).getMeldungsCounter(), benutzerliste.getBenutzer(username).getUserID(), benutzerliste.getBenutzer(username).getTerminCounter());
-        } catch (DatenbankException ex) {
-            Logger.getLogger(Launcher.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        datenbank.addUser(username, passwort, email, benutzerliste.getBenutzer(username).getMeldungsCounter(), benutzerliste.getBenutzer(username).getUserID(), benutzerliste.getBenutzer(username).getTerminCounter());
     }
     
     /**
@@ -80,20 +76,21 @@ public class Launcher implements LauncherInterface{
         int sitzungsID = 10000000 * sitzungscounter + (int)(Math.random() * 1000000 + 1);
         sitzungscounter++;
 
-        try {
-            benutzerliste.addBenutzer(datenbank.getBenutzer(username));
-        } catch (SQLException ex) {
-            Logger.getLogger(Launcher.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (DatenbankException e) {
-            throw new BenutzerException(e.getMessage());
-        }
-
-        if(benutzerliste.existiertBenutzer(username)){
-            if(benutzerliste.getBenutzer(username).istPasswort(passwort)){
-                aktiveSitzungen.add(new Sitzung(benutzerliste.getBenutzer(username), sitzungsID));
-                return sitzungsID;
+        if(!benutzerliste.existiertBenutzer(username)){
+            try {
+                benutzerliste.addBenutzer(datenbank.getBenutzer(username, benutzerliste));
+            } 
+            catch (SQLException e) {
+                throw new BenutzerException(e.getMessage() + "Benutzer: " + username + " exisitert nicht!");
+            } 
+            catch (DatenbankException e){
+                throw new BenutzerException(e.getMessage());
             }
-        } 
+        }    
+        if(benutzerliste.getBenutzer(username).istPasswort(passwort)){
+            aktiveSitzungen.add(new Sitzung(benutzerliste.getBenutzer(username), sitzungsID));
+            return sitzungsID;
+        }
         
         return -1;
     }
@@ -318,8 +315,17 @@ public class Launcher implements LauncherInterface{
     @Override
     public void addTerminteilnehmer(int terminID, String username, int sitzungsID) throws BenutzerException, TerminException, SQLException{
         Benutzer eingeloggterBenutzer = istEingeloggt(sitzungsID);
+        
         if(!benutzerliste.existiertBenutzer(username)){
-            throw new BenutzerException("Benutzer: " + username + " exisitert nicht!");
+            try {
+                benutzerliste.addBenutzer(datenbank.getBenutzer(username, benutzerliste));
+            } 
+            catch (SQLException e) {
+                throw new BenutzerException("Benutzer: " + username + " exisitert nicht!");
+            } 
+            catch (DatenbankException e){
+                throw new BenutzerException(e.getMessage());
+            }
         }
         eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).addTeilnehmer(username);
         int anfrageID = benutzerliste.getBenutzer(username).addAnfrage(eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID), eingeloggterBenutzer.getUsername());
@@ -458,9 +464,19 @@ public class Launcher implements LauncherInterface{
     @Override
     public void addKontakt(String username, int sitzungsID) throws BenutzerException, SQLException{
         Benutzer eingeloggterBenutzer = istEingeloggt(sitzungsID);
+       
         if(!benutzerliste.existiertBenutzer(username)){
-            throw new BenutzerException("Benutzername existiert nicht!");
+            try {
+                benutzerliste.addBenutzer(datenbank.getBenutzer(username, benutzerliste));
+            } 
+            catch (SQLException e) {
+                throw new BenutzerException("Benutzer: " + username + " exisitert nicht!");
+            } 
+            catch (DatenbankException e){
+                throw new BenutzerException(e.getMessage());
+            }
         }
+        
         eingeloggterBenutzer.addKontakt(username);
         datenbank.addKontakt(eingeloggterBenutzer.getUserID(), benutzerliste.getBenutzer(username).getUserID());
     }

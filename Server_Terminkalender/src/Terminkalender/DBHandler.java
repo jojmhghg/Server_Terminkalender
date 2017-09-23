@@ -17,12 +17,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class DBHandler {
     boolean abfrage;
     private static Connection con;
     private static boolean hasData;
     ResultSet rs;
+    private BenutzerListe benutzerliste;
     
     public DBHandler(){
         abfrage = true;
@@ -150,7 +153,7 @@ public class DBHandler {
         }
     }
     
-    public void addUser(String username, String passwort, String email, int meldungsCounter, int userID, int terminCounter) throws SQLException, DatenbankException{
+    public void addUser(String username, String passwort, String email, int meldungsCounter, int userID, int terminCounter) throws SQLException{
         PreparedStatement prepuser = con.prepareStatement("INSERT INTO benutzer values(?,?,?,?,?,?,?,?);");        
         prepuser.setInt(1, userID);
         prepuser.setString(2, username);
@@ -175,7 +178,6 @@ public class DBHandler {
             prepIncUserCounter.setInt(2, 1);
             prepIncUserCounter.execute(); 
         }
-        throw new DatenbankException("Counter konnte nich hochgezaehlt werden!"); 
     }
     
     public void resetPassword(String username, String passwort) throws SQLException{
@@ -245,7 +247,7 @@ public class DBHandler {
         prepAddNewTermin.setInt(13, 1);
         prepAddNewTermin.execute();
         
-        PreparedStatement prepIncCounter = con.prepareStatement("UPDATE benutzer SET idCounter = ? WHERE userID = ?;");
+        PreparedStatement prepIncCounter = con.prepareStatement("UPDATE benutzer SET terminCounter = ? WHERE userID = ?;");
         prepIncCounter.setInt(1, terminCounter);
         prepIncCounter.setInt(2, userID);
         prepIncCounter.execute();
@@ -345,7 +347,7 @@ public class DBHandler {
     }
     
     public void addMeldung(int meldungsID, int userID, String text, Boolean istAnfrage) throws SQLException{
-        PreparedStatement prepAddMeldung = con.prepareStatement("INSERT INTO meldugen values(?,?,?,?,?);");
+        PreparedStatement prepAddMeldung = con.prepareStatement("INSERT INTO meldungen values(?,?,?,?,?);");
         prepAddMeldung.setInt(1, meldungsID);
         prepAddMeldung.setInt(2, userID);
         prepAddMeldung.setString(3, text);
@@ -389,23 +391,83 @@ public class DBHandler {
         throw new DatenbankException("kein user Counter!!");
     }
     
-    public ResultSet getUserDetails(int userID) throws SQLException{
+    private ResultSet getUserDetails(int userID) throws SQLException{
         Statement state = con.createStatement();
         ResultSet res = state.executeQuery("Select * FROM benutzer " +
                 "Where userID = " + userID);
         return res;
     }   
     
-    public LinkedList<Termin> getTermine(int userID) throws SQLException{
-        /*Statement state = con.createStatement();
-        ResultSet res = state.executeQuery("Select * From termin" +
-        "Join usertermin on termin.terminID = usertermin.terminID" +
-        "Where usertermin.userID = " + userID);
-        */
-        return new LinkedList<>();
+    private LinkedList<Termin> getTermine(int userID) throws SQLException {
+        LinkedList<Termin> terminkalender = new LinkedList<>();   
+        Statement state = con.createStatement();
+        String teilnehmerUsername;
+        boolean edit, stopLoop;
+        ResultSet teilnehmerliste, termine = null;
+        
+        
+        try {
+            //Grunddaten jedes Termins des Users holen
+            termine = state.executeQuery("SELECT * FROM termine " +
+                    "JOIN terminkalender ON termine.terminID = terminkalender.terminID " +
+                    "WHERE terminkalender.userID = " + userID);
+        } catch (SQLException ex) {
+            System.out.println("benutzer ohne termine geladen");  
+            Logger.getLogger(DBHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        //hier werden die Terminliste erstellt
+        while(termine != null && termine.next()){
+            //gibt es einen User auf dem Servern, der an dem Termin teilnimmt? 
+            //wenn ja: füge referenz hinzu
+            teilnehmerliste = getTeilnehmerSet(termine.getInt("terminID"));
+            stopLoop = false;
+            while(teilnehmerliste.next() && !stopLoop){
+                teilnehmerUsername = getUsernameByUserID(teilnehmerliste.getInt("userID"));
+                if(benutzerliste.existiertBenutzer(teilnehmerUsername)){
+                    try {
+                        terminkalender.add(benutzerliste.getBenutzer(teilnehmerUsername).getTerminkalender().getTerminByID(termine.getInt("terminID")));
+                        stopLoop = true;
+                    } catch (BenutzerException | TerminException ex) {
+                        Logger.getLogger(DBHandler.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }    
+            //wenn nein: erstelle neuen Termin
+            if(!stopLoop){
+                edit = termine.getInt("editEveryone") == 1;
+                try {
+                    //Erst die einfachen Datentypen und Klassen hinzufügen
+                    terminkalender.add(new Termin(
+                            new Datum(termine.getInt("day"), termine.getInt("month"), termine.getInt("year")),
+                            new Zeit(termine.getInt("from_hours"), termine.getInt("from_minutes")),
+                            new Zeit(termine.getInt("to_hours"), termine.getInt("to_minutes")),
+                            termine.getString("titel"),
+                            termine.getInt("terminID"),
+                            getUsernameByUserID(termine.getInt("ownerID")),
+                            termine.getString("location"),
+                            termine.getString("note"),
+                            edit));
+                    //und nun die Teilnehmerliste
+                    teilnehmerliste = getTeilnehmerSet(termine.getInt("terminID"));
+                    while(teilnehmerliste.next() && termine.getInt("ownerID") != teilnehmerliste.getInt("userID")){
+                        teilnehmerUsername = getUsernameByUserID(teilnehmerliste.getInt("userID"));
+                        terminkalender.getLast().addTeilnehmer(teilnehmerUsername);
+                        //falls der Teilnehmer zugesagt hat, muss das noch gesetzt werden
+                        if(testUserNimmtTeil(teilnehmerliste.getInt("userID"), termine.getInt("terminID"))){
+                            terminkalender.getLast().changeTeilnehmerNimmtTeil(teilnehmerUsername);
+                        }
+                    }
+                } catch (TerminException | Datum.DatumException | Zeit.ZeitException ex) {
+                    Logger.getLogger(DBHandler.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        
+        return terminkalender;
     }
       
-    public LinkedList<String> getKontaktliste(int userID) throws SQLException, DatenbankException{
+    private LinkedList<String> getKontaktliste(int userID) throws SQLException, DatenbankException{
         LinkedList<String> kontaktliste = new LinkedList<>();
         Statement state = con.createStatement();
         ResultSet resSet = state.executeQuery("Select * FROM kontaktliste " +
@@ -418,7 +480,7 @@ public class DBHandler {
         return kontaktliste;
     }
     
-    public LinkedList<Meldungen> getMeldungen(int userID) throws SQLException{
+    private LinkedList<Meldungen> getMeldungen(int userID) throws SQLException{
         /*Statement state = con.createStatement();
         ResultSet res2 = null;
         ResultSet res = state.executeQuery("Select * FROM meldungstyp" +
@@ -467,13 +529,14 @@ public class DBHandler {
         throw new DatenbankException("user " + userID + " nicht in Datenbank vorhanden!");
     }
 
-    public Benutzer getBenutzer(String username) throws SQLException, DatenbankException{
+    public Benutzer getBenutzer(String username, BenutzerListe benutzerliste) throws SQLException, DatenbankException{
+        this.benutzerliste = benutzerliste;
         int userID;
         Statement state = con.createStatement();
         
         //hier gibt es Probleme :S
         ResultSet res = state.executeQuery("SELECT * FROM benutzer " +
-                "WHERE username = username");       
+                "WHERE username = \"" + username + "\"");       
         
         if(res.next()){
             userID = res.getInt("userID");
@@ -483,7 +546,9 @@ public class DBHandler {
         throw new DatenbankException(username + " nicht in Datenbank vorhanden!");
     }
     
-    private String getUsernameByUserID(int userID) throws SQLException, DatenbankException{
+    // ****************************** Hilfsmethoden ****************************** //
+    
+    private String getUsernameByUserID(int userID) throws SQLException{
         String username;
         Statement state = con.createStatement();
         
@@ -494,6 +559,23 @@ public class DBHandler {
             username = res.getString("username");
             return username;
         }
-        throw new DatenbankException(userID + " nicht in Datenbank vorhanden!"); 
+        return null; 
+    }
+    
+    private ResultSet getTeilnehmerSet(int terminID) throws SQLException{
+        Statement state = con.createStatement();
+        ResultSet resSet = state.executeQuery("Select * From terminkalender " +
+                    "Where terminID = " + terminID);
+        
+        return resSet;
+    }
+
+    private boolean testUserNimmtTeil(int userID, int terminID) throws SQLException {
+        Statement state = con.createStatement();
+        ResultSet resSet = state.executeQuery("Select * From terminkalender " +
+                    "Where terminID = " + terminID + " AND userID = " + userID);
+        
+        resSet.next();        
+        return resSet.getInt("nimmtTeil") == 1;
     }
 }
