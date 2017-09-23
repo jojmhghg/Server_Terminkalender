@@ -392,7 +392,7 @@ public class DBHandler {
     
     public ResultSet showAnfragen(int userID) throws SQLException{
         Statement state = con.createStatement();
-        ResultSet res = state.executeQuery("Select * FROM meldungsanfrage" +
+        ResultSet res = state.executeQuery("Select * FROM meldungsanfrage" + 
                 "Where meldungsTypID in (Select meldungsID from meldungstyp" +
                 "Where userID = userID And anfrage = 1");
         return res;
