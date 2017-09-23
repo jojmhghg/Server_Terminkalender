@@ -17,23 +17,22 @@ import java.util.logging.Logger;
  */
 public class Launcher implements LauncherInterface{
     
-    private BenutzerListe benutzerliste;
+    private final BenutzerListe benutzerliste;
     // Liste mit Benutzer + SitzungID
     private final LinkedList<Sitzung> aktiveSitzungen;
     private int sitzungscounter;
     private final DBHandler datenbank;
     
-    public Launcher(){
+    public Launcher() throws SQLException, DatenbankException{
         datenbank = new DBHandler(); 
         try {
-            datenbank.displayAuswahl();
+            datenbank.getConnection();
         } catch (ClassNotFoundException | SQLException | NoSuchAlgorithmException ex) {
             Logger.getLogger(Launcher.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+        benutzerliste = new BenutzerListe(datenbank.getUserCounter());
         aktiveSitzungen = new LinkedList<>();
         sitzungscounter = 1;
-        ladeBenutzerliste();
     }
 
     /**
@@ -60,7 +59,7 @@ public class Launcher implements LauncherInterface{
     @Override
     public void createUser(String username, String passwort, String email) throws BenutzerException, SQLException{
         benutzerliste.addBenutzer(username, passwort, email);
-        datenbank.addUser(username, passwort, email, benutzerliste.getBenutzer(username).getMeldungsCounter(), benutzerliste.getBenutzer(username).getUserID());
+        datenbank.addUser(username, passwort, email, benutzerliste.getBenutzer(username).getMeldungsCounter(), benutzerliste.getBenutzer(username).getUserID(), benutzerliste.getBenutzer(username).getTerminCounter());
     }
     
     /**
@@ -76,13 +75,14 @@ public class Launcher implements LauncherInterface{
     public int einloggen(String username, String passwort) throws BenutzerException{
         int sitzungsID = 10000000 * sitzungscounter + (int)(Math.random() * 1000000 + 1);
         sitzungscounter++;
+
+        addUserToServer(username);   
         if(benutzerliste.getBenutzer(username).istPasswort(passwort)){
             aktiveSitzungen.add(new Sitzung(benutzerliste.getBenutzer(username), sitzungsID));
             return sitzungsID;
         }
-        else{
-            return -1;
-        }
+        
+        return -1;
     }
     
     /**
@@ -143,7 +143,7 @@ public class Launcher implements LauncherInterface{
     public void addTermin(Datum datum, Zeit beginn, Zeit ende, String titel, int sitzungsID) throws BenutzerException, TerminException, SQLException{
         Benutzer eingeloggterBenutzer = istEingeloggt(sitzungsID);
         int terminID = eingeloggterBenutzer.getTerminkalender().addTermin(datum, beginn, ende, titel, eingeloggterBenutzer.getUsername());
-        datenbank.addnewTermin(datum, beginn, ende, titel, terminID, eingeloggterBenutzer.getUserID());
+        datenbank.addnewTermin(datum, beginn, ende, titel, terminID, eingeloggterBenutzer.getUserID(), eingeloggterBenutzer.getTerminCounter());
     }
     
     /**
@@ -160,6 +160,7 @@ public class Launcher implements LauncherInterface{
         Benutzer eingeloggterBenutzer = istEingeloggt(sitzungsID);
         if(eingeloggterBenutzer.getUsername().equals(eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).getOwner())){
             for(Teilnehmer teilnehmer : eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).getTeilnehmerliste()){      
+                addUserToServer(teilnehmer.getUsername());    
                 if(!teilnehmer.getUsername().equals(eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).getOwner())){                                
                     benutzerliste.getBenutzer(teilnehmer.getUsername()).getTerminkalender().removeTerminByID(terminID);
                     String text = eingeloggterBenutzer.getUsername() 
@@ -169,7 +170,7 @@ public class Launcher implements LauncherInterface{
                             + eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).getDatum().toString()
                             + " gelöscht";
                     int meldungsID = benutzerliste.getBenutzer(teilnehmer.getUsername()).addMeldung(text);   
-                    datenbank.addMeldung(meldungsID, benutzerliste.getBenutzer(teilnehmer.getUsername()).getUserID(), text);
+                    datenbank.addMeldung(meldungsID, benutzerliste.getBenutzer(teilnehmer.getUsername()).getUserID(), text, false);
                 }            
             }
             datenbank.deleteTermin(terminID);
@@ -177,6 +178,7 @@ public class Launcher implements LauncherInterface{
         else{
             datenbank.removeTermin(terminID, eingeloggterBenutzer.getUserID());
             for(Teilnehmer teilnehmer : eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).getTeilnehmerliste()){
+                addUserToServer(teilnehmer.getUsername());
                 if(!eingeloggterBenutzer.getUsername().equals(teilnehmer.getUsername())){ 
                     String text = eingeloggterBenutzer.getUsername() 
                             + " hat den Termin '" 
@@ -185,7 +187,7 @@ public class Launcher implements LauncherInterface{
                             + eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).getDatum().toString()
                             + " gelöscht";
                     int meldungsID = benutzerliste.getBenutzer(teilnehmer.getUsername()).addMeldung(text); 
-                    datenbank.addMeldung(meldungsID, benutzerliste.getBenutzer(teilnehmer.getUsername()).getUserID(), text);
+                    datenbank.addMeldung(meldungsID, benutzerliste.getBenutzer(teilnehmer.getUsername()).getUserID(), text, false);
                 }
             }
             try {
@@ -305,9 +307,8 @@ public class Launcher implements LauncherInterface{
     @Override
     public void addTerminteilnehmer(int terminID, String username, int sitzungsID) throws BenutzerException, TerminException, SQLException{
         Benutzer eingeloggterBenutzer = istEingeloggt(sitzungsID);
-        if(!benutzerliste.existiertBenutzer(username)){
-            throw new BenutzerException("Benutzer: " + username + " exisitert nicht!");
-        }
+        
+        addUserToServer(username);
         eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).addTeilnehmer(username);
         int anfrageID = benutzerliste.getBenutzer(username).addAnfrage(eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID), eingeloggterBenutzer.getUsername());
         benutzerliste.getBenutzer(username).addTermin(eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID));      
@@ -326,9 +327,10 @@ public class Launcher implements LauncherInterface{
     @Override
     public void terminAnnehmen(int terminID, int sitzungsID) throws TerminException, BenutzerException, SQLException{
         Benutzer eingeloggterBenutzer = istEingeloggt(sitzungsID);
-        benutzerliste.getBenutzer(eingeloggterBenutzer.getUsername()).getTerminkalender().getTerminByID(terminID).changeTeilnehmerNimmtTeil(eingeloggterBenutzer.getUsername());
+        eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).changeTeilnehmerNimmtTeil(eingeloggterBenutzer.getUsername());
         for(Teilnehmer teilnehmer : eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).getTeilnehmerliste()){
                 if(!eingeloggterBenutzer.getUsername().equals(teilnehmer.getUsername())){ 
+                    addUserToServer(teilnehmer.getUsername());
                     String text= eingeloggterBenutzer.getUsername() 
                             + " nimmt an dem Termin '" 
                             + eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).getTitel()
@@ -336,7 +338,7 @@ public class Launcher implements LauncherInterface{
                             + eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).getDatum().toString()
                             + " teil";
                     int meldungsID = benutzerliste.getBenutzer(teilnehmer.getUsername()).addMeldung(text); 
-                    datenbank.addMeldung(meldungsID, benutzerliste.getBenutzer(teilnehmer.getUsername()).getUserID(), text);
+                    datenbank.addMeldung(meldungsID, benutzerliste.getBenutzer(teilnehmer.getUsername()).getUserID(), text, false);
                 }
             }
         datenbank.nimmtTeil(terminID, eingeloggterBenutzer.getUserID());
@@ -356,6 +358,7 @@ public class Launcher implements LauncherInterface{
         Benutzer eingeloggterBenutzer = istEingeloggt(sitzungsID);
         for(Teilnehmer teilnehmer : eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).getTeilnehmerliste()){
             if(!eingeloggterBenutzer.getUsername().equals(teilnehmer.getUsername())){ 
+                addUserToServer(teilnehmer.getUsername()); 
                 String text = eingeloggterBenutzer.getUsername() 
                         + " hat den Termin '" 
                         + eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).getTitel()
@@ -363,7 +366,7 @@ public class Launcher implements LauncherInterface{
                         + eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).getDatum().toString()
                         + " abgelehnt";
                 int meldungsID = benutzerliste.getBenutzer(teilnehmer.getUsername()).addMeldung(text); 
-                datenbank.addMeldung(meldungsID, benutzerliste.getBenutzer(teilnehmer.getUsername()).getUserID(), text);
+                datenbank.addMeldung(meldungsID, benutzerliste.getBenutzer(teilnehmer.getUsername()).getUserID(), text, false);
             }
         }
         try {
@@ -444,10 +447,8 @@ public class Launcher implements LauncherInterface{
      */
     @Override
     public void addKontakt(String username, int sitzungsID) throws BenutzerException, SQLException{
-        Benutzer eingeloggterBenutzer = istEingeloggt(sitzungsID);
-        if(!benutzerliste.existiertBenutzer(username)){
-            throw new BenutzerException("Benutzername existiert nicht!");
-        }
+        Benutzer eingeloggterBenutzer = istEingeloggt(sitzungsID);    
+        addUserToServer(username);
         eingeloggterBenutzer.addKontakt(username);
         datenbank.addKontakt(eingeloggterBenutzer.getUserID(), benutzerliste.getBenutzer(username).getUserID());
     }
@@ -620,16 +621,6 @@ public class Launcher implements LauncherInterface{
         Benutzer eingeloggterBenutzer = istEingeloggt(sitzungsID);
         eingeloggterBenutzer.getMeldungen().get(index).meldungGelesen();
     }
-    
-    /**
-     * Hilfsmethode um Benutzerliste zu füllen
-     * 
-     */
-    private void ladeBenutzerliste() {     
-        //TODO: hier wird die Benutzerliste mit den Daten aus der DB gefüllt
-        benutzerliste = new BenutzerListe();
-        testliste();
-    }
 
     private void testliste(){
         /*try {
@@ -654,4 +645,21 @@ public class Launcher implements LauncherInterface{
         }
         throw new BenutzerException("ungültige Sitzungs-ID");
     }
+    
+    private void addUserToServer(String username) throws BenutzerException{
+        if(!benutzerliste.existiertBenutzer(username)){
+            try {
+                benutzerliste.addBenutzer(datenbank.getBenutzer(username, benutzerliste));
+            } 
+            catch (SQLException e) {
+                throw new BenutzerException("Benutzer: " + username + " exisitert nicht!");
+            } 
+            catch (DatenbankException e){
+                throw new BenutzerException(e.getMessage());
+            }
+        }
+    }
+            
+    
+    
 }

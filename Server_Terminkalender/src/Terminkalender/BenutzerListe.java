@@ -17,9 +17,9 @@ public class BenutzerListe implements Serializable{
     private final LinkedList<Benutzer> benutzerliste;
     private int userIDCounter;
     
-    BenutzerListe(){
-        benutzerliste = new LinkedList<>();
-        userIDCounter = 1;
+    BenutzerListe(int userIDCounter){
+        this.benutzerliste = new LinkedList<>();
+        this.userIDCounter = userIDCounter;
     }
     
     /**
@@ -36,6 +36,12 @@ public class BenutzerListe implements Serializable{
         }
         benutzerliste.add(new Benutzer(username, passwort, email, userIDCounter));      
         userIDCounter++;
+    }
+    
+    public void addBenutzer(Benutzer benutzer){
+        if(!existiertBenutzer(benutzer.getUsername())){
+            benutzerliste.add(benutzer); 
+        }    
     }
     
     public int getIDCounter(){

@@ -60,16 +60,8 @@ public class Benutzer implements Serializable{
      * @param username
      * @param passwort
      * @param email
-     * @throws BenutzerException 
      */
-    Benutzer(String username, String passwort, String email, int userID, String vorname, String nachname, int meldungsCounter) throws BenutzerException{
-        if(username.length() < 4 || username.length() > 12){
-            throw new BenutzerException("Der Username sollte zwischen 4 und 12 Zeichen lang sein");
-        }
-        if(passwort.length() < 4 || passwort.length() > 12){
-            throw new BenutzerException("Das Passwort sollte zwischen 4 und 12 Zeichen lang sein");
-        }
-        
+    Benutzer(String username, String passwort, String email, int userID, String vorname, String nachname, int meldungsCounter){        
         this.userID = userID;
         this.email = email;
         this.username = username;
@@ -114,6 +106,9 @@ public class Benutzer implements Serializable{
     public int getUserID(){
         return this.userID;
     }
+    public int getTerminCounter(){
+        return terminkalender.getTerminCounter();
+    }
     
     //Setter:
     public void setNachname(String nachname){
@@ -131,6 +126,14 @@ public class Benutzer implements Serializable{
         }
         this.passwort = neuesPasswort;
     }
+    public void setKontaktliste(LinkedList<String> kontaktliste){
+        this.kontaktliste = kontaktliste;
+    }
+    public void setMeldungen(LinkedList<Meldungen> meldungen){
+        this.meldungen = meldungen;
+    }
+    
+    
     
     public String resetPasswort(){
         Properties properties = System.getProperties();
@@ -215,9 +218,8 @@ public class Benutzer implements Serializable{
     /**
      * 
      * @param termin
-     * @throws TerminException 
      */
-    public void addTermin(Termin termin) throws TerminException{
+    public void addTermin(Termin termin){
         terminkalender.addTermin(termin);
     }
     
