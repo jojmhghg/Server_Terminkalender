@@ -311,6 +311,7 @@ public class Launcher implements LauncherInterface{
         addUserToServer(username);
         eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).addTeilnehmer(username);
         int anfrageID = benutzerliste.getBenutzer(username).addAnfrage(eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID), eingeloggterBenutzer.getUsername());
+        System.out.println(anfrageID);
         benutzerliste.getBenutzer(username).addTermin(eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID));      
         datenbank.addTermin(terminID, benutzerliste.getBenutzer(username).getUserID(), 0);
         datenbank.addAnfrage(anfrageID, benutzerliste.getBenutzer(username).getUserID(), terminID, eingeloggterBenutzer.getUserID());
@@ -603,11 +604,13 @@ public class Launcher implements LauncherInterface{
      * @param index
      * @param sitzungsID
      * @throws BenutzerException 
+     * @throws java.sql.SQLException 
      */
     @Override
-    public void deleteMeldung(int index, int sitzungsID) throws BenutzerException{
+    public void deleteMeldung(int index, int sitzungsID) throws BenutzerException, SQLException{
         Benutzer eingeloggterBenutzer = istEingeloggt(sitzungsID);
         eingeloggterBenutzer.deleteMeldung(index);
+        datenbank.deleteMeldung(eingeloggterBenutzer.getMeldungen().get(index).meldungsID);
     }
     
     /**
@@ -615,26 +618,13 @@ public class Launcher implements LauncherInterface{
      * @param index
      * @param sitzungsID
      * @throws BenutzerException 
+     * @throws java.sql.SQLException 
      */
     @Override
-    public void setMeldungenGelesen(int index, int sitzungsID) throws BenutzerException{
+    public void setMeldungenGelesen(int index, int sitzungsID) throws BenutzerException, SQLException{
         Benutzer eingeloggterBenutzer = istEingeloggt(sitzungsID);
         eingeloggterBenutzer.getMeldungen().get(index).meldungGelesen();
-    }
-
-    private void testliste(){
-        /*try {
-            benutzerliste.addBenutzer("timeyer", "test", "timeyer@email.de");
-            benutzerliste.addBenutzer("sanja", "test", "sanja@email.de");
-            benutzerliste.addBenutzer("marco", "test", "marco@email.de");
-            benutzerliste.getBenutzer("timeyer").addTermin(new Datum(3, 9, 2017), new Zeit(20, 30), new Zeit(21, 30), "essen gehen");
-            benutzerliste.getBenutzer("timeyer").addTermin(new Datum(4, 9, 2017), new Zeit(20, 30), new Zeit(21, 30), "laufen gehen");
-            benutzerliste.getBenutzer("timeyer").addTermin(new Datum(5, 9, 2017), new Zeit(20, 30), new Zeit(21, 30), "reden gehen");
-            benutzerliste.getBenutzer("timeyer").addTermin(new Datum(6, 9, 2017), new Zeit(20, 30), new Zeit(21, 30), "scheißen gehen");
-        } catch (BenutzerException | Datum.DatumException | Zeit.ZeitException | TerminException e) {
-            System.out.println(e.getMessage());
-        }
-        */
+        datenbank.setMeldungenGelesen(eingeloggterBenutzer.getMeldungen().get(index).meldungsID);
     }
 
     private Benutzer istEingeloggt(int sitzungsID) throws BenutzerException {

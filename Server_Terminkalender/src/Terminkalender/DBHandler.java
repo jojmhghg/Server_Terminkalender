@@ -359,6 +359,16 @@ public class DBHandler {
             prepAddMeldung.setInt(5, 0);
         }
         prepAddMeldung.execute();
+        
+        Statement state = con.createStatement();
+        ResultSet resSet = state.executeQuery("Select * From benutzer " +
+                    "Where userID = " + userID);
+        
+        resSet.next();
+        PreparedStatement prepIncMeldungsCounter = con.prepareStatement("UPDATE benutzer SET meldungsCounter = ? WHERE userID = ?");
+        prepIncMeldungsCounter.setInt(1, resSet.getInt("meldungsCounter") + 1);
+        prepIncMeldungsCounter.setInt(2, userID);
+        prepIncMeldungsCounter.execute();
     }  
     
     public void addAnfrage(int meldungsID, int userID, int terminID, int absenderID) throws SQLException{
@@ -366,17 +376,34 @@ public class DBHandler {
         
         PreparedStatement prepAddAnfrage = con.prepareStatement("INSERT INTO anfragen values(?,?,?);");
         prepAddAnfrage.setInt(1, meldungsID);
-        prepAddAnfrage.setInt(2, absenderID);
-        prepAddAnfrage.setInt(3, terminID);
+        prepAddAnfrage.setInt(2, terminID);
+        prepAddAnfrage.setInt(3, absenderID);
         prepAddAnfrage.execute();
     }
     
-    public void deleteMeldung(int index, int sitzungsID) throws SQLException{
+    public void deleteMeldung(int meldungsID) throws SQLException{
+        PreparedStatement deleteAnfrage, deleteMeldung;
+        Statement state = con.createStatement();
+        ResultSet resSet = state.executeQuery("Select * From meldungen " +
+                    "Where meldungsID = " + meldungsID);
         
+        resSet.next();
+        if(resSet.getInt("anfrage") == 1){
+            deleteAnfrage = con.prepareStatement("DELETE anfrage WHERE meldungsID = ?");
+            deleteAnfrage.setInt(1, meldungsID);
+            deleteAnfrage.execute();
+        }
+        
+        deleteMeldung = con.prepareStatement("DELETE meldungen WHERE meldungsID = ?");
+        deleteMeldung.setInt(1, meldungsID);
+        deleteMeldung.execute();
     }
     
-    public void setMeldungenGelesen(int index, int sitzungsID) throws SQLException{
-        
+    public void setMeldungenGelesen(int meldungsID) throws SQLException{
+        PreparedStatement prepNimmtTeil = con.prepareStatement("UPDATE meldungen SET gelesen = ? WHERE meldungsID = ?");
+        prepNimmtTeil.setInt(1, 1);
+        prepNimmtTeil.setInt(2, meldungsID);
+        prepNimmtTeil.execute();
     }
     
     // ****************************** GETTER ****************************** //
@@ -450,12 +477,14 @@ public class DBHandler {
                             edit));
                     //und nun die Teilnehmerliste
                     teilnehmerliste = getTeilnehmerSet(termine.getInt("terminID"));
-                    while(teilnehmerliste.next() && termine.getInt("ownerID") != teilnehmerliste.getInt("userID")){
-                        teilnehmerUsername = getUsernameByUserID(teilnehmerliste.getInt("userID"));
-                        terminkalender.getLast().addTeilnehmer(teilnehmerUsername);
-                        //falls der Teilnehmer zugesagt hat, muss das noch gesetzt werden
-                        if(testUserNimmtTeil(teilnehmerliste.getInt("userID"), termine.getInt("terminID"))){
-                            terminkalender.getLast().changeTeilnehmerNimmtTeil(teilnehmerUsername);
+                    while(teilnehmerliste.next()){
+                        if(termine.getInt("ownerID") != teilnehmerliste.getInt("userID")){
+                            teilnehmerUsername = getUsernameByUserID(teilnehmerliste.getInt("userID"));
+                            terminkalender.getLast().addTeilnehmer(teilnehmerUsername);
+                            //falls der Teilnehmer zugesagt hat, muss das noch gesetzt werden
+                            if(testUserNimmtTeil(teilnehmerliste.getInt("userID"), termine.getInt("terminID"))){
+                                terminkalender.getLast().changeTeilnehmerNimmtTeil(teilnehmerUsername);
+                            }
                         }
                     }
                 } catch (TerminException | Datum.DatumException | Zeit.ZeitException ex) {
@@ -480,30 +509,57 @@ public class DBHandler {
         return kontaktliste;
     }
     
-    private LinkedList<Meldungen> getMeldungen(int userID) throws SQLException{
-        /*Statement state = con.createStatement();
-        ResultSet res2 = null;
-        ResultSet res = state.executeQuery("Select * FROM meldungstyp" +
-                "Where userID = " + userID +
-                "Where anfrage =" + 0);
-        while(res.next()){
-            res2 = state.executeQuery("Select * FROM meldung" +
-                    "Where meldungsTypID = " + res.getInt("meldungsTypID"));
+    private LinkedList<Meldungen> getMeldungen(int userID, Benutzer benutzer) throws SQLException{
+        LinkedList<Meldungen> meldungen = new LinkedList<>();
+        
+        Statement state = con.createStatement();
+        ResultSet resSet = state.executeQuery("Select * FROM meldungen " +
+                "Where userID = " + userID);
+        
+        while(resSet.next()){
+            if(resSet.getInt("anfrage") == 1){
+                meldungen.add(getAnfrage(resSet.getString("text"), resSet.getInt("meldungsID"), benutzer));
             }
-        */
-        return new LinkedList<>();
+            else{
+                meldungen.add(new Meldungen(resSet.getString("text"), resSet.getInt("meldungsID")));
+                     
+            } 
+            if(resSet.getInt("gelesen") == 1){
+                    meldungen.getLast().meldungGelesen();
+            }  
+        }
+        return meldungen;
+    }
+    
+    private Anfrage getAnfrage(String text, int meldungsID, Benutzer benutzer) throws SQLException{
+        Anfrage anfrage; 
+        Termin termin;
+        
+        Statement state = con.createStatement();
+        ResultSet resSet = state.executeQuery("Select * FROM anfragen " +
+                "Where meldungsID = " + meldungsID);
+        
+        resSet.next();
+        try {
+            termin = benutzer.getTerminkalender().getTerminByID(resSet.getInt("terminID"));
+            anfrage = new Anfrage(text, termin, getUsernameByUserID(resSet.getInt("absenderID")), meldungsID);
+            return anfrage;
+        } catch (TerminException ex) {
+            Logger.getLogger(DBHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
     
     public Benutzer getBenutzer(int userID) throws SQLException, DatenbankException{
         Benutzer benutzer;
+        LinkedList<Termin> termine;
+        LinkedList<String> kontakte;
+        LinkedList<Meldungen> meldungen;
         
         ResultSet user = getUserDetails(userID);
-        LinkedList<Termin> termine = getTermine(userID);
-        LinkedList<String> kontakte = getKontaktliste(userID);
-        LinkedList<Meldungen> meldungen = getMeldungen(userID);
         
         if(user.next()){
-            //erstmal alle einfachen Datentypen
+            //erstmal alle einfachen Datentypen 
             benutzer = new Benutzer(
                     user.getString("username"), 
                     user.getString("password"), 
@@ -514,15 +570,18 @@ public class DBHandler {
                     user.getInt("meldungsCounter")
             );
             //jetzt die Listen
-            //1. Meldungen
-            benutzer.setMeldungen(meldungen);
-            //2. Kontakte
-            benutzer.setKontaktliste(kontakte);
-            //3. Termine
+            //1. Termine
+            termine = getTermine(userID);
             for(Termin termin : termine){
                 benutzer.addTermin(termin);
             }
-             
+            //2. Meldungen
+            meldungen = getMeldungen(userID, benutzer);
+            benutzer.setMeldungen(meldungen);
+            //3. Kontakte
+            kontakte = getKontaktliste(userID);
+            benutzer.setKontaktliste(kontakte);
+           
             return benutzer;
         }
         
