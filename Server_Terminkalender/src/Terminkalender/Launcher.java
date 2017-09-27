@@ -343,7 +343,7 @@ public class Launcher implements LauncherInterface{
                     int meldungsID = benutzerliste.getBenutzer(teilnehmer.getUsername()).addMeldung(text); 
                     datenbank.addMeldung(meldungsID, benutzerliste.getBenutzer(teilnehmer.getUsername()).getUserID(), text, false);
                 }
-            }
+        }
         datenbank.nimmtTeil(terminID, eingeloggterBenutzer.getUserID());
     }
     
