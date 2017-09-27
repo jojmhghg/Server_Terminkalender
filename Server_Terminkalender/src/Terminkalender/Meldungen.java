@@ -16,7 +16,7 @@ public class Meldungen implements Serializable{
     protected boolean gelesen;
     protected int meldungsID;
     
-    Meldungen(String text, int meldungsID){
+    public Meldungen(String text, int meldungsID){
         this.text = text;
         this.gelesen = false;
         this.meldungsID = meldungsID;

@@ -626,6 +626,21 @@ public class Launcher implements LauncherInterface{
         eingeloggterBenutzer.getMeldungen().get(index).meldungGelesen();
         datenbank.setMeldungenGelesen(eingeloggterBenutzer.getMeldungen().get(index).meldungsID);
     }
+    
+    /**
+     * 
+     * @param username
+     * @return
+     * @throws BenutzerException 
+     */
+    @Override
+    public LinkedList<String> getProfil(String username) throws BenutzerException{
+        addUserToServer(username);
+        return benutzerliste.getBenutzer(username).getProfil();
+    }
+    
+    
+    // ----------------------------------- Hilfsmethoden ----------------------------------- //
 
     private Benutzer istEingeloggt(int sitzungsID) throws BenutzerException {
         for(Sitzung sitzung : aktiveSitzungen){

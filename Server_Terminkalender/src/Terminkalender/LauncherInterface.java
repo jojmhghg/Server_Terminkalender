@@ -60,5 +60,9 @@ public interface LauncherInterface extends Remote{
     public LinkedList<Meldungen> getMeldungen(int sitzungsID) throws RemoteException, BenutzerException;
     public void deleteMeldung(int index, int sitzungsID) throws RemoteException, BenutzerException, SQLException;
     public void setMeldungenGelesen(int index, int sitzungsID) throws BenutzerException, RemoteException, SQLException;
+    
+    /* Profil */
+    // Liste = { username, email, vorname, nachname }
+    public LinkedList<String> getProfil(String username) throws RemoteException, BenutzerException;
 }
 

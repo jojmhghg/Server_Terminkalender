@@ -253,6 +253,19 @@ public class Benutzer implements Serializable{
     public void deleteMeldung(int index){
         meldungen.remove(index);
     }
+    
+    /**
+     * 
+     * @return 
+     */
+    public LinkedList<String> getProfil(){
+        LinkedList<String> profil = new LinkedList<>();
+        profil.add(this.username);
+        profil.add(this.email);
+        profil.add(this.vorname);
+        profil.add(this.nachname);
+        return profil;
+    }
 }
     
 
