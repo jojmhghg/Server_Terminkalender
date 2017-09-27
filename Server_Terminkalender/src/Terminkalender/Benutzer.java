@@ -49,7 +49,7 @@ public class Benutzer implements Serializable{
         this.passwort = passwort;
         this.nachname = "";
         this.vorname = "";
-        this.terminkalender = new Terminkalender(userID);
+        this.terminkalender = new Terminkalender(userID * 1000000 + 1);
         this.kontaktliste = new LinkedList<>();
         this.meldungen = new LinkedList<>();
         this.meldungsCounter = 1 + userID * 1000000;
@@ -61,14 +61,14 @@ public class Benutzer implements Serializable{
      * @param passwort
      * @param email
      */
-    Benutzer(String username, String passwort, String email, int userID, String vorname, String nachname, int meldungsCounter){        
+    Benutzer(String username, String passwort, String email, int userID, String vorname, String nachname, int meldungsCounter, int terminIDCounter){        
         this.userID = userID;
         this.email = email;
         this.username = username;
         this.passwort = passwort;
         this.nachname = nachname;
         this.vorname = vorname;
-        this.terminkalender = new Terminkalender(userID);
+        this.terminkalender = new Terminkalender(terminIDCounter);
         this.kontaktliste = new LinkedList<>();
         this.meldungen = new LinkedList<>();
         this.meldungsCounter = meldungsCounter;
@@ -226,11 +226,12 @@ public class Benutzer implements Serializable{
     /**
      * 
      * @param termin
+     * @param text
      * @param absender 
      * @return  
      */
-    public int addAnfrage(Termin termin, String absender){
-        meldungen.add(new Anfrage(absender + " lädt sie zu einem Termin ein" ,termin, absender, meldungsCounter));
+    public int addAnfrage(Termin termin, String text, String absender){
+        meldungen.add(new Anfrage(text ,termin, absender, meldungsCounter));
         meldungsCounter++;
         return meldungsCounter - 1;
     }

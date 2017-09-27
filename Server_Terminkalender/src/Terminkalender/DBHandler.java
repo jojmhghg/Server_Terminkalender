@@ -371,8 +371,8 @@ public class DBHandler {
         prepIncMeldungsCounter.execute();
     }  
     
-    public void addAnfrage(int meldungsID, int userID, int terminID, int absenderID) throws SQLException{
-        addMeldung(meldungsID, userID, "", true);
+    public void addAnfrage(int meldungsID, int userID, int terminID, int absenderID, String text) throws SQLException{
+        addMeldung(meldungsID, userID, text, true);
         
         PreparedStatement prepAddAnfrage = con.prepareStatement("INSERT INTO anfragen values(?,?,?);");
         prepAddAnfrage.setInt(1, meldungsID);
@@ -389,12 +389,12 @@ public class DBHandler {
         
         resSet.next();
         if(resSet.getInt("anfrage") == 1){
-            deleteAnfrage = con.prepareStatement("DELETE anfrage WHERE meldungsID = ?");
+            deleteAnfrage = con.prepareStatement("DELETE FROM anfragen WHERE meldungsID = ?");
             deleteAnfrage.setInt(1, meldungsID);
             deleteAnfrage.execute();
         }
         
-        deleteMeldung = con.prepareStatement("DELETE meldungen WHERE meldungsID = ?");
+        deleteMeldung = con.prepareStatement("DELETE FROM meldungen WHERE meldungsID = ?");
         deleteMeldung.setInt(1, meldungsID);
         deleteMeldung.execute();
     }
@@ -521,8 +521,7 @@ public class DBHandler {
                 meldungen.add(getAnfrage(resSet.getString("text"), resSet.getInt("meldungsID"), benutzer));
             }
             else{
-                meldungen.add(new Meldungen(resSet.getString("text"), resSet.getInt("meldungsID")));
-                     
+                meldungen.add(new Meldungen(resSet.getString("text"), resSet.getInt("meldungsID")));                    
             } 
             if(resSet.getInt("gelesen") == 1){
                     meldungen.getLast().meldungGelesen();
@@ -567,7 +566,8 @@ public class DBHandler {
                     user.getInt("userID"), 
                     user.getString("name"), 
                     user.getString("lastname"), 
-                    user.getInt("meldungsCounter")
+                    user.getInt("meldungsCounter"),
+                    user.getInt("terminCounter")
             );
             //jetzt die Listen
             //1. Termine
@@ -593,7 +593,6 @@ public class DBHandler {
         int userID;
         Statement state = con.createStatement();
         
-        //hier gibt es Probleme :S
         ResultSet res = state.executeQuery("SELECT * FROM benutzer " +
                 "WHERE username = \"" + username + "\"");       
         

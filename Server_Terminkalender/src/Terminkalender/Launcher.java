@@ -93,6 +93,7 @@ public class Launcher implements LauncherInterface{
      */
     @Override
     public void resetPassword(String username) throws BenutzerException, SQLException{
+        addUserToServer(username);
         datenbank.resetPassword(username, benutzerliste.getBenutzer(username).resetPasswort());
     }
     
@@ -307,14 +308,15 @@ public class Launcher implements LauncherInterface{
     @Override
     public void addTerminteilnehmer(int terminID, String username, int sitzungsID) throws BenutzerException, TerminException, SQLException{
         Benutzer eingeloggterBenutzer = istEingeloggt(sitzungsID);
+        String text = eingeloggterBenutzer.getUsername() + " lädt sie zu einem Termin ein";
         
         addUserToServer(username);
         eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID).addTeilnehmer(username);
-        int anfrageID = benutzerliste.getBenutzer(username).addAnfrage(eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID), eingeloggterBenutzer.getUsername());
+        int anfrageID = benutzerliste.getBenutzer(username).addAnfrage(eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID), text, eingeloggterBenutzer.getUsername());
         System.out.println(anfrageID);
         benutzerliste.getBenutzer(username).addTermin(eingeloggterBenutzer.getTerminkalender().getTerminByID(terminID));      
         datenbank.addTermin(terminID, benutzerliste.getBenutzer(username).getUserID(), 0);
-        datenbank.addAnfrage(anfrageID, benutzerliste.getBenutzer(username).getUserID(), terminID, eingeloggterBenutzer.getUserID());
+        datenbank.addAnfrage(anfrageID, benutzerliste.getBenutzer(username).getUserID(), terminID, eingeloggterBenutzer.getUserID(), text);
     }
     
     /**
@@ -608,9 +610,9 @@ public class Launcher implements LauncherInterface{
      */
     @Override
     public void deleteMeldung(int index, int sitzungsID) throws BenutzerException, SQLException{
-        Benutzer eingeloggterBenutzer = istEingeloggt(sitzungsID);
-        eingeloggterBenutzer.deleteMeldung(index);
+        Benutzer eingeloggterBenutzer = istEingeloggt(sitzungsID);       
         datenbank.deleteMeldung(eingeloggterBenutzer.getMeldungen().get(index).meldungsID);
+        eingeloggterBenutzer.deleteMeldung(index);
     }
     
     /**
