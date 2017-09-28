@@ -7,9 +7,7 @@ package Terminkalender;
 
 import java.util.LinkedList;
 import java.io.Serializable;
-import java.util.Properties;
-import javax.mail.*;
-import javax.mail.internet.*;
+import java.security.SecureRandom;
 
 /**
  *
@@ -136,24 +134,21 @@ public class Benutzer implements Serializable{
     
     
     public String resetPasswort(){
-        Properties properties = System.getProperties();
-        properties.setProperty("mail.smtp.host", "smtp.gmail.de");
-        Session session = Session.getDefaultInstance(properties);
-
-        passwort = "hallo123";
-        
-        try {
-            MimeMessage message = new MimeMessage(session);
-            message.setFrom(new InternetAddress("terminkalenderServiceTeam@gmail.com"));
-            message.addRecipient(Message.RecipientType.TO, new InternetAddress(email));
-            message.setSubject("Passwort wurde erfolgreich zurückgesetzt!");
-            message.setText("Ihr Passwort wurde erfolgreich zurückgesetzt\nIhr neues Passwort lautet: " + passwort);
-            Transport.send(message);
+        String message;
+        EMailService emailService = new EMailService();
+        String allowedChars = "0123456789abcdefghijklmnopqrstuvwABCDEFGHIJKLMNOP!?";
+        SecureRandom random = new SecureRandom();
+        StringBuilder pass = new StringBuilder(10);
+    
+        //zufälliges Passwort generieren (10 Zeichen)
+        for (int i = 0; i < 10; i++) {
+            pass.append(allowedChars.charAt(random.nextInt(allowedChars.length())));
         }
-        catch (MessagingException e) {
-            System.out.println(e.getMessage());
-        }
-        
+               
+        passwort = pass.toString();
+        message = "Ihr neues Passwort lautet: " + passwort + "!";
+        emailService.sendMail(email, "Terminkalender: Passwort zurückgesetzt", message);
+ 
         return passwort;
     }
        
