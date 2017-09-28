@@ -146,7 +146,7 @@ public class Benutzer implements Serializable{
         }
                
         passwort = pass.toString();
-        message = "Ihr neues Passwort lautet: " + passwort + "!";
+        message = "Ihr neues Passwort lautet: " + passwort ;
         emailService.sendMail(email, "Terminkalender: Passwort zurückgesetzt", message);
  
         return passwort;
